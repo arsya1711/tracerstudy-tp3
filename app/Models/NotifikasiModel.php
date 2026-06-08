@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use CodeIgniter\Model;
+use Throwable;
 
 /*
 |-------------------------------------------------------------------
@@ -72,7 +73,11 @@ class NotifikasiModel extends Model
             ];
         }
 
-        $this->insertBatch($rows);
+        try {
+            $this->insertBatch($rows);
+        } catch (Throwable $th) {
+            log_message('error', 'Notifikasi gagal dibuat: ' . $th->getMessage());
+        }
     }
 
     public function ambilUntukHeader(int $idPengguna, int $limit = 5): array
