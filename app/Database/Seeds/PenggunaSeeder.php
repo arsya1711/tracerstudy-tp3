@@ -36,46 +36,57 @@ class PenggunaSeeder extends Seeder
     */
     public function run()
     {
-        $peranSuperadmin = $this->db->table('tb_peran')
-            ->where('slug_peran', 'superadmin')
-            ->get()
-            ->getRowArray();
+        $this->call(PeranSeeder::class);
 
-        if (! $peranSuperadmin) {
-            $this->call(PeranSeeder::class);
-
-            $peranSuperadmin = $this->db->table('tb_peran')
-                ->where('slug_peran', 'superadmin')
-                ->get()
-                ->getRowArray();
-        }
-
-        if (! $peranSuperadmin) {
-            return;
-        }
-
-        $data = [
-            'id_peran'      => $peranSuperadmin['id_peran'],
-            'nama_lengkap'  => 'Super Administrator',
-            'email'         => 'superadmin@tracerstudy.local',
-            'kata_sandi'    => password_hash('Admin123', PASSWORD_BCRYPT),
-            'status_aktif'  => 1,
+        $akunAwal = [
+            [
+                'slug_peran'     => 'superadmin',
+                'nama_lengkap'   => 'Super Administrator',
+                'email'          => 'superadmin@tracerstudy.local',
+                'password'       => 'Admin123',
+            ],
+            [
+                'slug_peran'     => 'admin_sekolah',
+                'nama_lengkap'   => 'Admin Sekolah',
+                'email'          => 'adminsekolah@tracerstudy.local',
+                'password'       => 'AdminSekolah123',
+            ],
         ];
 
         $table = $this->db->table('tb_pengguna');
-        $existing = $table
-            ->where('email', $data['email'])
-            ->get()
-            ->getRowArray();
 
-        if ($existing) {
-            $table
-                ->where('id_pengguna', $existing['id_pengguna'])
-                ->update($data);
+        foreach ($akunAwal as $akun) {
+            $peran = $this->db->table('tb_peran')
+                ->where('slug_peran', $akun['slug_peran'])
+                ->get()
+                ->getRowArray();
 
-            return;
+            if (! $peran) {
+                continue;
+            }
+
+            $data = [
+                'id_peran'      => $peran['id_peran'],
+                'nama_lengkap'  => $akun['nama_lengkap'],
+                'email'         => $akun['email'],
+                'kata_sandi'    => password_hash($akun['password'], PASSWORD_BCRYPT),
+                'status_aktif'  => 1,
+            ];
+
+            $existing = $table
+                ->where('email', $data['email'])
+                ->get()
+                ->getRowArray();
+
+            if ($existing) {
+                $table
+                    ->where('id_pengguna', $existing['id_pengguna'])
+                    ->update($data);
+
+                continue;
+            }
+
+            $table->insert($data);
         }
-
-        $table->insert($data);
     }
 }
