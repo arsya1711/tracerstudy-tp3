@@ -18,12 +18,14 @@ if ($isAlumni) {
     $menuItems = [
         ['label' => 'Dashboard', 'url' => base_url('alumni/dashboard'), 'active' => uri_string() === 'alumni/dashboard'],
         ['label' => 'Profil & Tracer', 'url' => base_url('alumni/profil'), 'active' => uri_string() === 'alumni/profil'],
+        ['label' => 'Legalisir', 'url' => base_url('alumni/legalisir'), 'active' => uri_string() === 'alumni/legalisir'],
     ];
 } elseif ($isAdminSekolah) {
     $menuItems = [
         ['label' => 'Dashboard', 'url' => base_url('admin-sekolah/dashboard'), 'active' => in_array(uri_string(), ['admin-sekolah/dashboard', 'dashboard/admin-sekolah'], true)],
         ['label' => 'Alumni', 'url' => base_url('admin-sekolah/alumni'), 'active' => str_starts_with(uri_string(), 'admin-sekolah/alumni')],
         ['label' => 'Tracer Alumni', 'url' => base_url('admin-sekolah/tracer'), 'active' => uri_string() === 'admin-sekolah/tracer'],
+        ['label' => 'Legalisir', 'url' => base_url('admin-sekolah/legalisir'), 'active' => uri_string() === 'admin-sekolah/legalisir'],
         ['label' => 'Angkatan', 'url' => base_url('admin-sekolah/angkatan'), 'active' => uri_string() === 'admin-sekolah/angkatan'],
         ['label' => 'Kompetensi', 'url' => base_url('admin-sekolah/kompetensi'), 'active' => uri_string() === 'admin-sekolah/kompetensi'],
         ['label' => 'Aktivitas', 'url' => base_url('admin-sekolah/aktivitas'), 'active' => uri_string() === 'admin-sekolah/aktivitas'],
@@ -33,6 +35,7 @@ if ($isAlumni) {
         ['label' => 'Dashboard', 'url' => base_url('dashboard/superadmin'), 'active' => uri_string() === 'dashboard/superadmin'],
         ['label' => 'Alumni', 'url' => base_url('superadmin/alumni'), 'active' => str_starts_with(uri_string(), 'superadmin/alumni')],
         ['label' => 'Tracer Alumni', 'url' => base_url('superadmin/tracer'), 'active' => uri_string() === 'superadmin/tracer'],
+        ['label' => 'Legalisir', 'url' => base_url('superadmin/legalisir'), 'active' => uri_string() === 'superadmin/legalisir'],
         ['label' => 'Angkatan', 'url' => base_url('superadmin/angkatan'), 'active' => uri_string() === 'superadmin/angkatan'],
         ['label' => 'Kompetensi', 'url' => base_url('superadmin/kompetensi'), 'active' => uri_string() === 'superadmin/kompetensi'],
         ['label' => 'Aktivitas', 'url' => base_url('superadmin/aktivitas'), 'active' => uri_string() === 'superadmin/aktivitas'],

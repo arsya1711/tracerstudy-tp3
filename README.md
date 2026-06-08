@@ -1,6 +1,8 @@
-# Tracer Study TP4
+# Sistem Informasi Tracer Study SMK Teratai Putih Global 3 Bekasi
 
-Aplikasi Tracer Study untuk mengelola data alumni, master sekolah, isian aktivitas setelah lulus, dan pelaporan tracer alumni.
+Implementasi Sistem Informasi Tracer Study Berbasis Web untuk Pemetaan Karier Lulusan pada SMK Teratai Putih Global 3 Bekasi.
+
+Aplikasi ini mengelola data alumni, master sekolah, isian aktivitas setelah lulus, pengajuan legalisir, dan pelaporan tracer alumni.
 
 Project ini dibangun dengan CodeIgniter 4 dan PHP 8.2.
 
@@ -11,6 +13,12 @@ Project ini dibangun dengan CodeIgniter 4 dan PHP 8.2.
 - Manajemen master data sekolah, kompetensi, angkatan, dan aktivitas alumni.
 - Registrasi alumni dan pengisian tracer study mandiri.
 - Modul tracer study alumni dengan rekap dan data analisis.
+- Modul pengajuan legalisir dokumen alumni.
+
+## Batasan Fitur Skripsi
+
+- Fitur lowongan kerja, lamaran, perusahaan, dan rekrutmen BKK tidak dijadikan fitur utama skripsi ini.
+- Modul tersebut sudah dipisahkan dari aplikasi agar fokus sistem tetap pada tracer study, pemetaan karier lulusan, data alumni, legalisir, dan pelaporan.
 
 ## Kebutuhan Sistem
 
@@ -25,7 +33,7 @@ Project ini dibangun dengan CodeIgniter 4 dan PHP 8.2.
 
    ```bash
    git clone <url-repository>
-   cd app-tracer-study-tp4
+   cd app-tracer-bkk-tp4
    ```
 
 2. Install dependency PHP.

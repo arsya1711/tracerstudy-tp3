@@ -25,6 +25,7 @@ $routes->post('daftar', 'Auth\RegisterController::store');
 $routes->get('logout', 'Auth\LoginController::logout');
 
 $routes->get('notifikasi/buka/(:num)', 'NotifikasiController::buka/$1', ['filter' => 'auth']);
+$routes->get('alumni', 'Alumni\DashboardController::index', ['filter' => 'auth:alumni']);
 
 $routes->group('dashboard', ['filter' => 'auth'], static function (RouteCollection $routes) {
     $routes->get('superadmin', 'Superadmin\DashboardController::index', ['filter' => 'auth:superadmin']);
@@ -35,6 +36,9 @@ $routes->group('dashboard', ['filter' => 'auth'], static function (RouteCollecti
 
 $routes->group('admin-sekolah', ['filter' => 'auth:admin_sekolah'], static function (RouteCollection $routes) {
     $routes->get('dashboard', 'AdminSekolah\DashboardController::index');
+    $routes->get('alumni', 'AdminSekolah\TracerController::index');
+    $routes->get('legalisir', 'AdminSekolah\LegalisirController::index');
+    $routes->post('legalisir/update-status/(:num)', 'AdminSekolah\LegalisirController::updateStatus/$1');
     $routes->get('kompetensi', 'AdminSekolah\KompetensiController::index');
     $routes->post('kompetensi/simpan', 'AdminSekolah\KompetensiController::simpan');
     $routes->post('kompetensi/update/(:num)', 'AdminSekolah\KompetensiController::update/$1');
@@ -51,6 +55,9 @@ $routes->group('admin-sekolah', ['filter' => 'auth:admin_sekolah'], static funct
 });
 
 $routes->group('superadmin', ['filter' => 'auth:superadmin'], static function (RouteCollection $routes) {
+    $routes->get('alumni', 'Superadmin\TracerController::index');
+    $routes->get('legalisir', 'Superadmin\LegalisirController::index');
+    $routes->post('legalisir/update-status/(:num)', 'Superadmin\LegalisirController::updateStatus/$1');
     $routes->get('kompetensi', 'Superadmin\KompetensiController::index');
     $routes->post('kompetensi/simpan', 'Superadmin\KompetensiController::simpan');
     $routes->post('kompetensi/update/(:num)', 'Superadmin\KompetensiController::update/$1');
@@ -75,6 +82,8 @@ $routes->group('superadmin', ['filter' => 'auth:superadmin'], static function (R
 $routes->group('alumni', ['filter' => 'auth:alumni'], static function (RouteCollection $routes) {
     $routes->get('dashboard', 'Alumni\DashboardController::index');
     $routes->get('profil', 'Alumni\DashboardController::profil');
+    $routes->get('legalisir', 'Alumni\LegalisirController::index');
+    $routes->post('legalisir/simpan', 'Alumni\LegalisirController::simpan');
     $routes->post('profil/update/(:num)', 'Alumni\DashboardController::updateDetail/$1');
     $routes->post('profil/update-email', 'Alumni\DashboardController::updateEmail');
     $routes->post('profil/update-password', 'Alumni\DashboardController::updatePassword');
