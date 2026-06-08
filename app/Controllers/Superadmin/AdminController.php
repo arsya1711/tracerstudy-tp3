@@ -47,15 +47,13 @@ class AdminController extends BaseController
         $areaPrefix = $this->ambilAreaPrefix();
 
         return view('superadmin/admin/index', [
-            'title'               => 'Manajemen Admin - Sistem Tracer Study & BKK',
+            'title'               => 'Manajemen Admin - Sistem Tracer Study',
             'areaPrefix'          => $areaPrefix,
             'dashboardUrl'        => $this->ambilDashboardUrl(),
             'pageHeading'         => $areaPrefix === 'admin-sekolah' ? 'Data Admin' : 'Manajemen Admin',
             'breadcrumbParent'    => 'Manajemen Pengguna',
             'breadcrumbCurrent'   => 'Data Admin',
             'jenis_admin'         => $this->ambilJenisAdmin(),
-            'daftar_perusahaan'   => $this->ambilDaftarPerusahaan(),
-            'perusahaan_tersedia' => $this->perusahaanTersedia(),
         ]);
     }
 
@@ -85,11 +83,6 @@ class AdminController extends BaseController
             return $this->jsonResponse('error', $errorFoto, [], 422);
         }
 
-        $errorPerusahaan = $this->validatePenugasanPerusahaan($payload['jenis_admin'], $payload['id_perusahaan']);
-        if ($errorPerusahaan !== null) {
-            return $this->jsonResponse('error', $errorPerusahaan, [], 422);
-        }
-
         $peran = $this->peranModel->cariBySlug($payload['jenis_admin']);
         if ($peran === null) {
             return $this->jsonResponse('error', 'Peran admin tidak ditemukan.', [], 404);
@@ -111,8 +104,6 @@ class AdminController extends BaseController
                 'foto_profil'   => $uploadedFoto,
                 'status_aktif'  => 1,
             ], true);
-
-            $this->sinkronkanPerusahaanAdmin((int) $idPengguna, $payload['jenis_admin'], $payload['id_perusahaan']);
 
             $this->db->transComplete();
 
@@ -163,11 +154,6 @@ class AdminController extends BaseController
             return $this->jsonResponse('error', $errorFoto, [], 422);
         }
 
-        $errorPerusahaan = $this->validatePenugasanPerusahaan($payload['jenis_admin'], $payload['id_perusahaan'], $idPengguna);
-        if ($errorPerusahaan !== null) {
-            return $this->jsonResponse('error', $errorPerusahaan, [], 422);
-        }
-
         $peran = $this->peranModel->cariBySlug($payload['jenis_admin']);
         if ($peran === null) {
             return $this->jsonResponse('error', 'Peran admin tidak ditemukan.', [], 404);
@@ -203,7 +189,6 @@ class AdminController extends BaseController
             $this->db->transStart();
 
             $this->penggunaModel->update($idPengguna, $dataPengguna);
-            $this->sinkronkanPerusahaanAdmin($idPengguna, $payload['jenis_admin'], $payload['id_perusahaan']);
 
             $this->db->transComplete();
 
@@ -288,7 +273,7 @@ class AdminController extends BaseController
             ->select('u.id_pengguna, u.foto_profil')
             ->join('tb_peran r', 'r.id_peran = u.id_peran', 'inner')
             ->whereIn('u.id_pengguna', $ids)
-            ->whereIn('r.slug_peran', ['admin_sekolah', 'admin_dudi', 'admin_perusahaan'])
+            ->whereIn('r.slug_peran', ['admin_sekolah'])
             ->get()
             ->getResultArray();
 
@@ -296,7 +281,6 @@ class AdminController extends BaseController
             return $this->jsonResponse('error', 'Data admin tidak ditemukan.', [], 404);
         }
 
-        $this->lepaskanSemuaPerusahaanDariAdmin($ids);
         $this->penggunaModel->whereIn('id_pengguna', $ids)->delete();
 
         foreach ($admins as $admin) {
@@ -316,7 +300,6 @@ class AdminController extends BaseController
             'kata_sandi'    => (string) $this->request->getPost('kata_sandi'),
             'jenis_admin'   => trim((string) $this->request->getPost('jenis_admin')),
             'nomor_telepon' => trim((string) $this->request->getPost('nomor_telepon')) ?: null,
-            'id_perusahaan' => (int) ($this->request->getPost('id_perusahaan') ?? 0),
             'foto_remove'   => (string) $this->request->getPost('foto_remove') === '1',
         ];
     }
@@ -325,63 +308,10 @@ class AdminController extends BaseController
     {
         return $this->db->table('tb_peran')
             ->select('id_peran, nama_peran, slug_peran')
-            ->whereIn('slug_peran', ['admin_sekolah', 'admin_dudi', 'admin_perusahaan'])
+            ->whereIn('slug_peran', ['admin_sekolah'])
             ->orderBy('id_peran', 'ASC')
             ->get()
             ->getResultArray();
-    }
-
-    protected function perusahaanTersedia(): bool
-    {
-        return $this->db->tableExists('tb_perusahaan')
-            && $this->db->fieldExists('id_perusahaan', 'tb_perusahaan')
-            && $this->db->fieldExists('nama_perusahaan', 'tb_perusahaan')
-            && $this->db->fieldExists('id_pengguna', 'tb_perusahaan');
-    }
-
-    protected function ambilDaftarPerusahaan(): array
-    {
-        if (! $this->perusahaanTersedia()) {
-            return [];
-        }
-
-        return $this->db->table('tb_perusahaan')
-            ->select('id_perusahaan, nama_perusahaan, id_pengguna')
-            ->orderBy('nama_perusahaan', 'ASC')
-            ->get()
-            ->getResultArray();
-    }
-
-    protected function validatePenugasanPerusahaan(string $jenisAdmin, int $idPerusahaan, ?int $idPengguna = null): ?string
-    {
-        if (! $this->perusahaanTersedia()) {
-            return null;
-        }
-
-        if ($jenisAdmin !== 'admin_dudi' && $jenisAdmin !== 'admin_perusahaan') {
-            return null;
-        }
-
-        if ($idPerusahaan <= 0) {
-            return 'Pilih perusahaan untuk admin DUDI.';
-        }
-
-        $perusahaan = $this->db->table('tb_perusahaan')
-            ->select('id_perusahaan, id_pengguna')
-            ->where('id_perusahaan', $idPerusahaan)
-            ->get()
-            ->getRowArray();
-
-        if ($perusahaan === null) {
-            return 'Perusahaan tidak ditemukan.';
-        }
-
-        $pemilikSaatIni = (int) ($perusahaan['id_pengguna'] ?? 0);
-        if ($pemilikSaatIni > 0 && $pemilikSaatIni !== (int) ($idPengguna ?? 0)) {
-            return 'Perusahaan tersebut sudah terhubung ke admin lain.';
-        }
-
-        return null;
     }
 
     protected function validateFotoUpload(): ?string
@@ -431,34 +361,6 @@ class AdminController extends BaseController
         return 'uploads/admin/' . $randomName;
     }
 
-    protected function sinkronkanPerusahaanAdmin(int $idPengguna, string $jenisAdmin, int $idPerusahaan): void
-    {
-        if (! $this->perusahaanTersedia()) {
-            return;
-        }
-
-        $this->db->table('tb_perusahaan')
-            ->where('id_pengguna', $idPengguna)
-            ->update(['id_pengguna' => null]);
-
-        if (($jenisAdmin === 'admin_dudi' || $jenisAdmin === 'admin_perusahaan') && $idPerusahaan > 0) {
-            $this->db->table('tb_perusahaan')
-                ->where('id_perusahaan', $idPerusahaan)
-                ->update(['id_pengguna' => $idPengguna]);
-        }
-    }
-
-    protected function lepaskanSemuaPerusahaanDariAdmin(array $ids): void
-    {
-        if (! $this->perusahaanTersedia() || $ids === []) {
-            return;
-        }
-
-        $this->db->table('tb_perusahaan')
-            ->whereIn('id_pengguna', $ids)
-            ->update(['id_pengguna' => null]);
-    }
-
     protected function hapusFileLokal(?string $relativePath): void
     {
         if ($relativePath === null || trim($relativePath) === '') {
@@ -477,8 +379,6 @@ class AdminController extends BaseController
         $row['foto_url'] = ! empty($row['foto_profil'])
             ? base_url((string) $row['foto_profil'])
             : base_url('assets/media/avatars/blank.png');
-
-        $row['nama_perusahaan'] = trim((string) ($row['nama_perusahaan'] ?? '')) ?: '-';
 
         return $row;
     }
@@ -506,7 +406,7 @@ class AdminController extends BaseController
     | KONTEKS AREA BACKOFFICE
     |-------------------------------------------------------------------
     | Menentukan prefix route dan dashboard untuk view Data Admin yang
-    | dipakai ulang oleh Super Admin dan Admin Sekolah/BKK.
+    | dipakai ulang oleh Super Admin dan Admin Sekolah.
     |
     | Tips Debugging:
     | - Jika AJAX Data Admin mengarah ke prefix yang salah, cek nilai

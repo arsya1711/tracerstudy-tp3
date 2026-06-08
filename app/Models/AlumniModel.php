@@ -8,13 +8,11 @@ use CodeIgniter\Model;
 |-------------------------------------------------------------------
 | MODEL ALUMNI
 |-------------------------------------------------------------------
-| Model ini menangani akses data alumni yang terhubung ke pelamar,
+| Model ini menangani akses data alumni yang terhubung ke pengguna,
 | termasuk pengambilan data lengkap beserta angkatan dan kompetensi.
-| Alur kerja: controller detail pelamar memanggil method
-| ambilLengkapByPelamar() untuk mengisi sidebar dan kartu anggota.
 |
 | Tips Debugging:
-| - Jika data alumni kosong, cek relasi tb_alumni.id_pelamar.
+| - Jika data alumni kosong, cek relasi tb_alumni.id_pengguna.
 | - Jika tahun_angkatan tidak muncul, cek apakah kolom itu memang ada.
 */
 class AlumniModel extends Model
@@ -23,14 +21,20 @@ class AlumniModel extends Model
     protected $primaryKey    = 'id_alumni';
     protected $returnType    = 'array';
     protected $allowedFields = [
-        'id_pelamar',
+        'id_pengguna',
         'id_angkatan',
         'id_kompetensi',
         'nis',
         'nisn',
         'no_ijazah',
+        'jenis_kelamin',
+        'tempat_lahir',
+        'tanggal_lahir',
+        'alamat',
         'status_verifikasi',
+        'status_pendaftaran',
         'catatan_verifikasi',
+        'terdaftar_pada',
         'diverifikasi_oleh',
         'diverifikasi_pada',
     ];
@@ -38,7 +42,7 @@ class AlumniModel extends Model
     protected $createdField  = 'dibuat_pada';
     protected $updatedField  = 'diperbarui_pada';
 
-    public function ambilLengkapByPelamar($id_pelamar): ?array
+    public function ambilLengkapByPengguna($idPengguna): ?array
     {
         if (! $this->db->tableExists('tb_alumni')) {
             return null;
@@ -46,6 +50,15 @@ class AlumniModel extends Model
 
         $builder = $this->db->table('tb_alumni al');
         $selects = ['al.*'];
+
+        if ($this->db->tableExists('tb_pengguna')) {
+            $builder->join('tb_pengguna u', 'u.id_pengguna = al.id_pengguna', 'inner');
+            $selects[] = 'u.nama_lengkap';
+            $selects[] = 'u.email';
+            $selects[] = 'u.nomor_telepon';
+            $selects[] = 'u.foto_profil';
+            $selects[] = 'u.status_aktif';
+        }
 
         if ($this->db->tableExists('tb_angkatan')) {
             $builder->join('tb_angkatan ang', 'ang.id_angkatan = al.id_angkatan', 'left');
@@ -67,8 +80,9 @@ class AlumniModel extends Model
 
         return $builder
             ->select(implode(', ', $selects), false)
-            ->where('al.id_pelamar', $id_pelamar)
+            ->where('al.id_pengguna', $idPengguna)
             ->get()
             ->getRowArray();
     }
+
 }

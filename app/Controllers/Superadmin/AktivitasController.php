@@ -75,7 +75,7 @@ class AktivitasController extends BaseController
         }
 
         return view('superadmin/aktivitas/index', [
-            'title' => 'Aktivitas - Sistem Tracer Study & BKK',
+            'title' => 'Aktivitas - Sistem Tracer Study',
         ]);
     }
 

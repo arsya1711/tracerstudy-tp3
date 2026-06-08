@@ -64,7 +64,7 @@ class KompetensiController extends BaseController
         }
 
         return view('superadmin/kompetensi/index', [
-            'title'      => 'Kompetensi Keahlian - Sistem Tracer Study & BKK',
+            'title'      => 'Kompetensi Keahlian - Sistem Tracer Study',
             'kompetensi' => $this->kompetensiModel->ambilSemuaDenganKeterserapan(),
         ]);
     }

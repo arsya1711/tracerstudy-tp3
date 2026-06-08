@@ -32,7 +32,6 @@ $formatTanggal = static function (?string $tanggal, bool $pakaiJam = false): str
 
 $statusBadge = static function (?string $status): array {
     return match ((string) $status) {
-        'draft'         => ['badge badge-light-secondary', 'Draft'],
         'terkirim'      => ['badge badge-light-warning', 'Terkirim'],
         'terverifikasi' => ['badge badge-light-info', 'Terverifikasi'],
         'disetujui'     => ['badge badge-light-success', 'Disetujui'],
@@ -53,9 +52,9 @@ $ringkasKompetensi = static function (array $row): string {
 
 $detailFields = [
     'posisi_kerja' => 'Posisi / Jabatan',
-    'nama_dudi' => 'Nama DUDI / Perusahaan',
-    'bidang_dudi' => 'Bidang DUDI',
-    'alamat_dudi' => 'Alamat DUDI',
+    'nama_instansi' => 'Nama Instansi / Perusahaan',
+    'bidang_instansi' => 'Bidang Instansi',
+    'alamat_instansi' => 'Alamat Instansi',
     'tahun_mulai_kerja' => 'Tahun Mulai Kerja',
     'relevan_jurusan' => 'Relevan Jurusan',
     'penghasilan_range' => 'Penghasilan',
@@ -386,7 +385,7 @@ $tracerRoleLabel = $tracerRoleLabel ?? 'Manajemen Sekolah';
                 <div class="modal-body px-5 py-7">
                     <div class="notice d-flex bg-light-primary rounded border-primary border border-dashed p-5 mb-7">
                         <div class="fw-semibold text-gray-700 fs-7">
-                            Detail ini membaca data dari <code>tb_tracer_alumni</code> yang terhubung dengan data alumni dan pelamar.
+                            Detail ini membaca data dari <code>tb_tracer_alumni</code> yang terhubung dengan data alumni.
                         </div>
                     </div>
 

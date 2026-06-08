@@ -21,18 +21,18 @@
 <!--begin::Head-->
 <head>
 	<base href="../../" />
-	<title><?= esc($title ?? 'Dashboard - Sistem Tracer Study & BKK') ?></title>
+	<title><?= esc($title ?? 'Dashboard - Sistem Tracer Study') ?></title>
 	<meta charset="utf-8" />
 	<meta name="description"
-		content="Dashboard Sistem Tracer Study dan Bursa Kerja Khusus berbasis Metronic 8.2.0." />
+		content="Dashboard Sistem Tracer Study berbasis Metronic 8.2.0." />
 	<meta name="keywords"
-		content="metronic, bootstrap, tracer study, bkk, dashboard, kompetensi" />
+		content="metronic, bootstrap, tracer study, dashboard, kompetensi" />
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
 	<meta property="og:locale" content="en_US" />
 	<meta property="og:type" content="article" />
-	<meta property="og:title" content="Dashboard Sistem Tracer Study & Bursa Kerja Khusus" />
+	<meta property="og:title" content="Dashboard Sistem Tracer Study" />
 	<meta property="og:url" content="<?= current_url() ?>" />
-	<meta property="og:site_name" content="Sistem Tracer Study & BKK" />
+	<meta property="og:site_name" content="Sistem Tracer Study" />
 	<link rel="canonical" href="<?= current_url() ?>" />
 	<link rel="shortcut icon" href="<?= base_url('assets/media/logos/favicon.ico') ?>" />
 	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,400,500,600,700" />

@@ -64,7 +64,7 @@ class AngkatanController extends BaseController
         }
 
         return view('superadmin/angkatan/index', [
-            'title'    => 'Angkatan - Sistem Tracer Study & BKK',
+            'title'    => 'Angkatan - Sistem Tracer Study',
             'angkatan' => $this->angkatanModel->ambilSemuaDenganJumlahSiswa(),
         ]);
     }

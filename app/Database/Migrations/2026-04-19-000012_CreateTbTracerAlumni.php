@@ -29,9 +29,9 @@ class CreateTbTracerAlumni extends Migration
             ],
             'status' => [
                 'type'       => 'ENUM',
-                'constraint' => ['draft', 'terkirim', 'terverifikasi', 'disetujui'],
+                'constraint' => ['terkirim', 'terverifikasi', 'disetujui'],
                 'null'       => false,
-                'default'   => 'draft',
+                'default'   => 'terkirim',
             ],
             'diverifikasi_oleh' => [
                 'type'       => 'INT',
@@ -58,17 +58,17 @@ class CreateTbTracerAlumni extends Migration
                 'constraint' => 100,
                 'null'       => true,
             ],
-            'nama_dudi' => [
+            'nama_instansi' => [
                 'type'       => 'VARCHAR',
                 'constraint' => 150,
                 'null'       => true,
             ],
-            'bidang_dudi' => [
+            'bidang_instansi' => [
                 'type'       => 'VARCHAR',
                 'constraint' => 100,
                 'null'       => true,
             ],
-            'alamat_dudi' => [
+            'alamat_instansi' => [
                 'type' => 'TEXT',
                 'null' => true,
             ],

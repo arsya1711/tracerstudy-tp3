@@ -4,7 +4,7 @@
 | VIEW MANAJEMEN ADMIN
 |-------------------------------------------------------------------
 | View ini menampilkan daftar akun admin untuk Super Admin dengan
-| pola yang konsisten seperti modul pelamar: DataTables server-side,
+| pola DataTables server-side,
 | filter jenis admin, aksi massal, dan modal tambah/edit.
 */
 ?>
@@ -14,7 +14,7 @@
 |-------------------------------------------------------------------
 | KONTEKS VIEW DATA ADMIN
 |-------------------------------------------------------------------
-| View ini dipakai ulang oleh Super Admin dan Admin Sekolah/BKK.
+| View ini dipakai ulang oleh Super Admin dan Admin Sekolah.
 | Konteks menentukan judul, breadcrumb, dan endpoint AJAX yang sesuai
 | dengan area kerja pengguna.
 |
@@ -120,7 +120,6 @@ $breadcrumbCurrent = (string) ($breadcrumbCurrent ?? 'Data Admin');
                             </th>
                             <th class="min-w-250px">Admin</th>
                             <th class="min-w-150px">Jenis Admin</th>
-                            <th class="min-w-175px">Nama Perusahaan</th>
                             <th class="min-w-125px">Status</th>
                             <th class="min-w-175px">Terakhir Login</th>
                             <th class="text-end min-w-150px">Aksi</th>
@@ -214,24 +213,6 @@ $breadcrumbCurrent = (string) ($breadcrumbCurrent ?? 'Data Admin');
                             <?php endforeach; ?>
                         </div>
 
-                        <div class="fv-row mb-7 d-none" data-admin-company-field>
-                            <label class="fw-semibold fs-6 mb-2">Nama Perusahaan</label>
-                            <?php if ($perusahaan_tersedia): ?>
-                                <select name="id_perusahaan" class="form-select form-select-solid" data-kt-select2="true" data-placeholder="Pilih perusahaan" data-allow-clear="true">
-                                    <option></option>
-                                    <?php foreach ($daftar_perusahaan as $perusahaan): ?>
-                                        <option value="<?= (int) $perusahaan['id_perusahaan'] ?>"><?= esc((string) $perusahaan['nama_perusahaan']) ?></option>
-                                    <?php endforeach; ?>
-                                </select>
-                                <div class="form-text">Wajib dipilih jika jenis admin adalah Admin DUDI.</div>
-                            <?php else: ?>
-                                <div class="notice d-flex bg-light-warning rounded border-warning border border-dashed p-4">
-                                    <div class="fw-semibold fs-7 text-gray-700">
-                                        Modul perusahaan belum tersedia, jadi relasi perusahaan untuk admin DUDI akan tampil <strong>-</strong> terlebih dahulu.
-                                    </div>
-                                </div>
-                            <?php endif; ?>
-                        </div>
                     </div>
 
                     <div class="text-center pt-10">
@@ -331,24 +312,6 @@ $breadcrumbCurrent = (string) ($breadcrumbCurrent ?? 'Data Admin');
                             <?php endforeach; ?>
                         </div>
 
-                        <div class="fv-row mb-7 d-none" data-admin-company-field>
-                            <label class="fw-semibold fs-6 mb-2">Nama Perusahaan</label>
-                            <?php if ($perusahaan_tersedia): ?>
-                                <select name="id_perusahaan" class="form-select form-select-solid" data-kt-select2="true" data-placeholder="Pilih perusahaan" data-allow-clear="true">
-                                    <option></option>
-                                    <?php foreach ($daftar_perusahaan as $perusahaan): ?>
-                                        <option value="<?= (int) $perusahaan['id_perusahaan'] ?>"><?= esc((string) $perusahaan['nama_perusahaan']) ?></option>
-                                    <?php endforeach; ?>
-                                </select>
-                                <div class="form-text">Wajib dipilih jika jenis admin adalah Admin DUDI.</div>
-                            <?php else: ?>
-                                <div class="notice d-flex bg-light-warning rounded border-warning border border-dashed p-4">
-                                    <div class="fw-semibold fs-7 text-gray-700">
-                                        Modul perusahaan belum tersedia, jadi relasi perusahaan untuk admin DUDI akan tampil <strong>-</strong> terlebih dahulu.
-                                    </div>
-                                </div>
-                            <?php endif; ?>
-                        </div>
                     </div>
 
                     <div class="text-center pt-10">
@@ -376,8 +339,7 @@ $breadcrumbCurrent = (string) ($breadcrumbCurrent ?? 'Data Admin');
         hapusUrl: '<?= site_url($areaPrefix . '/admin/hapus') ?>',
         hapusMassalUrl: '<?= site_url($areaPrefix . '/admin/hapus-massal') ?>',
         aktivasiUrl: '<?= site_url($areaPrefix . '/admin/aktivasi') ?>',
-        defaultFoto: '<?= base_url('assets/media/avatars/blank.png') ?>',
-        perusahaanAvailable: <?= $perusahaan_tersedia ? 'true' : 'false' ?>
+        defaultFoto: '<?= base_url('assets/media/avatars/blank.png') ?>'
     };
 </script>
 <script src="<?= base_url('assets/js/custom/admin/admin.js') ?>"></script>

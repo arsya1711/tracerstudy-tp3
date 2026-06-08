@@ -1,0 +1,305 @@
+<?php
+/*
+|-------------------------------------------------------------------
+| VIEW DASHBOARD PELAMAR
+|-------------------------------------------------------------------
+| View ini menjadi halaman awal setelah alumni login. Dashboard tidak
+| hanya menampilkan angka ringkasan, tetapi juga memandu alumni lewat
+| checklist onboarding sampai data tracer alumni lengkap.
+|
+| Alur kerja:
+| 1. Controller mengirim data alumni dan checklist onboarding.
+| 2. View menampilkan status akun, progress checklist, dan langkah
+|    berikutnya yang paling relevan.
+| 3. Checklist menampilkan langkah profil dan Tracer Study.
+|
+| Tips Debugging:
+| - Jika checklist kosong, periksa payload onboarding dari
+|   Alumni\DashboardController::index().
+*/
+?>
+<?= $this->extend('layouts/main') ?>
+
+<?= $this->section('extra_css') ?>
+<style>
+    .tracer-onboarding-hero {
+        background:
+            radial-gradient(circle at top right, rgba(80, 205, 137, .18), transparent 34%),
+            linear-gradient(135deg, #071a33 0%, #102a4c 54%, #0f4c81 100%);
+        border-radius: 1.25rem;
+        overflow: hidden;
+    }
+
+    .tracer-onboarding-step {
+        border: 1px solid var(--bs-gray-200);
+        border-radius: 1rem;
+        padding: 1.25rem;
+        transition: .18s ease;
+    }
+
+    .tracer-onboarding-step:hover {
+        border-color: var(--bs-primary);
+        box-shadow: 0 12px 32px rgba(15, 23, 42, .08);
+    }
+
+    .tracer-onboarding-step.is-done {
+        background: linear-gradient(135deg, rgba(80, 205, 137, .12), rgba(255, 255, 255, .96));
+    }
+
+    .tracer-onboarding-icon {
+        width: 46px;
+        height: 46px;
+        border-radius: 14px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex: 0 0 46px;
+    }
+</style>
+<?= $this->endSection() ?>
+
+<?= $this->section('content') ?>
+<?php
+/*
+|-------------------------------------------------------------------
+| DATA STATUS DASHBOARD
+|-------------------------------------------------------------------
+| Blok ini menyiapkan variabel tampilan agar HTML di bawah tetap rapi.
+| Data utama sudah dihitung di controller, sementara view hanya memilih
+| label, warna badge, dan tombol yang perlu ditampilkan.
+|
+| Tips Debugging:
+| - Jika status pendaftaran salah tampil, cek nilai
+|   tb_alumni.status_pendaftaran.
+| - Jika tombol utama tidak sesuai, cek array onboarding.next_step.
+*/
+$statusPendaftaran = (string) ($alumni['status_pendaftaran'] ?? '');
+$menungguPersetujuan = $statusPendaftaran !== '' && $statusPendaftaran !== 'aktif';
+$labelStatusPendaftaran = $statusPendaftaran !== '' ? ucwords(str_replace('_', ' ', $statusPendaftaran)) : 'Belum Diketahui';
+$kelasStatusPendaftaran = $menungguPersetujuan ? 'badge badge-light-warning' : 'badge badge-light-success';
+$isAlumni = (bool) ($isAlumni ?? false);
+$onboarding = $onboarding ?? ['steps' => [], 'next_step' => null, 'ready' => false, 'progress' => ['total' => 0, 'selesai' => 0, 'persen' => 0]];
+$progress = $onboarding['progress'] ?? ['total' => 0, 'selesai' => 0, 'persen' => 0];
+$nextStep = $onboarding['next_step'] ?? null;
+$siapMelamar = (bool) ($onboarding['ready'] ?? false);
+
+$statusStep = static function (array $step, bool $menungguPersetujuan): array {
+    if (! empty($step['done'])) {
+        return [
+            'badge' => 'badge badge-light-success',
+            'label' => 'Selesai',
+            'iconBg' => 'bg-light-success',
+            'iconText' => 'text-success',
+            'icon' => 'ki-check-circle',
+        ];
+    }
+
+    if (($step['key'] ?? '') === 'akun' && $menungguPersetujuan) {
+        return [
+            'badge' => 'badge badge-light-warning',
+            'label' => 'Menunggu Review',
+            'iconBg' => 'bg-light-warning',
+            'iconText' => 'text-warning',
+            'icon' => 'ki-time',
+        ];
+    }
+
+    return [
+        'badge' => 'badge badge-light-primary',
+        'label' => 'Perlu dilengkapi',
+        'iconBg' => 'bg-light-primary',
+        'iconText' => 'text-primary',
+        'icon' => 'ki-pencil',
+    ];
+};
+?>
+<div id="kt_app_toolbar" class="app-toolbar py-3 py-lg-6">
+    <div id="kt_app_toolbar_container" class="app-container container-xxl d-flex flex-stack">
+        <div class="page-title d-flex flex-column justify-content-center flex-wrap me-3">
+            <h1 class="page-heading d-flex text-dark fw-bold fs-3 flex-column justify-content-center my-0">Dashboard Alumni</h1>
+            <ul class="breadcrumb breadcrumb-separatorless fw-semibold fs-7 my-0 pt-1">
+                <li class="breadcrumb-item text-muted">
+                    <a href="<?= base_url('alumni/dashboard') ?>" class="text-muted text-hover-primary">Home</a>
+                </li>
+                <li class="breadcrumb-item">
+                    <span class="bullet bg-gray-400 w-5px h-2px"></span>
+                </li>
+                <li class="breadcrumb-item text-muted">Dashboard</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<div id="kt_app_content" class="app-content flex-column-fluid">
+    <div id="kt_app_content_container" class="app-container container-xxl">
+        <div class="card tracer-onboarding-hero mb-8">
+            <div class="card-body p-8 p-lg-10">
+                <div class="row align-items-center g-8">
+                    <div class="col-lg-8">
+                        <span class="badge badge-light-success mb-4">Alumni</span>
+                        <h1 class="text-white fw-bold mb-3">Selamat datang, <?= esc((string) ($alumni['nama_lengkap'] ?? 'Alumni')) ?></h1>
+                        <p class="text-white opacity-75 fs-5 mb-0">
+                            <?php if ($menungguPersetujuan): ?>
+                                Akun kamu sudah dibuat dan sedang menunggu persetujuan admin sekolah. Setelah aktif, sistem akan memandu kamu melengkapi profil dan tracer study.
+                            <?php elseif ($siapMelamar): ?>
+                                Semua langkah utama sudah selesai. Data tracer alumni kamu sudah lengkap.
+                            <?php else: ?>
+                                Ikuti checklist di bawah ini agar profil dan tracer study kamu rapi dari awal.
+                            <?php endif; ?>
+                        </p>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="bg-white bg-opacity-10 rounded-4 p-6">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <span class="text-white fw-semibold">Progress Kesiapan</span>
+                                <span class="text-white fw-bold"><?= (int) ($progress['persen'] ?? 0) ?>%</span>
+                            </div>
+                            <div class="progress h-8px bg-white bg-opacity-25 mb-4">
+                                <div class="progress-bar bg-success" role="progressbar" style="width: <?= (int) ($progress['persen'] ?? 0) ?>%"></div>
+                            </div>
+                            <div class="text-white opacity-75 fs-7 mb-5">
+                                <?= (int) ($progress['selesai'] ?? 0) ?> dari <?= (int) ($progress['total'] ?? 0) ?> langkah selesai
+                            </div>
+                            <?php if (! $menungguPersetujuan && ! empty($nextStep['url'])): ?>
+                                <a href="<?= esc((string) $nextStep['url']) ?>" class="btn btn-success w-100">
+                                    <?= esc((string) ($siapMelamar ? 'Lihat Tracer' : ($nextStep['button'] ?? 'Lanjutkan'))) ?>
+                                </a>
+                            <?php else: ?>
+                                <button type="button" class="btn btn-light-warning w-100" disabled>Menunggu Aktivasi</button>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <?php if ($menungguPersetujuan): ?>
+            <div class="alert alert-warning d-flex align-items-start gap-3 mb-8">
+                <i class="ki-duotone ki-information-5 fs-2hx text-warning">
+                    <span class="path1"></span>
+                    <span class="path2"></span>
+                    <span class="path3"></span>
+                </i>
+                <div>
+                    <div class="fw-bold mb-1">Akun menunggu review admin sekolah</div>
+                    <div class="text-gray-700 fs-6">Untuk sementara, dashboard hanya menampilkan status dan panduan awal. Menu profil dan tracer akan terbuka setelah akun disetujui.</div>
+                </div>
+            </div>
+        <?php endif; ?>
+
+        <div class="row g-5 g-xl-8 mb-8">
+            <div class="col-md-3">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <div class="text-muted fs-7 text-uppercase fw-bold mb-2">Status Akun</div>
+                        <div class="mb-2"><span class="<?= $kelasStatusPendaftaran ?> fs-7"><?= esc($labelStatusPendaftaran) ?></span></div>
+                        <div class="text-gray-600 fs-7">Persetujuan admin sekolah menentukan akses penuh alumni.</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <div class="text-muted fs-7 text-uppercase fw-bold mb-2">Profil Akademik</div>
+                        <div class="fs-4 fw-bold text-gray-900 mb-2"><?= ! empty($alumni['nis']) ? 'Terisi' : 'Belum Terisi' ?></div>
+                        <div class="text-gray-600 fs-7">Data NIS, angkatan, dan kompetensi alumni.</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <div class="text-muted fs-7 text-uppercase fw-bold mb-2">Tracer Study</div>
+                        <div class="fs-4 fw-bold text-gray-900 mb-2">
+                            <?php if ($isAlumni): ?>
+                                <?= ! empty($tracerTerakhir) ? 'Sudah Diisi' : 'Belum Diisi' ?>
+                            <?php else: ?>
+                                Umum
+                            <?php endif; ?>
+                        </div>
+                        <div class="text-gray-600 fs-7"><?= $isAlumni ? 'Status pengisian tracer alumni.' : 'Tidak memerlukan pengisian tracer alumni.' ?></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <div class="text-muted fs-7 text-uppercase fw-bold mb-2">Status Data</div>
+                        <div class="fs-4 fw-bold text-gray-900 mb-2"><?= ! empty($tracerTerakhir) ? 'Lengkap' : 'Berproses' ?></div>
+                        <div class="text-gray-600 fs-7">Ringkasan kesiapan data tracer.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header border-0 pt-6">
+                <div class="card-title flex-column">
+                    <h2 class="mb-1">Linimasa Kesiapan Alumni</h2>
+                    <div class="text-muted fw-semibold fs-6">Ikuti langkah ini dari atas ke bawah sampai data tracer kamu lengkap.</div>
+                </div>
+                <?php if ($siapMelamar && ! $menungguPersetujuan): ?>
+                    <div class="card-toolbar">
+                        <a href="<?= base_url('alumni/profil') ?>" class="btn btn-primary">Lihat Profil</a>
+                    </div>
+                <?php endif; ?>
+            </div>
+            <div class="card-body pt-0">
+                <div class="timeline timeline-border-dashed">
+                    <?php foreach (($onboarding['steps'] ?? []) as $step): ?>
+                        <?php
+                        $stepStatus = $statusStep($step, $menungguPersetujuan);
+                        $bolehKlik = ! $menungguPersetujuan && empty($step['done']) && ! empty($step['url']);
+                        ?>
+                        <div class="timeline-item">
+                            <div class="timeline-line"></div>
+                            <div class="timeline-icon">
+                                <div class="tracer-onboarding-icon <?= esc($stepStatus['iconBg']) ?>">
+                                    <i class="ki-duotone <?= esc($stepStatus['icon']) ?> fs-2 <?= esc($stepStatus['iconText']) ?>">
+                                        <span class="path1"></span>
+                                        <span class="path2"></span>
+                                        <span class="path3"></span>
+                                    </i>
+                                </div>
+                            </div>
+                            <div class="timeline-content mb-7 mt-n1">
+                                <div class="tracer-onboarding-step <?= ! empty($step['done']) ? 'is-done' : '' ?>">
+                                    <div class="d-flex flex-column flex-md-row justify-content-between gap-4">
+                                        <div>
+                                            <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
+                                                <div class="fs-5 fw-bold text-gray-900"><?= esc((string) ($step['title'] ?? '-')) ?></div>
+                                                <span class="<?= esc($stepStatus['badge']) ?>"><?= esc($stepStatus['label']) ?></span>
+                                            </div>
+                                            <div class="text-gray-600 fs-7"><?= esc((string) ($step['description'] ?? '')) ?></div>
+                                        </div>
+                                        <?php if ($bolehKlik): ?>
+                                            <div class="d-flex align-items-center">
+                                                <a href="<?= esc((string) $step['url']) ?>" class="btn btn-sm btn-light-primary text-nowrap">
+                                                    <?= esc((string) ($step['button'] ?? 'Lanjutkan')) ?>
+                                                </a>
+                                            </div>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+
+                <?php if ($siapMelamar && ! $menungguPersetujuan): ?>
+                    <div class="notice d-flex bg-light-success rounded border-success border border-dashed p-6 mt-4">
+                        <i class="ki-duotone ki-verify fs-2tx text-success me-4">
+                            <span class="path1"></span>
+                            <span class="path2"></span>
+                        </i>
+                        <div>
+                            <div class="fw-bold text-gray-900 mb-1">Data tracer lengkap!</div>
+                            <div class="text-gray-700 fs-6">Profil dan tracer study kamu sudah siap untuk rekap data alumni sekolah.</div>
+                        </div>
+                    </div>
+                <?php endif; ?>
+            </div>
+        </div>
+    </div>
+</div>
+<?= $this->endSection() ?>

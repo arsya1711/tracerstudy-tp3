@@ -7,16 +7,16 @@ use CodeIgniter\HTTP\RedirectResponse;
 
 /*
 |-------------------------------------------------------------------
-| CONTROLLER ANGKATAN ADMIN SEKOLAH/BKK
+| CONTROLLER ANGKATAN ADMIN SEKOLAH
 |-------------------------------------------------------------------
-| Controller ini membuka modul Angkatan untuk Admin Sekolah/BKK dengan
+| Controller ini membuka modul Angkatan untuk Admin Sekolah dengan
 | memakai logika simpan, update, dan hapus dari controller Super Admin.
 |
 | Alur kerja:
 | 1. Admin Sekolah membuka admin-sekolah/angkatan.
 | 2. Data angkatan diambil dari model yang sama.
 | 3. Endpoint AJAX diarahkan ke prefix admin-sekolah agar sidebar dan
-|    URL tetap sesuai konteks BKK.
+|    URL tetap sesuai konteks admin sekolah.
 |
 | Tips Debugging:
 | - Jika AJAX 403, pastikan session slug_peran bernilai admin_sekolah.
@@ -31,7 +31,7 @@ class AngkatanController extends SuperadminAngkatanController
         }
 
         return view('superadmin/angkatan/index', [
-            'title' => 'Angkatan - Admin Sekolah/BKK',
+            'title' => 'Angkatan - Admin Sekolah',
             'angkatan' => $this->angkatanModel->ambilSemuaDenganJumlahSiswa(),
             'dashboardUrl' => base_url('admin-sekolah/dashboard'),
             'indexUrl' => site_url('admin-sekolah/angkatan'),

@@ -23,7 +23,7 @@ use CodeIgniter\HTTP\ResponseInterface;
 */
 class LoginController extends BaseController
 {
-    protected PenggunaModel $penggunaModel;
+    protected $penggunaModel;
 
     /*
     |-------------------------------------------------------------------
@@ -57,7 +57,7 @@ class LoginController extends BaseController
     | - Jika halaman login tidak tampil, periksa file app/Views/auth/login.php.
     | - Jika user yang sudah login tetap melihat form, periksa session pengguna_login.
     */
-    public function index(): string|RedirectResponse
+    public function index()
     {
         $this->simpanRedirectSetelahLogin();
 
@@ -66,7 +66,7 @@ class LoginController extends BaseController
         }
 
         return view('auth/login', [
-            'title' => 'Login - Sistem Tracer Study & BKK',
+            'title' => 'Login - Sistem Tracer Study',
         ]);
     }
 
@@ -86,7 +86,7 @@ class LoginController extends BaseController
     | - Jika muncul "Email atau password salah", periksa hasil cariByEmail() dan kolom kata_sandi di database.
     | - Jika login sukses tapi tidak pindah halaman yang benar, periksa mapping redirect pada method redirectBySlug().
     */
-    public function authenticate(): ResponseInterface|RedirectResponse
+    public function authenticate()
     {
         $validasi = $this->validate([
             'email'    => 'required|valid_email',
@@ -222,15 +222,8 @@ class LoginController extends BaseController
             case 'admin_sekolah':
                 return site_url('admin-sekolah/dashboard');
 
-            case 'admin_dudi':
-            case 'admin_perusahaan':
-                return site_url('admin-dudi/dashboard');
-
-            case 'pelamar_umum':
-                return site_url('pelamar/dashboard');
-
-            case 'pelamar_alumni':
-                return site_url('pelamar/dashboard');
+            case 'alumni':
+                return site_url('alumni/dashboard');
 
             default:
                 return site_url('login');
@@ -241,17 +234,8 @@ class LoginController extends BaseController
     |-------------------------------------------------------------------
     | REDIRECT SETELAH LOGIN DARI HALAMAN PUBLIK
     |-------------------------------------------------------------------
-    | Penjelasan fungsi kode ini: menyimpan tujuan internal ketika user
-    | dari landing lowongan menekan tombol melamar tetapi belum login.
-    | Alur kerja: parameter ?redirect=pelamar/lowongan/<slug> disimpan
-    | ke session, lalu setelah login berhasil role pelamar dikembalikan
-    | ke halaman detail lowongan tersebut.
-    |
-    | Tips Debugging:
-    | - Jika setelah login tidak kembali ke lowongan, cek query redirect
-    |   pada URL login dan pastikan path diawali pelamar/lowongan/.
-    | - Jika redirect eksternal tidak jalan, itu memang sengaja diblokir
-    |   agar aplikasi aman dari open redirect.
+    | Penjelasan fungsi kode ini: menyimpan tujuan internal halaman alumni
+    | ketika user perlu login lebih dulu.
     */
     protected function simpanRedirectSetelahLogin(): void
     {
@@ -263,7 +247,7 @@ class LoginController extends BaseController
 
         $path = ltrim($redirect, '/');
 
-        if (str_starts_with($path, 'pelamar/lowongan/')) {
+        if (str_starts_with($path, 'alumni/')) {
             session()->set('redirect_setelah_login', $path);
         }
     }
@@ -278,7 +262,7 @@ class LoginController extends BaseController
 
         session()->remove('redirect_setelah_login');
 
-        if (! in_array($slugPeran, ['pelamar_umum', 'pelamar_alumni'], true)) {
+        if ($slugPeran !== 'alumni') {
             return null;
         }
 

@@ -17,7 +17,7 @@ use CodeIgniter\Database\Seeder;
 |
 | Tips Debugging:
 | - Jika migrasi gagal karena tabel pengguna belum ada, cek migrate modul autentikasi.
-| - Jika seeder duplikat, cek apakah email superadmin@bkk.com sudah ada.
+| - Jika seeder duplikat, cek apakah email superadmin@tracerstudy.local sudah ada.
 */
 class PenggunaSeeder extends Seeder
 {
@@ -36,14 +36,46 @@ class PenggunaSeeder extends Seeder
     */
     public function run()
     {
+        $peranSuperadmin = $this->db->table('tb_peran')
+            ->where('slug_peran', 'superadmin')
+            ->get()
+            ->getRowArray();
+
+        if (! $peranSuperadmin) {
+            $this->call(PeranSeeder::class);
+
+            $peranSuperadmin = $this->db->table('tb_peran')
+                ->where('slug_peran', 'superadmin')
+                ->get()
+                ->getRowArray();
+        }
+
+        if (! $peranSuperadmin) {
+            return;
+        }
+
         $data = [
-            'id_peran'      => 1,
+            'id_peran'      => $peranSuperadmin['id_peran'],
             'nama_lengkap'  => 'Super Administrator',
-            'email'         => 'superadmin@bkk.com',
+            'email'         => 'superadmin@tracerstudy.local',
             'kata_sandi'    => password_hash('Admin123', PASSWORD_BCRYPT),
             'status_aktif'  => 1,
         ];
 
-        $this->db->table('tb_pengguna')->insert($data);
+        $table = $this->db->table('tb_pengguna');
+        $existing = $table
+            ->where('email', $data['email'])
+            ->get()
+            ->getRowArray();
+
+        if ($existing) {
+            $table
+                ->where('id_pengguna', $existing['id_pengguna'])
+                ->update($data);
+
+            return;
+        }
+
+        $table->insert($data);
     }
 }

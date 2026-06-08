@@ -170,38 +170,13 @@ var KTAdminList = (function () {
         });
     }
 
-    function isCompanyRole(role) {
-        return role === "admin_dudi" || role === "admin_perusahaan";
-    }
-
     function getSelectedRole(formElement) {
         var checked = formElement ? formElement.querySelector('input[name="jenis_admin"]:checked') : null;
         return checked ? checked.value : "";
     }
 
     function toggleCompanyField(formElement) {
-        var field = formElement ? formElement.querySelector("[data-admin-company-field]") : null;
-        var select = field ? field.querySelector('select[name="id_perusahaan"]') : null;
-        var shouldShow = isCompanyRole(getSelectedRole(formElement));
-
-        if (!field) {
-            return;
-        }
-
-        if (shouldShow) {
-            field.classList.remove("d-none");
-            return;
-        }
-
-        field.classList.add("d-none");
-
-        if (select) {
-            select.value = "";
-
-            if (typeof $ !== "undefined" && typeof $.fn.select2 !== "undefined") {
-                $(select).trigger("change");
-            }
-        }
+        return;
     }
 
     function setPhotoPreview(formElement, imageUrl) {
@@ -310,7 +285,6 @@ var KTAdminList = (function () {
         var namaInput = formElement.querySelector('[name="nama_lengkap"]');
         var emailInput = formElement.querySelector('[name="email"]');
         var passwordInput = formElement.querySelector('[name="kata_sandi"]');
-        var companySelect = formElement.querySelector('[name="id_perusahaan"]');
         var role = getSelectedRole(formElement);
 
         if (!namaInput || !namaInput.value.trim()) {
@@ -342,21 +316,12 @@ var KTAdminList = (function () {
             return false;
         }
 
-        if (config.perusahaanAvailable && isCompanyRole(role) && (!companySelect || !companySelect.value)) {
-            showError("Pilih perusahaan untuk admin DUDI.");
-            return false;
-        }
-
         return true;
     }
 
     function renderJenisBadge(row) {
         var label = row.nama_peran || row.slug_peran || "-";
         var className = "badge-light-primary";
-
-        if (row.slug_peran === "admin_dudi" || row.slug_peran === "admin_perusahaan") {
-            className = "badge-light-info";
-        }
 
         return '<span class="badge ' + className + '">' + escapeHtml(label) + "</span>";
     }
@@ -390,16 +355,6 @@ var KTAdminList = (function () {
                     '<span class="text-muted">' + escapeHtml(row.email || "-") + "</span>" +
                 "</div>" +
             "</div>";
-    }
-
-    function renderCompanyCell(row) {
-        var value = String(row.nama_perusahaan || "").trim();
-
-        if (value === "" || value === "-") {
-            return '<span class="text-muted">-</span>';
-        }
-
-        return '<span class="fw-semibold text-gray-800">' + escapeHtml(value) + "</span>";
     }
 
     function renderActions(row) {
@@ -511,7 +466,7 @@ var KTAdminList = (function () {
             processing: true,
             serverSide: true,
             searching: true,
-            order: [[5, "desc"]],
+            order: [[4, "desc"]],
             ajax: {
                 url: config.indexUrl,
                 type: "POST",
@@ -552,12 +507,6 @@ var KTAdminList = (function () {
                     data: null,
                     render: function (data, type, row) {
                         return renderJenisBadge(row);
-                    }
-                },
-                {
-                    data: null,
-                    render: function (data, type, row) {
-                        return renderCompanyCell(row);
                     }
                 },
                 {
@@ -632,8 +581,6 @@ var KTAdminList = (function () {
     }
 
     function fillEditForm(row) {
-        var companySelect;
-
         if (!editForm || !row) {
             return;
         }
@@ -646,16 +593,6 @@ var KTAdminList = (function () {
         editForm.querySelectorAll('input[name="jenis_admin"]').forEach(function (radio) {
             radio.checked = radio.value === row.slug_peran;
         });
-
-        companySelect = editForm.querySelector('select[name="id_perusahaan"]');
-
-        if (companySelect) {
-            companySelect.value = row.id_perusahaan || "";
-
-            if (typeof $ !== "undefined" && typeof $.fn.select2 !== "undefined") {
-                $(companySelect).trigger("change");
-            }
-        }
 
         setPhotoPreview(editForm, row.foto_url || "");
         toggleCompanyField(editForm);
@@ -671,10 +608,6 @@ var KTAdminList = (function () {
 
         formData = new FormData(formElement);
         formData.set("jenis_admin", role);
-
-        if (!isCompanyRole(role)) {
-            formData.delete("id_perusahaan");
-        }
 
         setSubmitState(submitButton, true);
 

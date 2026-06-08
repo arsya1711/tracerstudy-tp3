@@ -7,11 +7,11 @@ use CodeIgniter\HTTP\RedirectResponse;
 
 /*
 |-------------------------------------------------------------------
-| CONTROLLER KOMPETENSI ADMIN SEKOLAH/BKK
+| CONTROLLER KOMPETENSI ADMIN SEKOLAH
 |-------------------------------------------------------------------
 | Controller ini membuka pengelolaan kompetensi keahlian untuk Admin
-| Sekolah/BKK. Data kompetensi termasuk master sekolah, sehingga role
-| BKK memang layak mengelolanya.
+| Sekolah. Data kompetensi termasuk master sekolah, sehingga role
+| admin sekolah mengelolanya.
 |
 | Alur kerja:
 | 1. Admin Sekolah membuka admin-sekolah/kompetensi.
@@ -31,7 +31,7 @@ class KompetensiController extends SuperadminKompetensiController
         }
 
         return view('superadmin/kompetensi/index', [
-            'title' => 'Kompetensi Keahlian - Admin Sekolah/BKK',
+            'title' => 'Kompetensi Keahlian - Admin Sekolah',
             'kompetensi' => $this->kompetensiModel->ambilSemuaDenganKeterserapan(),
             'dashboardUrl' => base_url('admin-sekolah/dashboard'),
             'indexUrl' => site_url('admin-sekolah/kompetensi'),

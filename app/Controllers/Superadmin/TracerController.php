@@ -11,19 +11,19 @@ use Config\Database;
 | CONTROLLER DATA TRACER ALUMNI
 |-------------------------------------------------------------------
 | Controller ini menangani halaman laporan tracer alumni untuk Super
-| Admin/BKK. Halaman ini berisi tabel tracer, filter, tombol cetak,
+| Admin. Halaman ini berisi tabel tracer, filter, tombol cetak,
 | grafik batang, dan grafik donut.
 |
 | Alur kerja:
 | 1. Admin membuka menu Data Tracer Alumni.
 | 2. Controller membaca filter dari query string.
-| 3. Data tracer alumni diambil dari relasi alumni, pelamar, pengguna,
+| 3. Data tracer alumni diambil dari relasi alumni, pengguna,
 |    angkatan, kompetensi, dan aktivitas.
 | 4. View menampilkan tabel serta grafik berdasarkan data yang sama.
 |
 | Tips Debugging:
 | - Jika tabel kosong, cek tb_tracer_alumni dan relasi tb_alumni.
-| - Jika nama alumni kosong, cek relasi tb_alumni -> tb_pelamar -> tb_pengguna.
+| - Jika nama alumni kosong, cek relasi tb_alumni -> tb_pengguna.
 | - Jika grafik tidak tampil, cek ApexCharts pada bundle Metronic.
 */
 class TracerController extends BaseController
@@ -83,7 +83,7 @@ class TracerController extends BaseController
     */
     protected function ambilDataTracer(array $filters): array
     {
-        foreach (['tb_tracer_alumni', 'tb_alumni', 'tb_pelamar', 'tb_pengguna'] as $table) {
+        foreach (['tb_tracer_alumni', 'tb_alumni', 'tb_pengguna'] as $table) {
             if (! $this->db->tableExists($table)) {
                 return [];
             }
@@ -92,13 +92,13 @@ class TracerController extends BaseController
         $builder = $this->db->table('tb_tracer_alumni t')
             ->select([
                 't.*',
-                'al.id_pelamar',
+                'al.id_pengguna',
                 'al.id_angkatan',
                 'al.id_kompetensi',
                 'al.nis',
                 'al.nisn',
                 'al.status_verifikasi',
-                'p.account_id',
+                'CONCAT("ALM-", LPAD(al.id_alumni, 5, "0")) AS account_id',
                 'u.nama_lengkap',
                 'u.email',
                 'ang.tahun_lulus',
@@ -107,8 +107,7 @@ class TracerController extends BaseController
                 'a.nama_aktivitas',
             ])
             ->join('tb_alumni al', 'al.id_alumni = t.id_alumni', 'inner')
-            ->join('tb_pelamar p', 'p.id_pelamar = al.id_pelamar', 'inner')
-            ->join('tb_pengguna u', 'u.id_pengguna = p.id_pengguna', 'inner')
+            ->join('tb_pengguna u', 'u.id_pengguna = al.id_pengguna', 'inner')
             ->join('tb_angkatan ang', 'ang.id_angkatan = al.id_angkatan', 'left')
             ->join('tb_kompetensi k', 'k.id_kompetensi = al.id_kompetensi', 'left')
             ->join('tb_aktivitas a', 'a.id_aktivitas = t.id_aktivitas', 'left');
@@ -134,7 +133,7 @@ class TracerController extends BaseController
             $builder->groupStart()
                 ->like('u.nama_lengkap', $keyword)
                 ->orLike('u.email', $keyword)
-                ->orLike('p.account_id', $keyword)
+                ->orLike('al.nis', $keyword)
                 ->orLike('k.nama_kompetensi', $keyword)
                 ->orLike('k.akronim', $keyword)
                 ->orLike('a.nama_aktivitas', $keyword)
@@ -199,7 +198,6 @@ class TracerController extends BaseController
     protected function ambilDaftarStatusTracer(): array
     {
         return [
-            'draft'         => 'Draft',
             'terkirim'      => 'Terkirim',
             'terverifikasi' => 'Terverifikasi',
             'disetujui'     => 'Disetujui',
@@ -253,7 +251,7 @@ class TracerController extends BaseController
 
     protected function getPageTitle(): string
     {
-        return 'Data Tracer Alumni - Sistem Tracer Study & BKK';
+        return 'Data Tracer Alumni - Sistem Tracer Study';
     }
 
     protected function getDashboardUrl(): string

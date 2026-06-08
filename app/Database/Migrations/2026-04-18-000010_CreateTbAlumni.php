@@ -8,14 +8,14 @@ use CodeIgniter\Database\Migration;
 |-------------------------------------------------------------------
 | CREATE TB ALUMNI
 |-------------------------------------------------------------------
-| Migration ini membuat tabel tb_alumni untuk menyimpan data lanjutan
-| khusus pelamar alumni yang terhubung ke angkatan dan kompetensi.
-| Alur kerja: CI4 menjalankan migration ini setelah tb_pelamar,
+| Migration ini membuat tabel tb_alumni untuk menyimpan data profil
+| alumni yang terhubung ke akun pengguna, angkatan, dan kompetensi.
+| Alur kerja: CI4 menjalankan migration ini setelah tb_pengguna,
 | tb_angkatan, dan tb_kompetensi tersedia, lalu method up() membentuk
 | relasi dan metadata verifikasi alumni.
 |
 | Tips Debugging:
-| - Jika tabel gagal dibuat, cek migration tb_pelamar sudah sukses lebih dulu.
+| - Jika tabel gagal dibuat, cek migration tb_pengguna sudah sukses lebih dulu.
 | - Jika foreign key verifikator gagal, cek tb_pengguna sudah ada.
 */
 class CreateTbAlumni extends Migration
@@ -25,7 +25,7 @@ class CreateTbAlumni extends Migration
     | METHOD UP
     |-------------------------------------------------------------------
     | Method ini membangun struktur tabel tb_alumni lengkap dengan
-    | relasi ke pelamar, angkatan, kompetensi, dan pencatatan proses
+    | relasi ke pengguna, angkatan, kompetensi, dan pencatatan proses
     | verifikasi data alumni.
     | Alur kerja: saat php spark migrate dijalankan, CI4 memanggil
     | method ini untuk membuat tabel bila belum ada.
@@ -43,9 +43,9 @@ class CreateTbAlumni extends Migration
                 'unsigned'       => true,
                 'auto_increment' => true,
             ],
-            'id_pelamar' => [
+            'id_pengguna' => [
                 'type'       => 'INT',
-                'constraint' => 11,
+                'constraint' => 10,
                 'unsigned'   => true,
                 'null'       => false,
             ],
@@ -76,13 +76,42 @@ class CreateTbAlumni extends Migration
                 'constraint' => 50,
                 'null'       => true,
             ],
+            'jenis_kelamin' => [
+                'type'       => 'VARCHAR',
+                'constraint' => 20,
+                'null'       => true,
+            ],
+            'tempat_lahir' => [
+                'type'       => 'VARCHAR',
+                'constraint' => 100,
+                'null'       => true,
+            ],
+            'tanggal_lahir' => [
+                'type' => 'DATE',
+                'null' => true,
+            ],
+            'alamat' => [
+                'type' => 'TEXT',
+                'null' => true,
+            ],
             'status_verifikasi' => [
                 'type'       => 'VARCHAR',
                 'constraint' => 30,
-                'null'       => true,
+                'default'    => 'menunggu_aktivasi',
+                'null'       => false,
+            ],
+            'status_pendaftaran' => [
+                'type'       => 'ENUM',
+                'constraint' => ['menunggu_aktivasi', 'aktif', 'terdaftar'],
+                'default'    => 'aktif',
+                'null'       => false,
             ],
             'catatan_verifikasi' => [
                 'type' => 'TEXT',
+                'null' => true,
+            ],
+            'terdaftar_pada' => [
+                'type' => 'DATETIME',
                 'null' => true,
             ],
             'diverifikasi_oleh' => [
@@ -100,10 +129,10 @@ class CreateTbAlumni extends Migration
         ]);
 
         $this->forge->addKey('id_alumni', true);
-        $this->forge->addUniqueKey('id_pelamar', 'uk_tb_alumni_id_pelamar');
+        $this->forge->addUniqueKey('id_pengguna', 'uk_tb_alumni_id_pengguna');
         $this->forge->addKey('id_angkatan');
         $this->forge->addKey('id_kompetensi');
-        $this->forge->addForeignKey('id_pelamar', 'tb_pelamar', 'id_pelamar', 'CASCADE', 'CASCADE');
+        $this->forge->addForeignKey('id_pengguna', 'tb_pengguna', 'id_pengguna', 'CASCADE', 'CASCADE');
         $this->forge->addForeignKey('id_angkatan', 'tb_angkatan', 'id_angkatan', 'SET NULL', 'CASCADE');
         $this->forge->addForeignKey('id_kompetensi', 'tb_kompetensi', 'id_kompetensi', 'SET NULL', 'CASCADE');
         $this->forge->addForeignKey('diverifikasi_oleh', 'tb_pengguna', 'id_pengguna', 'SET NULL', 'CASCADE');

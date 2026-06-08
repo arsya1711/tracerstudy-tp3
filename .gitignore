@@ -49,6 +49,7 @@ Vagrantfile
 # Local Workspace / Notes
 #-------------------------
 .sixth/
+.refact/
 catatanku.md
 migration_output.txt
 

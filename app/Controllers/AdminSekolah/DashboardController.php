@@ -6,60 +6,32 @@ use App\Controllers\BaseController;
 use CodeIgniter\HTTP\RedirectResponse;
 use Config\Database;
 
-/*
-|-------------------------------------------------------------------
-| DASHBOARD CONTROLLER ADMIN SEKOLAH/BKK
-|-------------------------------------------------------------------
-| Controller ini menyiapkan command center untuk Admin Sekolah/BKK.
-| Fokusnya bukan seluruh sistem seperti Super Admin, tetapi pekerjaan
-| BKK: tracer alumni, verifikasi alumni, lowongan aktif, dan lamaran.
-|
-| Alur kerja:
-| 1. Method index() memastikan role yang masuk adalah admin_sekolah.
-| 2. Controller membaca ringkasan dari tabel alumni, tracer, lowongan,
-|    dan lamaran.
-| 3. Data dikirim ke view admin_sekolah/dashboard.php untuk dirender
-|    sebagai kartu statistik dan grafik kecil.
-|
-| Tips Debugging:
-| - Jika dashboard kosong, pastikan tabel tb_alumni dan tb_tracer_alumni
-|   sudah terisi.
-| - Jika setelah login admin sekolah masih ke placeholder, cek route
-|   dashboard/admin-sekolah di app/Config/Routes.php.
-*/
 class DashboardController extends BaseController
 {
-    protected \CodeIgniter\Database\BaseConnection $db;
+    protected $db;
 
     public function __construct()
     {
         $this->db = Database::connect();
     }
 
-    public function index(): string|RedirectResponse
+    public function index()
     {
         if (session()->get('slug_peran') !== 'admin_sekolah') {
             return redirect()->to('/login')->with('error', 'Akses ditolak.');
         }
 
-        $aktivitas = $this->ambilGrafikAktivitas();
-        $angkatan = $this->ambilGrafikAngkatan();
-
         return view('admin_sekolah/dashboard', [
-            'title'                  => 'Dashboard Admin Sekolah/BKK - Sistem Tracer Study & BKK',
-            'total_alumni'           => $this->hitungTabel('tb_alumni'),
-            'total_tracer'           => $this->hitungTabel('tb_tracer_alumni'),
-            'alumni_menunggu'        => $this->hitungAlumniByStatus('menunggu'),
-            'antrean_review'         => $this->hitungPelamarByStatus('menunggu_aktivasi'),
-            'pelamar_aktif'          => $this->hitungPelamarByStatus('aktif'),
-            'tracer_terkirim'        => $this->hitungTracerTerkirim(),
-            'tracer_belum_lengkap'   => $this->hitungTracerBelumLengkap(),
-            'lowongan_aktif'         => $this->hitungLowonganAktif(),
-            'lamaran_masuk'          => $this->hitungLamaranByStatus('menunggu_verifikasi'),
-            'lamaran_perbaikan'      => $this->hitungLamaranByStatus('perlu_perbaikan_berkas'),
-            'grafik_aktivitas'       => $aktivitas,
-            'grafik_angkatan'        => $angkatan,
-            'tracer_terbaru'         => $this->ambilTracerTerbaru(),
+            'title' => 'Dashboard Admin Sekolah - Sistem Tracer Study',
+            'total_alumni' => $this->hitungTabel('tb_alumni'),
+            'total_tracer' => $this->hitungTabel('tb_tracer_alumni'),
+            'alumni_menunggu' => $this->hitungAlumniByStatus('menunggu_aktivasi'),
+            'alumni_aktif' => $this->hitungAlumniByStatus('aktif'),
+            'tracer_terkirim' => $this->hitungTracerTerkirim(),
+            'tracer_belum_lengkap' => $this->hitungTracerBelumLengkap(),
+            'grafik_aktivitas' => $this->ambilGrafikAktivitas(),
+            'grafik_angkatan' => $this->ambilGrafikAngkatan(),
+            'tracer_terbaru' => $this->ambilTracerTerbaru(),
         ]);
     }
 
@@ -79,17 +51,6 @@ class DashboardController extends BaseController
         }
 
         return (int) $this->db->table('tb_alumni')
-            ->where('status_verifikasi', $status)
-            ->countAllResults();
-    }
-
-    protected function hitungPelamarByStatus(string $status): int
-    {
-        if (! $this->db->tableExists('tb_pelamar') || ! $this->db->fieldExists('status_pendaftaran', 'tb_pelamar')) {
-            return 0;
-        }
-
-        return (int) $this->db->table('tb_pelamar')
             ->where('status_pendaftaran', $status)
             ->countAllResults();
     }
@@ -111,51 +72,12 @@ class DashboardController extends BaseController
             return 0;
         }
 
-        $builder = $this->db->table('tb_alumni al')
-            ->join('tb_tracer_alumni t', 't.id_alumni = al.id_alumni', 'left');
-
-        $builder->groupStart()
-            ->where('t.id_tracer IS NULL', null, false);
-
-        if ($this->db->fieldExists('status', 'tb_tracer_alumni')) {
-            $builder->orWhere('t.status', 'draft');
-        }
-
-        $builder->groupEnd();
-
-        return (int) $builder->countAllResults();
-    }
-
-    protected function hitungLowonganAktif(): int
-    {
-        if (! $this->db->tableExists('tb_lowongan')) {
-            return 0;
-        }
-
-        return (int) $this->db->table('tb_lowongan')
-            ->where('status', 'aktif')
+        return (int) $this->db->table('tb_alumni al')
+            ->join('tb_tracer_alumni t', 't.id_alumni = al.id_alumni', 'left')
+            ->where('t.id_tracer IS NULL', null, false)
             ->countAllResults();
     }
 
-    protected function hitungLamaranByStatus(string $status): int
-    {
-        if (! $this->db->tableExists('tb_lamaran')) {
-            return 0;
-        }
-
-        return (int) $this->db->table('tb_lamaran')
-            ->where('status', $status)
-            ->countAllResults();
-    }
-
-    /*
-    |-------------------------------------------------------------------
-    | GRAFIK AKTIVITAS DAN ANGKATAN
-    |-------------------------------------------------------------------
-    | Dua helper berikut menyediakan data grafik ringkas. Grafik detail
-    | tetap ditempatkan di halaman Data Tracer Alumni agar dashboard
-    | tetap ringan.
-    */
     protected function ambilGrafikAktivitas(): array
     {
         if (! $this->db->tableExists('tb_tracer_alumni') || ! $this->db->tableExists('tb_aktivitas')) {
@@ -181,11 +103,7 @@ class DashboardController extends BaseController
 
     protected function ambilGrafikAngkatan(): array
     {
-        if (
-            ! $this->db->tableExists('tb_tracer_alumni')
-            || ! $this->db->tableExists('tb_alumni')
-            || ! $this->db->tableExists('tb_angkatan')
-        ) {
+        if (! $this->db->tableExists('tb_tracer_alumni') || ! $this->db->tableExists('tb_alumni') || ! $this->db->tableExists('tb_angkatan')) {
             return ['labels' => [], 'series' => []];
         }
 
@@ -199,24 +117,27 @@ class DashboardController extends BaseController
             ->getResultArray();
 
         return [
-            'labels' => array_map(static fn(array $row): string => (string) ($row['tahun_lulus'] ?? '-'), $rows),
-            'series' => array_map(static fn(array $row): int => (int) ($row['total'] ?? 0), $rows),
+            'labels' => array_map(static function (array $row): string {
+                return (string) ($row['tahun_lulus'] ?? '-');
+            }, $rows),
+            'series' => array_map(static function (array $row): int {
+                return (int) ($row['total'] ?? 0);
+            }, $rows),
         ];
     }
 
     protected function ambilTracerTerbaru(): array
     {
-        foreach (['tb_tracer_alumni', 'tb_alumni', 'tb_pelamar', 'tb_pengguna', 'tb_aktivitas'] as $table) {
+        foreach (['tb_tracer_alumni', 'tb_alumni', 'tb_pengguna', 'tb_aktivitas'] as $table) {
             if (! $this->db->tableExists($table)) {
                 return [];
             }
         }
 
         return $this->db->table('tb_tracer_alumni t')
-            ->select('t.status, t.diperbarui_pada, u.nama_lengkap, p.account_id, a.nama_aktivitas')
+            ->select('t.status, t.diperbarui_pada, u.nama_lengkap, CONCAT("ALM-", LPAD(al.id_alumni, 5, "0")) AS account_id, a.nama_aktivitas', false)
             ->join('tb_alumni al', 'al.id_alumni = t.id_alumni', 'inner')
-            ->join('tb_pelamar p', 'p.id_pelamar = al.id_pelamar', 'inner')
-            ->join('tb_pengguna u', 'u.id_pengguna = p.id_pengguna', 'inner')
+            ->join('tb_pengguna u', 'u.id_pengguna = al.id_pengguna', 'inner')
             ->join('tb_aktivitas a', 'a.id_aktivitas = t.id_aktivitas', 'left')
             ->orderBy('t.diperbarui_pada', 'DESC')
             ->limit(5)

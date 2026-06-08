@@ -68,7 +68,7 @@
 
     <div class="text-center mb-8">
         <span class="text-gray-500 fw-semibold fs-6">Belum punya akun?</span>
-        <a href="<?= base_url('daftar') ?>" class="link-primary fw-bold">Daftar sebagai pelamar</a>
+        <a href="<?= base_url('daftar') ?>" class="link-primary fw-bold">Daftar sebagai alumni</a>
     </div>
 
     <div class="separator separator-content my-14">

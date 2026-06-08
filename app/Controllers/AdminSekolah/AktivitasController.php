@@ -8,11 +8,10 @@ use CodeIgniter\HTTP\ResponseInterface;
 
 /*
 |-------------------------------------------------------------------
-| CONTROLLER AKTIVITAS ADMIN SEKOLAH/BKK
+| CONTROLLER AKTIVITAS ADMIN SEKOLAH
 |-------------------------------------------------------------------
 | Controller ini membuka master kegiatan/aktivitas alumni untuk Admin
-| Sekolah/BKK. Data ini dipakai langsung oleh tracer study, sehingga
-| pengelolaannya berada di wilayah operasional BKK.
+| Sekolah. Data ini dipakai langsung oleh tracer study.
 |
 | Alur kerja:
 | 1. Admin Sekolah membuka admin-sekolah/aktivitas.
@@ -42,7 +41,7 @@ class AktivitasController extends SuperadminAktivitasController
         }
 
         return view('superadmin/aktivitas/index', [
-            'title' => 'Aktivitas Alumni - Admin Sekolah/BKK',
+            'title' => 'Aktivitas Alumni - Admin Sekolah',
             'dashboardUrl' => base_url('admin-sekolah/dashboard'),
             'indexUrl' => site_url('admin-sekolah/aktivitas'),
             'simpanUrl' => site_url('admin-sekolah/aktivitas/simpan'),

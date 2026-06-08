@@ -1,15 +1,15 @@
-# BKK & Tracer Study TP4
+# Tracer Study TP4
 
-Aplikasi Bursa Kerja Khusus dan Tracer Study untuk mengelola data pelamar, alumni, perusahaan/DUDI, lowongan kerja, lamaran, serta pelaporan tracer alumni.
+Aplikasi Tracer Study untuk mengelola data alumni, master sekolah, isian aktivitas setelah lulus, dan pelaporan tracer alumni.
 
 Project ini dibangun dengan CodeIgniter 4 dan PHP 8.2.
 
 ## Fitur Utama
 
-- Landing page publik untuk menampilkan lowongan aktif.
-- Autentikasi multi-role: superadmin, admin sekolah/BKK, admin DUDI, pelamar umum, dan pelamar alumni.
-- Manajemen master data sekolah, kompetensi, angkatan, aktivitas alumni, dan kerja sama DUDI.
-- Manajemen pelamar, berkas profil, riwayat kerja, lowongan, lamaran, dan status proses lamaran.
+- Landing page publik untuk ringkasan tracer study.
+- Autentikasi multi-role: superadmin, admin sekolah, dan alumni.
+- Manajemen master data sekolah, kompetensi, angkatan, dan aktivitas alumni.
+- Registrasi alumni dan pengisian tracer study mandiri.
 - Modul tracer study alumni dengan rekap dan data analisis.
 
 ## Kebutuhan Sistem
@@ -25,7 +25,7 @@ Project ini dibangun dengan CodeIgniter 4 dan PHP 8.2.
 
    ```bash
    git clone <url-repository>
-   cd app-tracer-bkk-tp4
+   cd app-tracer-study-tp4
    ```
 
 2. Install dependency PHP.
@@ -47,7 +47,7 @@ Project ini dibangun dengan CodeIgniter 4 dan PHP 8.2.
    app.baseURL = 'http://localhost:8080/'
 
    database.default.hostname = localhost
-   database.default.database = db_bkk_tracerstudy
+   database.default.database = db_tracerstudy
    database.default.username = root
    database.default.password =
    database.default.DBDriver = MySQLi
@@ -68,8 +68,6 @@ Project ini dibangun dengan CodeIgniter 4 dan PHP 8.2.
    php spark db:seed KompetensiSeeder
    php spark db:seed AngkatanSeeder
    php spark db:seed AktivitasSeeder
-   php spark db:seed KerjasamaSeeder
-   php spark db:seed JenisBerkasSeeder
    ```
 
 7. Jalankan aplikasi.
@@ -84,7 +82,7 @@ Project ini dibangun dengan CodeIgniter 4 dan PHP 8.2.
 
 Seeder `PenggunaSeeder` membuat akun superadmin awal:
 
-- Email: `superadmin@bkk.com`
+- Email: `superadmin@tracerstudy.local`
 - Password: `Admin123`
 
 Ganti password ini setelah login pertama, terutama jika aplikasi akan dipakai di server online.

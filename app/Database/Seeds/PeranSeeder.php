@@ -40,30 +40,37 @@ class PeranSeeder extends Seeder
             [
                 'nama_peran' => 'Super Admin',
                 'slug_peran' => 'superadmin',
-                'keterangan' => 'Akses penuh ke seluruh sistem',
+                'keterangan' => 'Akses penuh ke aplikasi tracer study',
             ],
             [
-                'nama_peran' => 'Admin Sekolah/BKK',
+                'nama_peran' => 'Admin Sekolah',
                 'slug_peran' => 'admin_sekolah',
-                'keterangan' => 'Mengelola data sekolah dan BKK',
+                'keterangan' => 'Mengelola master data sekolah dan tracer alumni',
             ],
             [
-                'nama_peran' => 'Admin DUDI',
-                'slug_peran' => 'admin_dudi',
-                'keterangan' => 'Mengelola data perusahaan dan lowongan',
-            ],
-            [
-                'nama_peran' => 'Pelamar Umum',
-                'slug_peran' => 'pelamar_umum',
-                'keterangan' => 'Pelamar dari masyarakat umum',
-            ],
-            [
-                'nama_peran' => 'Pelamar Alumni',
-                'slug_peran' => 'pelamar_alumni',
-                'keterangan' => 'Pelamar dari alumni sekolah',
+                'nama_peran' => 'Alumni',
+                'slug_peran' => 'alumni',
+                'keterangan' => 'Akun alumni untuk mengisi profil dan tracer study',
             ],
         ];
 
-        $this->db->table('tb_peran')->insertBatch($data);
+        $table = $this->db->table('tb_peran');
+
+        foreach ($data as $peran) {
+            $existing = $table
+                ->where('slug_peran', $peran['slug_peran'])
+                ->get()
+                ->getRowArray();
+
+            if ($existing) {
+                $table
+                    ->where('id_peran', $existing['id_peran'])
+                    ->update($peran);
+
+                continue;
+            }
+
+            $table->insert($peran);
+        }
     }
 }

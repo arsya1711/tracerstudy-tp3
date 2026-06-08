@@ -63,7 +63,7 @@ class AuthFilter implements FilterInterface
 
         $allowedRoles = is_array($arguments) ? array_filter(array_map('strval', $arguments)) : [];
         if ($allowedRoles === []) {
-            return $this->pastikanAksesPelamarDisetujui($request, (string) ($user['slug_peran'] ?? ''), (string) ($user['status_pendaftaran'] ?? ''));
+            return $this->pastikanAksesAlumniDisetujui($request, (string) ($user['slug_peran'] ?? ''), (string) ($user['status_pendaftaran'] ?? ''));
         }
 
         $slugPeran = (string) ($user['slug_peran'] ?? '');
@@ -81,7 +81,7 @@ class AuthFilter implements FilterInterface
             return redirect()->to($this->dashboardUrl($slugPeran))->with('error', 'Akses ditolak.');
         }
 
-        return $this->pastikanAksesPelamarDisetujui($request, $slugPeran, (string) ($user['status_pendaftaran'] ?? ''));
+        return $this->pastikanAksesAlumniDisetujui($request, $slugPeran, (string) ($user['status_pendaftaran'] ?? ''));
     }
 
     protected function ambilPenggunaAktif(): ?array
@@ -101,10 +101,10 @@ class AuthFilter implements FilterInterface
             ->join('tb_peran r', 'r.id_peran = u.id_peran', 'left')
             ->where('u.id_pengguna', $idPengguna);
 
-        if ($db->tableExists('tb_pelamar')) {
+        if ($db->tableExists('tb_alumni')) {
             $builder
-                ->select('p.status_pendaftaran')
-                ->join('tb_pelamar p', 'p.id_pengguna = u.id_pengguna', 'left');
+                ->select('al.status_pendaftaran')
+                ->join('tb_alumni al', 'al.id_pengguna = u.id_pengguna', 'left');
         }
 
         $user = $builder->get()->getRowArray();
@@ -127,13 +127,13 @@ class AuthFilter implements FilterInterface
         ]);
     }
 
-    protected function pastikanAksesPelamarDisetujui(RequestInterface $request, string $slugPeran, string $statusPendaftaran)
+    protected function pastikanAksesAlumniDisetujui(RequestInterface $request, string $slugPeran, string $statusPendaftaran)
     {
-        if (! in_array($slugPeran, ['pelamar_umum', 'pelamar_alumni'], true)) {
+        if ($slugPeran !== 'alumni') {
             return null;
         }
 
-        if ($this->isPelamarDashboardRequest()) {
+        if ($this->isAlumniDashboardRequest()) {
             return null;
         }
 
@@ -146,23 +146,21 @@ class AuthFilter implements FilterInterface
                 ->setStatusCode(403)
                 ->setJSON([
                     'status' => 'error',
-                    'message' => 'Akun kamu masih menunggu persetujuan admin BKK.',
+                        'message' => 'Akun kamu masih menunggu persetujuan admin sekolah.',
                     'csrfHash' => csrf_hash(),
                 ]);
         }
 
-        return redirect()->to(site_url('pelamar/dashboard'))
-            ->with('error', 'Akun kamu masih menunggu persetujuan admin BKK. Saat ini hanya dashboard yang dapat diakses.');
+        return redirect()->to(site_url('alumni/dashboard'))
+            ->with('error', 'Akun kamu masih menunggu persetujuan admin sekolah. Saat ini hanya dashboard yang dapat diakses.');
     }
 
-    protected function isPelamarDashboardRequest(): bool
+    protected function isAlumniDashboardRequest(): bool
     {
         $path = trim(uri_string(), '/');
 
         return in_array($path, [
-            'pelamar/dashboard',
-            'dashboard/pelamar-umum',
-            'dashboard/pelamar-alumni',
+            'alumni/dashboard',
         ], true);
     }
 
@@ -171,8 +169,7 @@ class AuthFilter implements FilterInterface
         return match ($slugPeran) {
             'superadmin' => site_url('dashboard/superadmin'),
             'admin_sekolah' => site_url('admin-sekolah/dashboard'),
-            'admin_dudi', 'admin_perusahaan' => site_url('admin-dudi/dashboard'),
-            'pelamar_umum', 'pelamar_alumni' => site_url('pelamar/dashboard'),
+            'alumni' => site_url('alumni/dashboard'),
             default => site_url('login'),
         };
     }

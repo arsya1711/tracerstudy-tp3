@@ -89,18 +89,7 @@ class AdminModel extends Model
                 'r.slug_peran',
             ])
             ->join('tb_peran r', 'r.id_peran = u.id_peran', 'inner')
-            ->whereIn('r.slug_peran', ['admin_sekolah', 'admin_dudi', 'admin_perusahaan']);
-
-        if (
-            $this->db->tableExists('tb_perusahaan')
-            && $this->db->fieldExists('id_pengguna', 'tb_perusahaan')
-            && $this->db->fieldExists('nama_perusahaan', 'tb_perusahaan')
-        ) {
-            $builder->select('pr.id_perusahaan, pr.nama_perusahaan')
-                ->join('tb_perusahaan pr', 'pr.id_pengguna = u.id_pengguna', 'left');
-        } else {
-            $builder->select('NULL AS id_perusahaan, NULL AS nama_perusahaan', false);
-        }
+            ->whereIn('r.slug_peran', ['admin_sekolah']);
 
         return $builder;
     }
@@ -116,16 +105,8 @@ class AdminModel extends Model
 
             $builder->groupStart()
                 ->like('u.nama_lengkap', $keyword)
-                ->orLike('u.email', $keyword);
-
-            if (
-                $this->db->tableExists('tb_perusahaan')
-                && $this->db->fieldExists('nama_perusahaan', 'tb_perusahaan')
-            ) {
-                $builder->orLike('pr.nama_perusahaan', $keyword);
-            }
-
-            $builder->groupEnd();
+                ->orLike('u.email', $keyword)
+                ->groupEnd();
         }
     }
 
@@ -134,17 +115,11 @@ class AdminModel extends Model
         $mapOrder = [
             1 => 'u.nama_lengkap',
             2 => 'r.slug_peran',
-            3 => 'pr.nama_perusahaan',
             4 => 'u.status_aktif',
             5 => 'u.terakhir_login',
         ];
 
         if (isset($mapOrder[$orderColumn])) {
-            if ($mapOrder[$orderColumn] === 'pr.nama_perusahaan' && ! $this->db->tableExists('tb_perusahaan')) {
-                $builder->orderBy('u.nama_lengkap', 'ASC');
-                return;
-            }
-
             $builder->orderBy($mapOrder[$orderColumn], $orderDir);
             return;
         }

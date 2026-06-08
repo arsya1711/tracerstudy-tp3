@@ -56,9 +56,9 @@ class PenggunaModel extends Model
     */
     public function cariByEmail(string $email): ?array
     {
-        return $this->select('tb_pengguna.*, tb_peran.nama_peran, tb_peran.slug_peran, tb_pelamar.status_pendaftaran')
+        return $this->select('tb_pengguna.*, tb_peran.nama_peran, tb_peran.slug_peran, tb_alumni.status_pendaftaran')
             ->join('tb_peran', 'tb_peran.id_peran = tb_pengguna.id_peran', 'left')
-            ->join('tb_pelamar', 'tb_pelamar.id_pengguna = tb_pengguna.id_pengguna', 'left')
+            ->join('tb_alumni', 'tb_alumni.id_pengguna = tb_pengguna.id_pengguna', 'left')
             ->where('tb_pengguna.email', $email)
             ->first();
     }

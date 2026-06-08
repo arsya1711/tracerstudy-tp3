@@ -6,10 +6,10 @@ use App\Controllers\Superadmin\TracerController as SuperadminTracerController;
 
 /*
 |-------------------------------------------------------------------
-| CONTROLLER DATA TRACER ADMIN SEKOLAH/BKK
+| CONTROLLER DATA TRACER ADMIN SEKOLAH
 |-------------------------------------------------------------------
 | Controller ini memakai ulang logika laporan tracer Super Admin,
-| tetapi membatasi aksesnya untuk role Admin Sekolah/BKK.
+| tetapi membatasi aksesnya untuk role Admin Sekolah.
 |
 | Alur kerja:
 | 1. Admin Sekolah membuka menu Data Tracer Alumni.
@@ -31,7 +31,7 @@ class TracerController extends SuperadminTracerController
 
     protected function getPageTitle(): string
     {
-        return 'Data Tracer Alumni BKK - Sistem Tracer Study & BKK';
+        return 'Data Tracer Alumni - Sistem Tracer Study';
     }
 
     protected function getDashboardUrl(): string
@@ -46,6 +46,6 @@ class TracerController extends SuperadminTracerController
 
     protected function getTracerRoleLabel(): string
     {
-        return 'Admin Sekolah/BKK';
+        return 'Admin Sekolah';
     }
 }

@@ -1,10 +1,10 @@
 <?php
 /*
 |-------------------------------------------------------------------
-| VIEW REGISTER PELAMAR
+| VIEW REGISTER ALUMNI
 |-------------------------------------------------------------------
-| Form pendaftaran mandiri untuk pelamar umum dan alumni. Akun baru
-| dibuat dengan status menunggu aktivasi agar bisa direview admin BKK.
+| Form pendaftaran mandiri untuk alumni. Akun baru
+| dibuat dengan status menunggu aktivasi agar bisa direview admin sekolah.
 */
 ?>
 <?= $this->extend('layouts/auth') ?>
@@ -13,6 +13,9 @@
 <?php
 $errors = session()->getFlashdata('errors');
 $errors = is_array($errors) ? $errors : [];
+$jenisAlumniTerpilih = 'alumni';
+$daftar_angkatan = is_array($daftar_angkatan ?? null) ? $daftar_angkatan : [];
+$daftar_kompetensi = is_array($daftar_kompetensi ?? null) ? $daftar_kompetensi : [];
 ?>
 
 <?php if (session()->getFlashdata('error')): ?>
@@ -32,8 +35,8 @@ $errors = is_array($errors) ? $errors : [];
     <?= csrf_field() ?>
 
     <div class="text-center mb-11">
-        <h1 class="text-dark fw-bolder mb-3">Daftar Pelamar</h1>
-        <div class="text-gray-500 fw-semibold fs-6">Buat akun untuk masuk ke sistem BKK</div>
+        <h1 class="text-dark fw-bolder mb-3">Daftar Alumni</h1>
+        <div class="text-gray-500 fw-semibold fs-6">Buat akun untuk mengisi tracer study</div>
     </div>
 
     <div class="alert alert-warning d-flex align-items-start p-5 mb-8">
@@ -43,7 +46,7 @@ $errors = is_array($errors) ? $errors : [];
             <span class="path3"></span>
         </i>
         <div class="text-gray-700 fs-7">
-            Setelah daftar, kamu bisa login. Menu profil, lowongan, dan lamaran akan terbuka setelah admin BKK menyetujui akun kamu.
+            Setelah daftar, kamu bisa login. Menu profil dan tracer akan terbuka setelah admin sekolah menyetujui akun kamu.
         </div>
     </div>
 
@@ -69,14 +72,71 @@ $errors = is_array($errors) ? $errors : [];
     </div>
 
     <div class="fv-row mb-8">
-        <label class="form-label fw-semibold text-gray-700">Jenis pelamar</label>
-        <select name="jenis_pelamar" class="form-select bg-transparent">
-            <option value="umum" <?= old('jenis_pelamar', 'umum') === 'umum' ? 'selected' : '' ?>>Pelamar Umum</option>
-            <option value="alumni" <?= old('jenis_pelamar') === 'alumni' ? 'selected' : '' ?>>Alumni</option>
-        </select>
-        <?php if (isset($errors['jenis_pelamar'])): ?>
-            <div class="text-danger fs-8 mt-2"><?= esc($errors['jenis_pelamar']) ?></div>
+        <label class="form-label fw-semibold text-gray-700">Jenis akun</label>
+        <input type="hidden" name="jenis_alumni" id="kt_register_jenis_alumni" value="alumni">
+        <input type="text" class="form-control bg-transparent" value="Alumni" disabled>
+        <?php if (isset($errors['jenis_alumni'])): ?>
+            <div class="text-danger fs-8 mt-2"><?= esc($errors['jenis_alumni']) ?></div>
         <?php endif; ?>
+    </div>
+
+    <?php
+    /*
+    |-------------------------------------------------------------------
+    | FIELD AKADEMIK KHUSUS ALUMNI
+    |-------------------------------------------------------------------
+    | Blok ini menampilkan data akademik alumni. Data yang dikirim akan
+    | disimpan ke tb_alumni setelah akun dan profil alumni dibuat.
+    |
+    | Tips Debugging:
+    | - Jika blok tidak muncul, cek script toggle di bagian bawah view ini.
+    | - Jika dropdown kosong, cek data aktif pada tb_angkatan dan tb_kompetensi.
+    */
+    ?>
+    <div id="kt_register_alumni_fields" class="<?= $jenisAlumniTerpilih === 'alumni' ? '' : 'd-none' ?>">
+        <div class="separator separator-dashed my-8"></div>
+        <div class="text-gray-800 fw-bold fs-6 mb-2">Data Akademik Alumni</div>
+        <div class="text-gray-500 fs-8 mb-6">Isi data ini agar akun alumni langsung terhubung dengan data sekolah.</div>
+
+        <div class="fv-row mb-8">
+            <input type="text" name="nis" placeholder="NIS" autocomplete="off" class="form-control bg-transparent" value="<?= esc(old('nis')) ?>" />
+            <?php if (isset($errors['nis'])): ?>
+                <div class="text-danger fs-8 mt-2"><?= esc($errors['nis']) ?></div>
+            <?php endif; ?>
+        </div>
+
+        <div class="fv-row mb-8">
+            <select name="id_kompetensi" class="form-select bg-transparent">
+                <option value="">Pilih Kompetensi Keahlian</option>
+                <?php foreach ($daftar_kompetensi as $kompetensi): ?>
+                    <?php $idKompetensi = (string) ($kompetensi['id_kompetensi'] ?? ''); ?>
+                    <option value="<?= esc($idKompetensi, 'attr') ?>" <?= (string) old('id_kompetensi') === $idKompetensi ? 'selected' : '' ?>>
+                        <?= esc((string) ($kompetensi['nama_kompetensi'] ?? '-')) ?>
+                        <?php if (! empty($kompetensi['akronim'])): ?>
+                            (<?= esc((string) $kompetensi['akronim']) ?>)
+                        <?php endif; ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
+            <?php if (isset($errors['id_kompetensi'])): ?>
+                <div class="text-danger fs-8 mt-2"><?= esc($errors['id_kompetensi']) ?></div>
+            <?php endif; ?>
+        </div>
+
+        <div class="fv-row mb-8">
+            <select name="id_angkatan" class="form-select bg-transparent">
+                <option value="">Pilih Tahun Lulus</option>
+                <?php foreach ($daftar_angkatan as $angkatan): ?>
+                    <?php $idAngkatan = (string) ($angkatan['id_angkatan'] ?? ''); ?>
+                    <option value="<?= esc($idAngkatan, 'attr') ?>" <?= (string) old('id_angkatan') === $idAngkatan ? 'selected' : '' ?>>
+                        <?= esc((string) ($angkatan['tahun_lulus'] ?? '-')) ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
+            <?php if (isset($errors['id_angkatan'])): ?>
+                <div class="text-danger fs-8 mt-2"><?= esc($errors['id_angkatan']) ?></div>
+            <?php endif; ?>
+        </div>
     </div>
 
     <div class="fv-row mb-8">
@@ -102,4 +162,40 @@ $errors = is_array($errors) ? $errors : [];
         <a href="<?= base_url('login') ?>" class="link-primary fw-bold">Masuk</a>
     </div>
 </form>
+
+<script>
+    /*
+    |-------------------------------------------------------------------
+    | TOGGLE FORM AKADEMIK ALUMNI
+    |-------------------------------------------------------------------
+    | Script ini mengatur agar field NIS, kompetensi keahlian, dan tahun
+    | lulus hanya aktif untuk akun Alumni.
+    | Alur kerja: saat halaman dimuat dan saat dropdown berubah, blok
+    | alumni akan ditampilkan/disembunyikan serta inputnya diaktifkan.
+    |
+    | Tips Debugging:
+    | - Jika field tetap tersembunyi, cek id kt_register_jenis_alumni.
+    | - Jika data tidak terkirim, pastikan input alumni tidak disabled saat Alumni dipilih.
+    */
+    document.addEventListener('DOMContentLoaded', function () {
+        const jenisAlumni = document.getElementById('kt_register_jenis_alumni');
+        const alumniFields = document.getElementById('kt_register_alumni_fields');
+
+        if (!jenisAlumni || !alumniFields) {
+            return;
+        }
+
+        const toggleAlumniFields = function () {
+            const isAlumni = jenisAlumni.value === 'alumni';
+
+            alumniFields.classList.toggle('d-none', !isAlumni);
+            alumniFields.querySelectorAll('input, select').forEach(function (input) {
+                input.disabled = !isAlumni;
+            });
+        };
+
+        jenisAlumni.addEventListener('change', toggleAlumniFields);
+        toggleAlumniFields();
+    });
+</script>
 <?= $this->endSection() ?>

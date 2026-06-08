@@ -21,16 +21,16 @@
 <!--begin::Head-->
 <head>
     <base href="../../../"/>
-    <title><?= esc($title ?? 'Login - Sistem Tracer Study & BKK') ?></title>
+    <title><?= esc($title ?? 'Login - Sistem Tracer Study') ?></title>
     <meta charset="utf-8" />
-    <meta name="description" content="Halaman login Sistem Tracer Study & BKK." />
-    <meta name="keywords" content="metronic, bootstrap, login, tracer study, bkk" />
+    <meta name="description" content="Halaman login Sistem Tracer Study." />
+    <meta name="keywords" content="metronic, bootstrap, login, tracer study, alumni" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta property="og:locale" content="en_US" />
     <meta property="og:type" content="article" />
-    <meta property="og:title" content="Login - Sistem Tracer Study & BKK" />
+    <meta property="og:title" content="Login - Sistem Tracer Study" />
     <meta property="og:url" content="<?= current_url() ?>" />
-    <meta property="og:site_name" content="Sistem Tracer Study & BKK" />
+    <meta property="og:site_name" content="Sistem Tracer Study" />
     <link rel="canonical" href="<?= current_url() ?>" />
     <link rel="shortcut icon" href="<?= base_url('assets/media/logos/favicon.ico') ?>" />
     <!--begin::Fonts(mandatory for all pages)-->
