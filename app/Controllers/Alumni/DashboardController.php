@@ -5,6 +5,8 @@ namespace App\Controllers\Alumni;
 use App\Controllers\BaseController;
 use App\Models\AlumniModel;
 use App\Models\AktivitasModel;
+use App\Models\AngkatanModel;
+use App\Models\KompetensiModel;
 use App\Models\PenggunaModel;
 use App\Models\TracerAlumniModel;
 use CodeIgniter\HTTP\RedirectResponse;
@@ -14,6 +16,8 @@ class DashboardController extends BaseController
 {
     protected AlumniModel $alumniModel;
     protected AktivitasModel $aktivitasModel;
+    protected AngkatanModel $angkatanModel;
+    protected KompetensiModel $kompetensiModel;
     protected PenggunaModel $penggunaModel;
     protected TracerAlumniModel $tracerModel;
     protected $db;
@@ -22,6 +26,8 @@ class DashboardController extends BaseController
     {
         $this->alumniModel = new AlumniModel();
         $this->aktivitasModel = new AktivitasModel();
+        $this->angkatanModel = new AngkatanModel();
+        $this->kompetensiModel = new KompetensiModel();
         $this->penggunaModel = new PenggunaModel();
         $this->tracerModel = new TracerAlumniModel();
         $this->db = db_connect();
@@ -48,7 +54,21 @@ class DashboardController extends BaseController
 
     public function profil(): string|RedirectResponse
     {
-        return $this->index();
+        $alumni = $this->ambilAlumniLogin();
+        if ($alumni === null) {
+            return redirect()->to(site_url('logout'))->with('error', 'Profil alumni belum ditemukan.');
+        }
+
+        return view('alumni/profil/index', [
+            'title' => 'Profil Alumni - Sistem Tracer Study',
+            'alumni' => $alumni,
+            'daftarAngkatan' => $this->angkatanModel->where('status_aktif', 1)
+                ->orderBy('tahun_lulus', 'DESC')
+                ->findAll(),
+            'daftarKompetensi' => $this->kompetensiModel->where('status_aktif', 1)
+                ->orderBy('nama_kompetensi', 'ASC')
+                ->findAll(),
+        ]);
     }
 
     public function tracer(): string|RedirectResponse
@@ -93,7 +113,7 @@ class DashboardController extends BaseController
             'id_kompetensi' => (int) ($this->request->getPost('id_kompetensi') ?: $alumni['id_kompetensi']),
         ]);
 
-        return $this->responseAlumni('success', 'Profil alumni berhasil diperbarui.');
+        return $this->responseAlumni('success', 'Profil alumni berhasil diperbarui.', 200, site_url('alumni/profil'));
     }
 
     public function updateEmail(): ResponseInterface|RedirectResponse
@@ -105,7 +125,7 @@ class DashboardController extends BaseController
 
         $email = strtolower(trim((string) $this->request->getPost('email')));
         if ($email === '' || ! filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            return $this->responseAlumni('error', 'Email belum valid.', 422);
+            return $this->responseAlumni('error', 'Email belum valid.', 422, site_url('alumni/profil'));
         }
 
         $duplikat = $this->db->table('tb_pengguna')
@@ -114,13 +134,13 @@ class DashboardController extends BaseController
             ->countAllResults();
 
         if ($duplikat > 0) {
-            return $this->responseAlumni('error', 'Email sudah digunakan akun lain.', 422);
+            return $this->responseAlumni('error', 'Email sudah digunakan akun lain.', 422, site_url('alumni/profil'));
         }
 
         $this->penggunaModel->update((int) $alumni['id_pengguna'], ['email' => $email]);
         session()->set('email', $email);
 
-        return $this->responseAlumni('success', 'Email berhasil diperbarui.');
+        return $this->responseAlumni('success', 'Email berhasil diperbarui.', 200, site_url('alumni/profil'));
     }
 
     public function updatePassword(): ResponseInterface|RedirectResponse
@@ -133,14 +153,14 @@ class DashboardController extends BaseController
         $password = (string) $this->request->getPost('password');
         $konfirmasi = (string) $this->request->getPost('password_confirmation');
         if (strlen($password) < 8 || $password !== $konfirmasi) {
-            return $this->responseAlumni('error', 'Password minimal 8 karakter dan konfirmasi harus sama.', 422);
+            return $this->responseAlumni('error', 'Password minimal 8 karakter dan konfirmasi harus sama.', 422, site_url('alumni/profil'));
         }
 
         $this->penggunaModel->update((int) $alumni['id_pengguna'], [
             'kata_sandi' => password_hash($password, PASSWORD_DEFAULT),
         ]);
 
-        return $this->responseAlumni('success', 'Password berhasil diperbarui.');
+        return $this->responseAlumni('success', 'Password berhasil diperbarui.', 200, site_url('alumni/profil'));
     }
 
     public function simpanTracer(): ResponseInterface|RedirectResponse
@@ -249,7 +269,7 @@ class DashboardController extends BaseController
         ];
     }
 
-    protected function responseAlumni(string $status, string $message, int $httpStatus = 200): ResponseInterface|RedirectResponse
+    protected function responseAlumni(string $status, string $message, int $httpStatus = 200, ?string $redirectUrl = null): ResponseInterface|RedirectResponse
     {
         if ($this->request->isAJAX()) {
             return $this->response
@@ -261,7 +281,7 @@ class DashboardController extends BaseController
                 ]);
         }
 
-        return redirect()->to(site_url('alumni/tracer'))->with($status === 'success' ? 'sukses' : 'error', $message);
+        return redirect()->to($redirectUrl ?? site_url('alumni/tracer'))->with($status === 'success' ? 'sukses' : 'error', $message);
     }
 
     protected function penghasilanOptions(): array
