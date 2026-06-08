@@ -82,10 +82,12 @@ $routes->group('superadmin', ['filter' => 'auth:superadmin'], static function (R
 $routes->group('alumni', ['filter' => 'auth:alumni'], static function (RouteCollection $routes) {
     $routes->get('dashboard', 'Alumni\DashboardController::index');
     $routes->get('profil', 'Alumni\DashboardController::profil');
+    $routes->get('tracer', 'Alumni\DashboardController::tracer');
     $routes->get('legalisir', 'Alumni\LegalisirController::index');
     $routes->post('legalisir/simpan', 'Alumni\LegalisirController::simpan');
     $routes->post('profil/update/(:num)', 'Alumni\DashboardController::updateDetail/$1');
     $routes->post('profil/update-email', 'Alumni\DashboardController::updateEmail');
     $routes->post('profil/update-password', 'Alumni\DashboardController::updatePassword');
+    $routes->post('tracer/simpan', 'Alumni\DashboardController::simpanTracer');
     $routes->post('profil/simpan-tracer', 'Alumni\DashboardController::simpanTracer');
 });

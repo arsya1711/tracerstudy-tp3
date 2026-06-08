@@ -4,6 +4,7 @@ namespace App\Controllers\Alumni;
 
 use App\Controllers\BaseController;
 use App\Models\AlumniModel;
+use App\Models\AktivitasModel;
 use App\Models\PenggunaModel;
 use App\Models\TracerAlumniModel;
 use CodeIgniter\HTTP\RedirectResponse;
@@ -12,6 +13,7 @@ use CodeIgniter\HTTP\ResponseInterface;
 class DashboardController extends BaseController
 {
     protected AlumniModel $alumniModel;
+    protected AktivitasModel $aktivitasModel;
     protected PenggunaModel $penggunaModel;
     protected TracerAlumniModel $tracerModel;
     protected $db;
@@ -19,6 +21,7 @@ class DashboardController extends BaseController
     public function __construct()
     {
         $this->alumniModel = new AlumniModel();
+        $this->aktivitasModel = new AktivitasModel();
         $this->penggunaModel = new PenggunaModel();
         $this->tracerModel = new TracerAlumniModel();
         $this->db = db_connect();
@@ -46,6 +49,24 @@ class DashboardController extends BaseController
     public function profil(): string|RedirectResponse
     {
         return $this->index();
+    }
+
+    public function tracer(): string|RedirectResponse
+    {
+        $alumni = $this->ambilAlumniLogin();
+        if ($alumni === null) {
+            return redirect()->to(site_url('logout'))->with('error', 'Profil alumni belum ditemukan.');
+        }
+
+        return view('alumni/tracer/index', [
+            'title' => 'Isi Tracer Study - Sistem Tracer Study',
+            'alumni' => $alumni,
+            'tracer' => $this->tracerModel->ambilTerakhirByAlumni((int) $alumni['id_alumni']),
+            'daftarAktivitas' => $this->aktivitasModel->where('status_aktif', 1)
+                ->orderBy('nama_aktivitas', 'ASC')
+                ->findAll(),
+            'penghasilanOptions' => $this->penghasilanOptions(),
+        ]);
     }
 
     public function updateDetail(int $idAlumni): ResponseInterface|RedirectResponse
@@ -202,7 +223,7 @@ class DashboardController extends BaseController
                 'title' => 'Isi tracer study',
                 'description' => 'Kirim aktivitas setelah lulus untuk rekap tracer sekolah.',
                 'done' => $tracer !== null,
-                'url' => site_url('alumni/profil'),
+                'url' => site_url('alumni/tracer'),
                 'button' => 'Isi Tracer',
             ],
         ];
@@ -240,6 +261,17 @@ class DashboardController extends BaseController
                 ]);
         }
 
-        return redirect()->to(site_url('alumni/dashboard'))->with($status === 'success' ? 'sukses' : 'error', $message);
+        return redirect()->to(site_url('alumni/tracer'))->with($status === 'success' ? 'sukses' : 'error', $message);
+    }
+
+    protected function penghasilanOptions(): array
+    {
+        return [
+            '< Rp1.000.000',
+            'Rp1.000.000 - Rp2.999.999',
+            'Rp3.000.000 - Rp4.999.999',
+            'Rp5.000.000 - Rp7.499.999',
+            '>= Rp7.500.000',
+        ];
     }
 }

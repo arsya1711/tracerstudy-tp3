@@ -17,7 +17,8 @@ $menuItems = [];
 if ($isAlumni) {
     $menuItems = [
         ['label' => 'Dashboard', 'url' => base_url('alumni/dashboard'), 'active' => uri_string() === 'alumni/dashboard'],
-        ['label' => 'Profil & Tracer', 'url' => base_url('alumni/profil'), 'active' => uri_string() === 'alumni/profil'],
+        ['label' => 'Profil', 'url' => base_url('alumni/profil'), 'active' => uri_string() === 'alumni/profil'],
+        ['label' => 'Isi Tracer', 'url' => base_url('alumni/tracer'), 'active' => uri_string() === 'alumni/tracer'],
         ['label' => 'Legalisir', 'url' => base_url('alumni/legalisir'), 'active' => uri_string() === 'alumni/legalisir'],
     ];
 } elseif ($isAdminSekolah) {
