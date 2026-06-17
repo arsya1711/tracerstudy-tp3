@@ -3,6 +3,8 @@ $slugPeran = (string) (session()->get('slug_peran') ?? '');
 $isAlumni = $slugPeran === 'alumni';
 $isAdminSekolah = $slugPeran === 'admin_sekolah';
 $dashboardUrl = base_url('dashboard/superadmin');
+$appName = 'Tracer Study SMK Teratai Putih Global3';
+$schoolLogoUrl = base_url('assets/media/logos/logo-smk-teratai-putih-3.svg');
 switch ($slugPeran) {
     case 'alumni':
         $dashboardUrl = base_url('alumni/dashboard');
@@ -18,13 +20,12 @@ if ($isAlumni) {
     $menuItems = [
         ['label' => 'Dashboard', 'url' => base_url('alumni/dashboard'), 'active' => uri_string() === 'alumni/dashboard'],
         ['label' => 'Profil', 'url' => base_url('alumni/profil'), 'active' => uri_string() === 'alumni/profil'],
-        ['label' => 'Isi Tracer', 'url' => base_url('alumni/tracer'), 'active' => uri_string() === 'alumni/tracer'],
+        ['label' => 'Tracer', 'url' => base_url('alumni/tracer'), 'active' => uri_string() === 'alumni/tracer'],
         ['label' => 'Legalisir', 'url' => base_url('alumni/legalisir'), 'active' => uri_string() === 'alumni/legalisir'],
     ];
 } elseif ($isAdminSekolah) {
     $menuItems = [
         ['label' => 'Dashboard', 'url' => base_url('admin-sekolah/dashboard'), 'active' => in_array(uri_string(), ['admin-sekolah/dashboard', 'dashboard/admin-sekolah'], true)],
-        ['label' => 'Alumni', 'url' => base_url('admin-sekolah/alumni'), 'active' => str_starts_with(uri_string(), 'admin-sekolah/alumni')],
         ['label' => 'Tracer Alumni', 'url' => base_url('admin-sekolah/tracer'), 'active' => uri_string() === 'admin-sekolah/tracer'],
         ['label' => 'Legalisir', 'url' => base_url('admin-sekolah/legalisir'), 'active' => uri_string() === 'admin-sekolah/legalisir'],
         ['label' => 'Angkatan', 'url' => base_url('admin-sekolah/angkatan'), 'active' => uri_string() === 'admin-sekolah/angkatan'],
@@ -34,7 +35,6 @@ if ($isAlumni) {
 } else {
     $menuItems = [
         ['label' => 'Dashboard', 'url' => base_url('dashboard/superadmin'), 'active' => uri_string() === 'dashboard/superadmin'],
-        ['label' => 'Alumni', 'url' => base_url('superadmin/alumni'), 'active' => str_starts_with(uri_string(), 'superadmin/alumni')],
         ['label' => 'Tracer Alumni', 'url' => base_url('superadmin/tracer'), 'active' => uri_string() === 'superadmin/tracer'],
         ['label' => 'Legalisir', 'url' => base_url('superadmin/legalisir'), 'active' => uri_string() === 'superadmin/legalisir'],
         ['label' => 'Angkatan', 'url' => base_url('superadmin/angkatan'), 'active' => uri_string() === 'superadmin/angkatan'],
@@ -70,10 +70,19 @@ if ($isAlumni) {
             <div class="app-wrapper flex-column flex-row-fluid" id="kt_app_wrapper">
                 <div id="kt_app_sidebar" class="app-sidebar flex-column" data-kt-drawer="true"
                     data-kt-drawer-name="app-sidebar" data-kt-drawer-activate="{default: true, lg: false}"
-                    data-kt-drawer-overlay="true" data-kt-drawer-width="225px" data-kt-drawer-direction="start"
+                    data-kt-drawer-overlay="false" data-kt-drawer-width="280px" data-kt-drawer-direction="start"
                     data-kt-drawer-toggle="#kt_app_sidebar_mobile_toggle">
                     <div class="app-sidebar-logo px-6" id="kt_app_sidebar_logo">
-                        <a href="<?= $dashboardUrl ?>" class="text-white fw-bolder fs-4">Tracer Study</a>
+                        <a href="<?= $dashboardUrl ?>" class="kt-school-brand">
+                            <img src="<?= esc($schoolLogoUrl) ?>" alt="Logo SMK Teratai Putih 3" class="kt-school-brand-logo">
+                            <span class="kt-school-brand-title"><?= esc($appName) ?></span>
+                        </a>
+                        <button type="button" class="btn btn-icon btn-sm btn-active-color-primary kt-sidebar-close" data-sidebar-close title="Tutup Sidebar" aria-label="Tutup Sidebar">
+                            <i class="ki-duotone ki-cross fs-2 text-white">
+                                <span class="path1"></span>
+                                <span class="path2"></span>
+                            </i>
+                        </button>
                     </div>
                     <div class="app-sidebar-menu overflow-hidden flex-column-fluid">
                         <div id="kt_app_sidebar_menu_wrapper" class="app-sidebar-wrapper">

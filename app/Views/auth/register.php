@@ -137,17 +137,59 @@ $daftar_kompetensi = is_array($daftar_kompetensi ?? null) ? $daftar_kompetensi :
                 <div class="text-danger fs-8 mt-2"><?= esc($errors['id_angkatan']) ?></div>
             <?php endif; ?>
         </div>
+
+        <div class="separator separator-dashed my-8"></div>
+        <div class="text-gray-800 fw-bold fs-6 mb-2">Data Pribadi Alumni</div>
+        <div class="text-gray-500 fs-8 mb-6">Data ini wajib diisi dan akan tampil pada profil alumni.</div>
+
+        <div class="fv-row mb-8">
+            <select name="jenis_kelamin" class="form-select bg-transparent">
+                <option value="">Pilih Jenis Kelamin</option>
+                <option value="Laki-laki" <?= (string) old('jenis_kelamin') === 'Laki-laki' ? 'selected' : '' ?>>Laki-laki</option>
+                <option value="Perempuan" <?= (string) old('jenis_kelamin') === 'Perempuan' ? 'selected' : '' ?>>Perempuan</option>
+            </select>
+            <?php if (isset($errors['jenis_kelamin'])): ?>
+                <div class="text-danger fs-8 mt-2"><?= esc($errors['jenis_kelamin']) ?></div>
+            <?php endif; ?>
+        </div>
+
+        <div class="fv-row mb-8">
+            <input type="text" name="tempat_lahir" placeholder="Tempat lahir" autocomplete="off" class="form-control bg-transparent" value="<?= esc(old('tempat_lahir')) ?>" />
+            <?php if (isset($errors['tempat_lahir'])): ?>
+                <div class="text-danger fs-8 mt-2"><?= esc($errors['tempat_lahir']) ?></div>
+            <?php endif; ?>
+        </div>
+
+        <div class="fv-row mb-8">
+            <input type="date" name="tanggal_lahir" class="form-control bg-transparent" value="<?= esc(old('tanggal_lahir')) ?>" />
+            <?php if (isset($errors['tanggal_lahir'])): ?>
+                <div class="text-danger fs-8 mt-2"><?= esc($errors['tanggal_lahir']) ?></div>
+            <?php endif; ?>
+        </div>
+
+        <div class="fv-row mb-8">
+            <textarea name="alamat" rows="3" placeholder="Alamat lengkap" class="form-control bg-transparent"><?= esc(old('alamat')) ?></textarea>
+            <?php if (isset($errors['alamat'])): ?>
+                <div class="text-danger fs-8 mt-2"><?= esc($errors['alamat']) ?></div>
+            <?php endif; ?>
+        </div>
     </div>
 
     <div class="fv-row mb-8">
-        <input type="password" name="password" placeholder="Password" autocomplete="new-password" class="form-control bg-transparent" />
+        <div class="input-group">
+            <input type="password" name="password" placeholder="Password" autocomplete="new-password" class="form-control bg-transparent" data-password-input />
+            <button type="button" class="btn btn-light" data-password-toggle>Lihat</button>
+        </div>
         <?php if (isset($errors['password'])): ?>
             <div class="text-danger fs-8 mt-2"><?= esc($errors['password']) ?></div>
         <?php endif; ?>
     </div>
 
     <div class="fv-row mb-8">
-        <input type="password" name="password_confirmation" placeholder="Konfirmasi password" autocomplete="new-password" class="form-control bg-transparent" />
+        <div class="input-group">
+            <input type="password" name="password_confirmation" placeholder="Konfirmasi password" autocomplete="new-password" class="form-control bg-transparent" data-password-input />
+            <button type="button" class="btn btn-light" data-password-toggle>Lihat</button>
+        </div>
         <?php if (isset($errors['password_confirmation'])): ?>
             <div class="text-danger fs-8 mt-2"><?= esc($errors['password_confirmation']) ?></div>
         <?php endif; ?>
@@ -189,7 +231,7 @@ $daftar_kompetensi = is_array($daftar_kompetensi ?? null) ? $daftar_kompetensi :
             const isAlumni = jenisAlumni.value === 'alumni';
 
             alumniFields.classList.toggle('d-none', !isAlumni);
-            alumniFields.querySelectorAll('input, select').forEach(function (input) {
+            alumniFields.querySelectorAll('input, select, textarea').forEach(function (input) {
                 input.disabled = !isAlumni;
             });
         };

@@ -158,6 +158,86 @@
 	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 	<script>
 		document.addEventListener('DOMContentLoaded', function () {
+			function bersihkanOverlayTersangkut() {
+				var modalAktif = document.querySelector('.modal.show');
+				var sweetAlertAktif = document.querySelector('.swal2-container .swal2-popup');
+
+				if (! modalAktif) {
+					document.querySelectorAll('.modal-backdrop, .offcanvas-backdrop').forEach(function (overlay) {
+						overlay.remove();
+					});
+					document.body.classList.remove('modal-open');
+				}
+
+				if (! sweetAlertAktif) {
+					document.querySelectorAll('.swal2-container').forEach(function (overlay) {
+						overlay.remove();
+					});
+				}
+
+				if (window.innerWidth >= 992) {
+					document.querySelectorAll('.drawer-overlay').forEach(function (overlay) {
+						overlay.remove();
+					});
+					document.body.removeAttribute('data-kt-drawer');
+					document.body.removeAttribute('data-kt-drawer-app-sidebar');
+					document.body.removeAttribute('data-kt-drawer-name');
+					document.body.removeAttribute('data-kt-drawer-overlay');
+				}
+
+				if (! modalAktif && ! sweetAlertAktif) {
+					document.body.style.overflow = '';
+					document.body.style.paddingRight = '';
+				}
+			}
+
+			bersihkanOverlayTersangkut();
+			setTimeout(bersihkanOverlayTersangkut, 250);
+			window.addEventListener('load', bersihkanOverlayTersangkut);
+
+			var sidebarCloseButton = document.querySelector('[data-sidebar-close]');
+			var sidebarElement = document.getElementById('kt_app_sidebar');
+			var sidebarMobileToggle = document.getElementById('kt_app_sidebar_mobile_toggle');
+			localStorage.removeItem('kt-sidebar-manual-closed');
+
+			if (sidebarMobileToggle) {
+				sidebarMobileToggle.addEventListener('click', function () {
+					document.body.classList.remove('kt-sidebar-manual-closed');
+
+					if (sidebarElement) {
+						sidebarElement.style.display = '';
+					}
+				});
+			}
+
+			if (sidebarCloseButton) {
+				sidebarCloseButton.addEventListener('click', function () {
+					var drawer = sidebarElement && typeof KTDrawer !== 'undefined' ? KTDrawer.getInstance(sidebarElement) : null;
+
+					if (drawer && window.innerWidth < 992) {
+						drawer.hide();
+						return;
+					}
+
+					document.body.classList.add('kt-sidebar-manual-closed');
+				});
+			}
+
+			document.querySelectorAll('[data-password-toggle]').forEach(function (button) {
+				button.addEventListener('click', function () {
+					var wrapper = button.closest('.input-group') || button.parentElement;
+					var input = wrapper ? wrapper.querySelector('[data-password-input]') : null;
+
+					if (! input) {
+						return;
+					}
+
+					var visible = input.type === 'text';
+					input.type = visible ? 'password' : 'text';
+					button.textContent = visible ? 'Lihat' : 'Sembunyikan';
+				});
+			});
+
 			var logoutLinks = document.querySelectorAll('.js-logout-trigger');
 
 			logoutLinks.forEach(function (logoutLink) {

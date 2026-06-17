@@ -56,6 +56,79 @@
 	*/
 	?>
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" />
+	<style>
+		#kt_app_header {
+			position: sticky;
+			top: 0;
+			z-index: 100;
+			background: var(--bs-app-header-base-bg-color, #ffffff);
+			box-shadow: 0 8px 24px rgba(15, 23, 42, .06);
+		}
+
+		.drawer-overlay {
+			display: none !important;
+			pointer-events: none !important;
+		}
+
+		.kt-school-brand {
+			display: flex;
+			align-items: center;
+			gap: 10px;
+			min-width: 0;
+			text-decoration: none;
+		}
+
+		.kt-school-brand-logo {
+			width: 42px;
+			height: 50px;
+			object-fit: contain;
+			flex: 0 0 auto;
+			background: #ffffff;
+			border-radius: 6px;
+			padding: 3px;
+		}
+
+		.kt-school-brand-title {
+			color: #ffffff;
+			font-size: 13px;
+			font-weight: 800;
+			line-height: 1.2;
+			letter-spacing: 0;
+			white-space: normal;
+		}
+
+		.kt-sidebar-close {
+			flex: 0 0 auto;
+		}
+
+		#kt_app_sidebar_logo {
+			gap: 10px;
+			justify-content: space-between;
+			min-height: 82px;
+		}
+
+		body.kt-sidebar-manual-closed #kt_app_sidebar {
+			display: none !important;
+		}
+
+		@media (min-width: 992px) {
+			:root {
+				--kt-app-sidebar-width: 280px;
+				--kt-app-sidebar-width-actual: 280px;
+			}
+
+			body.kt-sidebar-manual-closed #kt_app_sidebar_mobile_toggle {
+				display: flex !important;
+			}
+
+			body.kt-sidebar-manual-closed #kt_app_wrapper,
+			body.kt-sidebar-manual-closed #kt_app_header,
+			body.kt-sidebar-manual-closed #kt_app_toolbar {
+				padding-left: 0 !important;
+				margin-left: 0 !important;
+			}
+		}
+	</style>
 	<script>
 		if (window.top != window.self) {
 			window.top.location.replace(window.self.location.href);

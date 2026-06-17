@@ -36,7 +36,6 @@ $routes->group('dashboard', ['filter' => 'auth'], static function (RouteCollecti
 
 $routes->group('admin-sekolah', ['filter' => 'auth:admin_sekolah'], static function (RouteCollection $routes) {
     $routes->get('dashboard', 'AdminSekolah\DashboardController::index');
-    $routes->get('alumni', 'AdminSekolah\TracerController::index');
     $routes->get('legalisir', 'AdminSekolah\LegalisirController::index');
     $routes->post('legalisir/update-status/(:num)', 'AdminSekolah\LegalisirController::updateStatus/$1');
     $routes->get('kompetensi', 'AdminSekolah\KompetensiController::index');
@@ -52,10 +51,12 @@ $routes->group('admin-sekolah', ['filter' => 'auth:admin_sekolah'], static funct
     $routes->post('aktivitas/update/(:num)', 'AdminSekolah\AktivitasController::update/$1');
     $routes->get('aktivitas/hapus/(:num)', 'AdminSekolah\AktivitasController::hapus/$1');
     $routes->get('tracer', 'AdminSekolah\TracerController::index');
+    $routes->post('tracer/update/(:num)', 'AdminSekolah\TracerController::update/$1');
+    $routes->post('tracer/hapus-tracer/(:num)', 'AdminSekolah\TracerController::hapusTracer/$1');
+    $routes->post('tracer/hapus-alumni/(:num)', 'AdminSekolah\TracerController::hapusAlumni/$1');
 });
 
 $routes->group('superadmin', ['filter' => 'auth:superadmin'], static function (RouteCollection $routes) {
-    $routes->get('alumni', 'Superadmin\TracerController::index');
     $routes->get('legalisir', 'Superadmin\LegalisirController::index');
     $routes->post('legalisir/update-status/(:num)', 'Superadmin\LegalisirController::updateStatus/$1');
     $routes->get('kompetensi', 'Superadmin\KompetensiController::index');
@@ -71,6 +72,9 @@ $routes->group('superadmin', ['filter' => 'auth:superadmin'], static function (R
     $routes->post('aktivitas/update/(:num)', 'Superadmin\AktivitasController::update/$1');
     $routes->get('aktivitas/hapus/(:num)', 'Superadmin\AktivitasController::hapus/$1');
     $routes->get('tracer', 'Superadmin\TracerController::index');
+    $routes->post('tracer/update/(:num)', 'Superadmin\TracerController::update/$1');
+    $routes->post('tracer/hapus-tracer/(:num)', 'Superadmin\TracerController::hapusTracer/$1');
+    $routes->post('tracer/hapus-alumni/(:num)', 'Superadmin\TracerController::hapusAlumni/$1');
     $routes->match(['GET', 'POST'], 'admin', 'Superadmin\AdminController::index');
     $routes->post('admin/simpan', 'Superadmin\AdminController::simpan');
     $routes->post('admin/update/(:num)', 'Superadmin\AdminController::update/$1');
@@ -89,5 +93,6 @@ $routes->group('alumni', ['filter' => 'auth:alumni'], static function (RouteColl
     $routes->post('profil/update-email', 'Alumni\DashboardController::updateEmail');
     $routes->post('profil/update-password', 'Alumni\DashboardController::updatePassword');
     $routes->post('tracer/simpan', 'Alumni\DashboardController::simpanTracer');
+    $routes->post('tracer/hapus', 'Alumni\DashboardController::hapusTracer');
     $routes->post('profil/simpan-tracer', 'Alumni\DashboardController::simpanTracer');
 });

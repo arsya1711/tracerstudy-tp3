@@ -2,11 +2,10 @@
 $grafikAktivitas = is_array($grafik_aktivitas ?? null) ? $grafik_aktivitas : ['labels' => [], 'series' => [], 'map' => []];
 $grafikAngkatan = is_array($grafik_angkatan ?? null) ? $grafik_angkatan : ['labels' => [], 'series' => []];
 $cards = [
-    ['label' => 'Total Alumni', 'value' => (int) ($total_alumni ?? 0), 'url' => site_url('admin-sekolah/alumni')],
-    ['label' => 'Alumni Aktif', 'value' => (int) ($alumni_aktif ?? 0), 'url' => site_url('admin-sekolah/alumni')],
-    ['label' => 'Menunggu Aktivasi', 'value' => (int) ($alumni_menunggu ?? 0), 'url' => site_url('admin-sekolah/alumni')],
     ['label' => 'Tracer Terisi', 'value' => (int) ($tracer_terkirim ?? 0), 'url' => site_url('admin-sekolah/tracer')],
     ['label' => 'Belum Tracer', 'value' => (int) ($tracer_belum_lengkap ?? 0), 'url' => site_url('admin-sekolah/tracer')],
+    ['label' => 'Pengajuan Legalisir', 'value' => (int) ($pengajuan_legalisir ?? 0), 'url' => site_url('admin-sekolah/legalisir')],
+    ['label' => 'Total Alumni', 'value' => (int) ($total_alumni ?? 0), 'url' => site_url('admin-sekolah/tracer')],
 ];
 $formatTanggal = static function (?string $tanggal): string {
     if ($tanggal === null || trim($tanggal) === '') {

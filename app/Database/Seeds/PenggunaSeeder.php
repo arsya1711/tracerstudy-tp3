@@ -42,7 +42,7 @@ class PenggunaSeeder extends Seeder
             [
                 'slug_peran'     => 'superadmin',
                 'nama_lengkap'   => 'Super Administrator',
-                'email'          => 'superadmin@tracerstudy.local',
+                'email'          => 'superadmin@tracer.com',
                 'password'       => 'Admin123',
             ],
             [
@@ -77,6 +77,14 @@ class PenggunaSeeder extends Seeder
                 ->where('email', $data['email'])
                 ->get()
                 ->getRowArray();
+
+            if (! $existing) {
+                $existing = $table
+                    ->where('id_peran', $peran['id_peran'])
+                    ->where('nama_lengkap', $akun['nama_lengkap'])
+                    ->get()
+                    ->getRowArray();
+            }
 
             if ($existing) {
                 $table

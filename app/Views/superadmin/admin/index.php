@@ -187,7 +187,10 @@ $breadcrumbCurrent = (string) ($breadcrumbCurrent ?? 'Data Admin');
 
                         <div class="fv-row mb-7">
                             <label class="required fw-semibold fs-6 mb-2">Kata Sandi</label>
-                            <input type="password" name="kata_sandi" class="form-control form-control-solid" placeholder="Minimal 8 karakter" minlength="8" required />
+                            <div class="input-group">
+                                <input type="password" name="kata_sandi" class="form-control form-control-solid" placeholder="Minimal 8 karakter" minlength="8" required data-password-input />
+                                <button type="button" class="btn btn-light" data-password-toggle>Lihat</button>
+                            </div>
                         </div>
 
                         <div class="fv-row mb-7">
@@ -286,7 +289,10 @@ $breadcrumbCurrent = (string) ($breadcrumbCurrent ?? 'Data Admin');
 
                         <div class="fv-row mb-7">
                             <label class="fw-semibold fs-6 mb-2">Kata Sandi Baru</label>
-                            <input type="password" name="kata_sandi" class="form-control form-control-solid" placeholder="Kosongkan jika tidak diubah" minlength="8" />
+                            <div class="input-group">
+                                <input type="password" name="kata_sandi" class="form-control form-control-solid" placeholder="Kosongkan jika tidak diubah" minlength="8" data-password-input />
+                                <button type="button" class="btn btn-light" data-password-toggle>Lihat</button>
+                            </div>
                         </div>
 
                         <div class="fv-row mb-7">

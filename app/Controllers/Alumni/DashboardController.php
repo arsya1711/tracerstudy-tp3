@@ -62,6 +62,7 @@ class DashboardController extends BaseController
         return view('alumni/profil/index', [
             'title' => 'Profil Alumni - Sistem Tracer Study',
             'alumni' => $alumni,
+            'tracerTerakhir' => $this->tracerModel->ambilTerakhirByAlumni((int) $alumni['id_alumni']),
             'daftarAngkatan' => $this->angkatanModel->where('status_aktif', 1)
                 ->orderBy('tahun_lulus', 'DESC')
                 ->findAll(),
@@ -79,12 +80,10 @@ class DashboardController extends BaseController
         }
 
         return view('alumni/tracer/index', [
-            'title' => 'Isi Tracer Study - Sistem Tracer Study',
+            'title' => 'Tracer - Sistem Tracer Study',
             'alumni' => $alumni,
             'tracer' => $this->tracerModel->ambilTerakhirByAlumni((int) $alumni['id_alumni']),
-            'daftarAktivitas' => $this->aktivitasModel->where('status_aktif', 1)
-                ->orderBy('nama_aktivitas', 'ASC')
-                ->findAll(),
+            'daftarAktivitas' => $this->ambilAktivitasUtamaTracer(),
             'penghasilanOptions' => $this->penghasilanOptions(),
         ]);
     }
@@ -175,6 +174,11 @@ class DashboardController extends BaseController
             return $this->responseAlumni('error', 'Aktivitas setelah lulus wajib dipilih.', 422);
         }
 
+        $kuliahPernah = (string) $this->request->getPost('kuliah_pernah');
+        if (! in_array($kuliahPernah, ['0', '1'], true)) {
+            return $this->responseAlumni('error', 'Riwayat kuliah wajib dipilih.', 422);
+        }
+
         $payload = [
             'id_alumni' => (int) $alumni['id_alumni'],
             'id_aktivitas' => $idAktivitas,
@@ -196,6 +200,12 @@ class DashboardController extends BaseController
             'rencana_kedepan' => trim((string) $this->request->getPost('rencana_kedepan')) ?: null,
         ];
 
+        if ($kuliahPernah !== '1') {
+            $payload['universitas'] = null;
+            $payload['program_studi'] = null;
+            $payload['status_kuliah'] = null;
+        }
+
         $existing = $this->tracerModel->where('id_alumni', (int) $alumni['id_alumni'])->first();
         if ($existing !== null) {
             $this->tracerModel->update((int) $existing['id_tracer'], $payload);
@@ -204,6 +214,36 @@ class DashboardController extends BaseController
         }
 
         return $this->responseAlumni('success', 'Data tracer study berhasil disimpan.');
+    }
+
+    public function hapusTracer(): ResponseInterface|RedirectResponse
+    {
+        $alumni = $this->ambilAlumniLogin();
+        if ($alumni === null) {
+            return $this->responseAlumni('error', 'Profil alumni belum ditemukan.', 404);
+        }
+
+        $tracer = $this->tracerModel->where('id_alumni', (int) $alumni['id_alumni'])->first();
+        if ($tracer === null) {
+            return $this->responseAlumni('error', 'Data tracer belum tersedia.', 404);
+        }
+
+        $this->tracerModel->delete((int) $tracer['id_tracer']);
+
+        return $this->responseAlumni('success', 'Data tracer berhasil dihapus.');
+    }
+
+    protected function ambilAktivitasUtamaTracer(): array
+    {
+        $aktivitas = $this->aktivitasModel->where('status_aktif', 1)
+            ->orderBy('nama_aktivitas', 'ASC')
+            ->findAll();
+
+        return array_values(array_filter($aktivitas, static function (array $item): bool {
+            $nama = strtolower((string) ($item['nama_aktivitas'] ?? ''));
+
+            return ! str_contains($nama, 'kuliah') && ! str_contains($nama, 'studi');
+        }));
     }
 
     protected function ambilAlumniLogin(): ?array
@@ -240,11 +280,11 @@ class DashboardController extends BaseController
             ],
             [
                 'key' => 'tracer',
-                'title' => 'Isi tracer study',
+                'title' => 'Tracer',
                 'description' => 'Kirim aktivitas setelah lulus untuk rekap tracer sekolah.',
                 'done' => $tracer !== null,
                 'url' => site_url('alumni/tracer'),
-                'button' => 'Isi Tracer',
+                'button' => 'Tracer',
             ],
         ];
 

@@ -30,13 +30,12 @@ $formatTanggal = static function (?string $tanggal, bool $pakaiJam = false): str
     }
 };
 
-$statusBadge = static function (?string $status): array {
-    return match ((string) $status) {
-        'terkirim'      => ['badge badge-light-warning', 'Terkirim'],
-        'terverifikasi' => ['badge badge-light-info', 'Terverifikasi'],
-        'disetujui'     => ['badge badge-light-success', 'Disetujui'],
-        default         => ['badge badge-light-secondary', '-'],
-    };
+$statusBadge = static function (array $row): array {
+    if ((int) ($row['id_tracer'] ?? 0) > 0) {
+        return ['badge badge-light-success', 'Sudah Mengisi Tracer'];
+    }
+
+    return ['badge badge-light-warning', 'Belum Mengisi Tracer'];
 };
 
 $ringkasKompetensi = static function (array $row): string {
@@ -58,9 +57,6 @@ $detailFields = [
     'tahun_mulai_kerja' => 'Tahun Mulai Kerja',
     'relevan_jurusan' => 'Relevan Jurusan',
     'penghasilan_range' => 'Penghasilan',
-    'universitas' => 'Universitas',
-    'program_studi' => 'Program Studi',
-    'status_kuliah' => 'Status Kuliah',
     'nama_usaha' => 'Nama Usaha',
     'bidang_usaha' => 'Bidang Usaha',
     'modal_awal' => 'Modal Awal',
@@ -71,6 +67,75 @@ $detailFields = [
 $dashboardUrl = $dashboardUrl ?? site_url('dashboard/superadmin');
 $tracerBaseUrl = $tracerBaseUrl ?? site_url('superadmin/tracer');
 $tracerRoleLabel = $tracerRoleLabel ?? 'Manajemen Sekolah';
+$tracerBaseUrl = rtrim($tracerBaseUrl, '/');
+
+$nilai = static function (array $row, string $field, string $default = ''): string {
+    $value = $row[$field] ?? $default;
+
+    return $value === null ? '' : (string) $value;
+};
+
+$selected = static function ($current, $expected): string {
+    return (string) $current === (string) $expected ? 'selected' : '';
+};
+
+$checked = static function ($current, $expected): string {
+    return (string) $current === (string) $expected ? 'checked' : '';
+};
+
+$teks = static function (mixed $value, string $empty = '-'): string {
+    $value = trim((string) ($value ?? ''));
+
+    return $value !== '' ? $value : $empty;
+};
+
+$punyaProfilKuliah = static function (array $row): bool {
+    return trim((string) ($row['universitas'] ?? '')) !== ''
+        || trim((string) ($row['program_studi'] ?? '')) !== ''
+        || trim((string) ($row['status_kuliah'] ?? '')) !== ''
+        || str_contains(strtolower((string) ($row['nama_aktivitas'] ?? '')), 'kuliah')
+        || str_contains(strtolower((string) ($row['nama_aktivitas'] ?? '')), 'studi');
+};
+
+$tipeAktivitas = static function (string $nama): string {
+    $nama = strtolower($nama);
+    if (str_contains($nama, 'belum') || str_contains($nama, 'mencari')) {
+        return 'rencana';
+    }
+    if (str_contains($nama, 'kuliah') || str_contains($nama, 'studi')) {
+        return 'kuliah';
+    }
+    if (str_contains($nama, 'wirausaha') || str_contains($nama, 'usaha')) {
+        return 'wirausaha';
+    }
+    if (str_contains($nama, 'bekerja') || str_contains($nama, 'kerja')) {
+        return 'pekerjaan';
+    }
+
+    return 'rencana';
+};
+
+$jenisKelaminOptions = [
+    '' => 'Pilih jenis kelamin',
+    'Laki-laki' => 'Laki-laki',
+    'Perempuan' => 'Perempuan',
+];
+
+$statusKuliahOptions = [
+    '' => 'Pilih status kuliah',
+    'Aktif' => 'Aktif',
+    'Lulus' => 'Lulus',
+    'Cuti' => 'Cuti',
+    'Berhenti' => 'Berhenti',
+];
+
+$penghasilanOptions = [
+    '' => 'Pilih rentang penghasilan',
+    '< Rp1.000.000' => '< Rp1.000.000',
+    'Rp1.000.000 - Rp3.000.000' => 'Rp1.000.000 - Rp3.000.000',
+    'Rp3.000.000 - Rp5.000.000' => 'Rp3.000.000 - Rp5.000.000',
+    '> Rp5.000.000' => '> Rp5.000.000',
+];
 ?>
 <?= $this->extend('layouts/main') ?>
 
@@ -251,7 +316,7 @@ $tracerRoleLabel = $tracerRoleLabel ?? 'Manajemen Sekolah';
                     <div class="d-flex flex-wrap gap-4 mb-6">
                         <div class="border border-gray-300 border-dashed rounded py-3 px-5">
                             <div class="fs-2 fw-bold text-gray-900"><?= count($tracer) ?></div>
-                            <div class="text-muted fw-semibold fs-7">Total Data Tracer</div>
+                            <div class="text-muted fw-semibold fs-7">Total Alumni</div>
                         </div>
                         <div class="border border-gray-300 border-dashed rounded py-3 px-5">
                             <div class="fs-2 fw-bold text-success"><?= (int) (($grafikAktivitas['map']['Bekerja'] ?? 0) + ($grafikAktivitas['map']['Wirausaha'] ?? 0)) ?></div>
@@ -284,8 +349,9 @@ $tracerRoleLabel = $tracerRoleLabel ?? 'Manajemen Sekolah';
                                     <?php foreach ($tracer as $item): ?>
                                         <?php
                                         $idTracer = (int) ($item['id_tracer'] ?? 0);
-                                        $modalId = 'kt_modal_detail_tracer_' . $idTracer;
-                                        [$badgeClass, $badgeLabel] = $statusBadge($item['status'] ?? null);
+                                        $idAlumni = (int) ($item['id_alumni'] ?? 0);
+                                        $modalId = 'kt_modal_detail_alumni_' . $idAlumni;
+                                        [$badgeClass, $badgeLabel] = $statusBadge($item);
                                         ?>
                                         <tr>
                                             <td>
@@ -295,10 +361,12 @@ $tracerRoleLabel = $tracerRoleLabel ?? 'Manajemen Sekolah';
                                             </td>
                                             <td><?= esc((string) (($item['tahun_lulus'] ?? '') !== '' ? $item['tahun_lulus'] : '-')) ?></td>
                                             <td><?= esc($ringkasKompetensi($item)) ?></td>
-                                            <td><span class="badge badge-light-primary"><?= esc((string) (($item['nama_aktivitas'] ?? '') !== '' ? $item['nama_aktivitas'] : '-')) ?></span></td>
+                                            <td>
+                                                <span class="badge badge-light-primary"><?= esc((string) (($item['nama_aktivitas'] ?? '') !== '' ? $item['nama_aktivitas'] : '-')) ?></span>
+                                            </td>
                                             <td><span class="<?= esc($badgeClass) ?>"><?= esc($badgeLabel) ?></span></td>
                                             <td class="text-end kt-tracer-no-print">
-                                                <button type="button" class="btn btn-icon btn-active-light-primary w-30px h-30px" data-bs-toggle="modal" data-bs-target="#<?= esc($modalId) ?>" title="Detail Tracer">
+                                                <button type="button" class="btn btn-icon btn-active-light-primary w-30px h-30px" data-bs-toggle="modal" data-bs-target="#<?= esc($modalId) ?>" title="Lihat Profil dan Tracer">
                                                     <i class="ki-duotone ki-eye fs-3">
                                                         <span class="path1"></span>
                                                         <span class="path2"></span>
@@ -367,14 +435,19 @@ $tracerRoleLabel = $tracerRoleLabel ?? 'Manajemen Sekolah';
 <?php foreach ($tracer as $item): ?>
     <?php
     $idTracer = (int) ($item['id_tracer'] ?? 0);
-    $modalId = 'kt_modal_detail_tracer_' . $idTracer;
-    [$badgeClass, $badgeLabel] = $statusBadge($item['status'] ?? null);
+    $idAlumni = (int) ($item['id_alumni'] ?? 0);
+    if ($idAlumni <= 0) {
+        continue;
+    }
+    $modalId = 'kt_modal_detail_alumni_' . $idAlumni;
+    $editModalId = 'kt_modal_edit_alumni_' . $idAlumni;
+    [$badgeClass, $badgeLabel] = $statusBadge($item);
     ?>
     <div class="modal fade" id="<?= esc($modalId) ?>" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered mw-800px">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h2 class="fw-bold">Detail Tracer Alumni</h2>
+                    <h2 class="fw-bold">Detail Profil dan Tracer Alumni</h2>
                     <div class="btn btn-icon btn-sm btn-active-icon-primary" data-bs-dismiss="modal">
                         <i class="ki-duotone ki-cross fs-1">
                             <span class="path1"></span>
@@ -383,29 +456,41 @@ $tracerRoleLabel = $tracerRoleLabel ?? 'Manajemen Sekolah';
                     </div>
                 </div>
                 <div class="modal-body px-5 py-7">
-                    <div class="notice d-flex bg-light-primary rounded border-primary border border-dashed p-5 mb-7">
-                        <div class="fw-semibold text-gray-700 fs-7">
-                            Detail ini membaca data dari <code>tb_tracer_alumni</code> yang terhubung dengan data alumni.
-                        </div>
-                    </div>
-
                     <div class="row g-5 mb-7">
                         <div class="col-md-6">
                             <div class="text-muted fs-7 text-uppercase fw-bold mb-1">Alumni</div>
                             <div class="fw-bold text-gray-900"><?= esc((string) ($item['nama_lengkap'] ?? '-')) ?></div>
                             <div class="text-muted fs-7"><?= esc((string) ($item['email'] ?? '-')) ?></div>
+                            <div class="text-muted fs-8"><?= esc((string) ($item['account_id'] ?? '-')) ?></div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="text-muted fs-7 text-uppercase fw-bold mb-1">NIS / NISN</div>
+                            <div class="fw-bold text-gray-900"><?= esc((string) (($item['nis'] ?? '') !== '' ? $item['nis'] : '-')) ?></div>
+                            <div class="text-muted fs-7"><?= esc((string) (($item['nisn'] ?? '') !== '' ? $item['nisn'] : '-')) ?></div>
                         </div>
                         <div class="col-md-3">
                             <div class="text-muted fs-7 text-uppercase fw-bold mb-1">Angkatan</div>
                             <div class="fw-bold text-gray-900"><?= esc((string) (($item['tahun_lulus'] ?? '') !== '' ? $item['tahun_lulus'] : '-')) ?></div>
                         </div>
-                        <div class="col-md-3">
-                            <div class="text-muted fs-7 text-uppercase fw-bold mb-1">Status</div>
-                            <span class="<?= esc($badgeClass) ?>"><?= esc($badgeLabel) ?></span>
-                        </div>
                     </div>
 
                     <div class="row g-5 mb-7">
+                        <div class="col-md-6">
+                            <div class="text-muted fs-7 text-uppercase fw-bold mb-1">No. Ijazah</div>
+                            <div class="fw-semibold text-gray-800"><?= esc((string) (($item['no_ijazah'] ?? '') !== '' ? $item['no_ijazah'] : '-')) ?></div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="text-muted fs-7 text-uppercase fw-bold mb-1">Jenis Kelamin</div>
+                            <div class="fw-semibold text-gray-800"><?= esc((string) (($item['jenis_kelamin'] ?? '') !== '' ? $item['jenis_kelamin'] : '-')) ?></div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="text-muted fs-7 text-uppercase fw-bold mb-1">Tempat Lahir</div>
+                            <div class="fw-semibold text-gray-800"><?= esc((string) (($item['tempat_lahir'] ?? '') !== '' ? $item['tempat_lahir'] : '-')) ?></div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="text-muted fs-7 text-uppercase fw-bold mb-1">Tanggal Lahir</div>
+                            <div class="fw-semibold text-gray-800"><?= esc($formatTanggal($item['tanggal_lahir'] ?? null)) ?></div>
+                        </div>
                         <div class="col-md-6">
                             <div class="text-muted fs-7 text-uppercase fw-bold mb-1">Jurusan</div>
                             <div class="fw-semibold text-gray-800"><?= esc($ringkasKompetensi($item)) ?></div>
@@ -414,39 +499,311 @@ $tracerRoleLabel = $tracerRoleLabel ?? 'Manajemen Sekolah';
                             <div class="text-muted fs-7 text-uppercase fw-bold mb-1">Kegiatan</div>
                             <div class="fw-semibold text-gray-800"><?= esc((string) (($item['nama_aktivitas'] ?? '') !== '' ? $item['nama_aktivitas'] : '-')) ?></div>
                         </div>
+                        <div class="col-md-6">
+                            <div class="text-muted fs-7 text-uppercase fw-bold mb-1">No. Telepon</div>
+                            <div class="fw-semibold text-gray-800"><?= esc((string) (($item['nomor_telepon'] ?? '') !== '' ? $item['nomor_telepon'] : '-')) ?></div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="text-muted fs-7 text-uppercase fw-bold mb-1">Status Tracer</div>
+                            <span class="<?= esc($badgeClass) ?>"><?= esc($badgeLabel) ?></span>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="text-muted fs-7 text-uppercase fw-bold mb-1">Status Akun Alumni</div>
+                            <div class="fw-semibold text-gray-800"><?= esc((string) (($item['status_verifikasi'] ?? '') !== '' ? ucwords(str_replace('_', ' ', $item['status_verifikasi'])) : '-')) ?></div>
+                        </div>
+                        <div class="col-12">
+                            <div class="text-muted fs-7 text-uppercase fw-bold mb-1">Alamat</div>
+                            <div class="fw-semibold text-gray-800"><?= nl2br(esc((string) (($item['alamat'] ?? '') !== '' ? $item['alamat'] : '-'))) ?></div>
+                        </div>
                     </div>
 
                     <div class="separator my-6"></div>
 
-                    <div class="row g-5">
-                        <?php $hasDetail = false; ?>
-                        <?php foreach ($detailFields as $field => $label): ?>
-                            <?php
-                            $value = $item[$field] ?? null;
-                            if ($field === 'relevan_jurusan' && $value !== null && $value !== '') {
-                                $value = (int) $value === 1 ? 'Ya, relevan' : 'Tidak relevan';
-                            }
-                            if ($value === null || $value === '') {
-                                continue;
-                            }
-                            $hasDetail = true;
-                            ?>
-                            <div class="col-md-6">
-                                <div class="border border-dashed rounded p-4 h-100">
-                                    <div class="text-muted fs-7 text-uppercase fw-bold mb-1"><?= esc($label) ?></div>
-                                    <div class="fw-semibold text-gray-800"><?= nl2br(esc((string) $value)) ?></div>
+                    <?php if ($idTracer > 0 && $punyaProfilKuliah($item)): ?>
+                        <div class="border border-dashed rounded p-5 mb-7">
+                            <div class="d-flex flex-column flex-md-row justify-content-between gap-3 mb-5">
+                                <div>
+                                    <div class="text-muted fs-7 text-uppercase fw-bold mb-1">Profil Kuliah</div>
+                                    <div class="fw-bold text-gray-900">Pendidikan Lanjutan Alumni</div>
+                                </div>
+                                <span class="badge badge-light-info align-self-start"><?= esc($teks($item['status_kuliah'] ?? null, 'Kuliah')) ?></span>
+                            </div>
+                            <div class="row g-5">
+                                <div class="col-md-6">
+                                    <div class="text-muted fs-7 text-uppercase fw-bold mb-1">Perguruan Tinggi</div>
+                                    <div class="fw-semibold text-gray-800"><?= esc($teks($item['universitas'] ?? null)) ?></div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="text-muted fs-7 text-uppercase fw-bold mb-1">Program Studi</div>
+                                    <div class="fw-semibold text-gray-800"><?= esc($teks($item['program_studi'] ?? null)) ?></div>
                                 </div>
                             </div>
-                        <?php endforeach; ?>
+                        </div>
+                    <?php endif; ?>
 
-                        <?php if (! $hasDetail): ?>
-                            <div class="col-12">
-                                <div class="text-center text-muted py-8">Belum ada detail tambahan pada tracer ini.</div>
-                            </div>
-                        <?php endif; ?>
-                    </div>
+                    <?php if ($idTracer > 0): ?>
+                        <div class="row g-5">
+                            <?php $hasDetail = false; ?>
+                            <?php foreach ($detailFields as $field => $label): ?>
+                                <?php
+                                $value = $item[$field] ?? null;
+                                if ($field === 'relevan_jurusan' && $value !== null && $value !== '') {
+                                    $value = (int) $value === 1 ? 'Ya, relevan' : 'Tidak relevan';
+                                }
+                                if ($value === null || $value === '') {
+                                    continue;
+                                }
+                                $hasDetail = true;
+                                ?>
+                                <div class="col-md-6">
+                                    <div class="border border-dashed rounded p-4 h-100">
+                                        <div class="text-muted fs-7 text-uppercase fw-bold mb-1"><?= esc($label) ?></div>
+                                        <div class="fw-semibold text-gray-800"><?= nl2br(esc((string) $value)) ?></div>
+                                    </div>
+                                </div>
+                            <?php endforeach; ?>
+
+                            <?php if (! $hasDetail): ?>
+                                <div class="col-12">
+                                    <div class="text-center text-muted py-8">Belum ada detail tambahan pada tracer ini.</div>
+                                </div>
+                            <?php endif; ?>
+                        </div>
+                    <?php else: ?>
+                        <div class="notice d-flex bg-light-warning rounded border-warning border border-dashed p-5">
+                            <div class="fw-semibold text-gray-700">Alumni ini belum mengisi tracer study.</div>
+                        </div>
+                    <?php endif; ?>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Tutup</button>
+                    <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#<?= esc($editModalId) ?>">
+                        <i class="ki-duotone ki-pencil fs-2">
+                            <span class="path1"></span>
+                            <span class="path2"></span>
+                        </i>Edit
+                    </button>
+                    <?php if ($idTracer > 0): ?>
+                        <form method="post" action="<?= esc($tracerBaseUrl . '/hapus-tracer/' . $idAlumni) ?>" onsubmit="return confirm('Hapus data tracer alumni ini? Profil dan akun alumni tetap tersimpan.');">
+                            <?= csrf_field() ?>
+                            <button type="submit" class="btn btn-light-danger">
+                                <i class="ki-duotone ki-trash fs-2">
+                                    <span class="path1"></span>
+                                    <span class="path2"></span>
+                                    <span class="path3"></span>
+                                    <span class="path4"></span>
+                                    <span class="path5"></span>
+                                </i>Hapus Tracer
+                            </button>
+                        </form>
+                    <?php endif; ?>
+                    <form method="post" action="<?= esc($tracerBaseUrl . '/hapus-alumni/' . $idAlumni) ?>" onsubmit="return confirm('Hapus akun, profil, dan tracer alumni ini? Tindakan ini tidak bisa dibatalkan.');">
+                        <?= csrf_field() ?>
+                        <button type="submit" class="btn btn-danger">
+                            <i class="ki-duotone ki-cross-circle fs-2">
+                                <span class="path1"></span>
+                                <span class="path2"></span>
+                            </i>Hapus Alumni
+                        </button>
+                    </form>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="<?= esc($editModalId) ?>" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-xl">
+            <form class="modal-content" method="post" action="<?= esc($tracerBaseUrl . '/update/' . $idAlumni) ?>">
+                <?= csrf_field() ?>
+                <div class="modal-header">
+                    <h2 class="fw-bold">Edit Profil dan Tracer Alumni</h2>
+                    <div class="btn btn-icon btn-sm btn-active-icon-primary" data-bs-dismiss="modal">
+                        <i class="ki-duotone ki-cross fs-1">
+                            <span class="path1"></span>
+                            <span class="path2"></span>
+                        </i>
+                    </div>
+                </div>
+                <div class="modal-body px-5 py-7">
+                    <div class="row g-6">
+                        <div class="col-lg-6">
+                            <h4 class="fw-bold mb-5">Profil Alumni</h4>
+                            <div class="row g-4">
+                                <div class="col-md-6">
+                                    <label class="form-label required">Nama Lengkap</label>
+                                    <input type="text" name="nama_lengkap" class="form-control form-control-solid" value="<?= esc($nilai($item, 'nama_lengkap'), 'attr') ?>" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label required">Email</label>
+                                    <input type="email" name="email" class="form-control form-control-solid" value="<?= esc($nilai($item, 'email'), 'attr') ?>" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">No. Telepon</label>
+                                    <input type="text" name="nomor_telepon" class="form-control form-control-solid" value="<?= esc($nilai($item, 'nomor_telepon'), 'attr') ?>">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">No. Ijazah</label>
+                                    <input type="text" name="no_ijazah" class="form-control form-control-solid" value="<?= esc($nilai($item, 'no_ijazah'), 'attr') ?>">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">NIS</label>
+                                    <input type="text" name="nis" class="form-control form-control-solid" value="<?= esc($nilai($item, 'nis'), 'attr') ?>">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">NISN</label>
+                                    <input type="text" name="nisn" class="form-control form-control-solid" value="<?= esc($nilai($item, 'nisn'), 'attr') ?>">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Jenis Kelamin</label>
+                                    <select name="jenis_kelamin" class="form-select form-select-solid">
+                                        <?php foreach ($jenisKelaminOptions as $value => $label): ?>
+                                            <option value="<?= esc($value, 'attr') ?>" <?= $selected($nilai($item, 'jenis_kelamin'), $value) ?>><?= esc($label) ?></option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Tanggal Lahir</label>
+                                    <input type="date" name="tanggal_lahir" class="form-control form-control-solid" value="<?= esc($nilai($item, 'tanggal_lahir'), 'attr') ?>">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Tempat Lahir</label>
+                                    <input type="text" name="tempat_lahir" class="form-control form-control-solid" value="<?= esc($nilai($item, 'tempat_lahir'), 'attr') ?>">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Angkatan</label>
+                                    <select name="id_angkatan" class="form-select form-select-solid">
+                                        <option value="">Pilih angkatan</option>
+                                        <?php foreach ($daftarAngkatan as $angkatan): ?>
+                                            <option value="<?= (int) $angkatan['id_angkatan'] ?>" <?= $selected($item['id_angkatan'] ?? '', $angkatan['id_angkatan'] ?? '') ?>>
+                                                <?= esc((string) ($angkatan['tahun_lulus'] ?? '-')) ?>
+                                            </option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label">Jurusan</label>
+                                    <select name="id_kompetensi" class="form-select form-select-solid">
+                                        <option value="">Pilih jurusan</option>
+                                        <?php foreach ($daftarKompetensi as $kompetensi): ?>
+                                            <option value="<?= (int) $kompetensi['id_kompetensi'] ?>" <?= $selected($item['id_kompetensi'] ?? '', $kompetensi['id_kompetensi'] ?? '') ?>>
+                                                <?= esc((string) ($kompetensi['nama_kompetensi'] ?? '-')) ?>
+                                            </option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label">Alamat</label>
+                                    <textarea name="alamat" class="form-control form-control-solid" rows="3"><?= esc($nilai($item, 'alamat')) ?></textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-6">
+                            <h4 class="fw-bold mb-5">Data Tracer</h4>
+                            <div class="row g-4">
+                                <div class="col-12">
+                                    <label class="form-label">Aktivitas Alumni</label>
+                                    <select name="id_aktivitas" class="form-select form-select-solid" data-tracer-activity-admin>
+                                        <option value="">Belum mengisi tracer</option>
+                                        <?php foreach ($daftarAktivitas as $aktivitas): ?>
+                                            <?php $namaAktivitas = (string) ($aktivitas['nama_aktivitas'] ?? '-'); ?>
+                                            <option value="<?= (int) $aktivitas['id_aktivitas'] ?>" data-tracer-type="<?= esc($tipeAktivitas($namaAktivitas), 'attr') ?>" <?= $selected($item['id_aktivitas'] ?? '', $aktivitas['id_aktivitas'] ?? '') ?>>
+                                                <?= esc($namaAktivitas) ?>
+                                            </option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                </div>
+                                <div class="col-md-6" data-tracer-section-admin="pekerjaan">
+                                    <label class="form-label">Posisi / Jabatan</label>
+                                    <input type="text" name="posisi_kerja" class="form-control form-control-solid" value="<?= esc($nilai($item, 'posisi_kerja'), 'attr') ?>">
+                                </div>
+                                <div class="col-md-6" data-tracer-section-admin="pekerjaan">
+                                    <label class="form-label">Nama Instansi / Perusahaan</label>
+                                    <input type="text" name="nama_instansi" class="form-control form-control-solid" value="<?= esc($nilai($item, 'nama_instansi'), 'attr') ?>">
+                                </div>
+                                <div class="col-md-6" data-tracer-section-admin="pekerjaan">
+                                    <label class="form-label">Bidang Instansi</label>
+                                    <input type="text" name="bidang_instansi" class="form-control form-control-solid" value="<?= esc($nilai($item, 'bidang_instansi'), 'attr') ?>">
+                                </div>
+                                <div class="col-md-6" data-tracer-section-admin="pekerjaan">
+                                    <label class="form-label">Tahun Mulai Kerja</label>
+                                    <input type="text" name="tahun_mulai_kerja" class="form-control form-control-solid" value="<?= esc($nilai($item, 'tahun_mulai_kerja'), 'attr') ?>">
+                                </div>
+                                <div class="col-12" data-tracer-section-admin="pekerjaan">
+                                    <label class="form-label">Alamat Instansi</label>
+                                    <textarea name="alamat_instansi" class="form-control form-control-solid" rows="2"><?= esc($nilai($item, 'alamat_instansi')) ?></textarea>
+                                </div>
+                                <div class="col-md-6" data-tracer-section-admin="pekerjaan wirausaha">
+                                    <label class="form-label d-block">Relevan Jurusan</label>
+                                    <div class="d-flex gap-4">
+                                        <label class="form-check form-check-custom form-check-solid">
+                                            <input class="form-check-input" type="radio" name="relevan_jurusan" value="1" <?= $checked($item['relevan_jurusan'] ?? '', '1') ?>>
+                                            <span class="form-check-label">Ya</span>
+                                        </label>
+                                        <label class="form-check form-check-custom form-check-solid">
+                                            <input class="form-check-input" type="radio" name="relevan_jurusan" value="0" <?= $checked($item['relevan_jurusan'] ?? '', '0') ?>>
+                                            <span class="form-check-label">Tidak</span>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6" data-tracer-section-admin="pekerjaan">
+                                    <label class="form-label">Penghasilan</label>
+                                    <select name="penghasilan_range" class="form-select form-select-solid">
+                                        <?php foreach ($penghasilanOptions as $value => $label): ?>
+                                            <option value="<?= esc($value, 'attr') ?>" <?= $selected($nilai($item, 'penghasilan_range'), $value) ?>><?= esc($label) ?></option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                </div>
+                                <div class="col-12">
+                                    <div class="separator my-2"></div>
+                                    <div class="fw-bold text-gray-900 mt-3">Profil Kuliah</div>
+                                    <div class="text-muted fs-7">Isi jika alumni pernah atau sedang kuliah, meskipun aktivitas saat ini bekerja, wirausaha, atau belum bekerja.</div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Universitas</label>
+                                    <input type="text" name="universitas" class="form-control form-control-solid" value="<?= esc($nilai($item, 'universitas'), 'attr') ?>">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Program Studi</label>
+                                    <input type="text" name="program_studi" class="form-control form-control-solid" value="<?= esc($nilai($item, 'program_studi'), 'attr') ?>">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Status Kuliah</label>
+                                    <select name="status_kuliah" class="form-select form-select-solid">
+                                        <?php foreach ($statusKuliahOptions as $value => $label): ?>
+                                            <option value="<?= esc($value, 'attr') ?>" <?= $selected($nilai($item, 'status_kuliah'), $value) ?>><?= esc($label) ?></option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                </div>
+                                <div class="col-md-6" data-tracer-section-admin="wirausaha">
+                                    <label class="form-label">Nama Usaha</label>
+                                    <input type="text" name="nama_usaha" class="form-control form-control-solid" value="<?= esc($nilai($item, 'nama_usaha'), 'attr') ?>">
+                                </div>
+                                <div class="col-md-6" data-tracer-section-admin="wirausaha">
+                                    <label class="form-label">Bidang Usaha</label>
+                                    <input type="text" name="bidang_usaha" class="form-control form-control-solid" value="<?= esc($nilai($item, 'bidang_usaha'), 'attr') ?>">
+                                </div>
+                                <div class="col-md-6" data-tracer-section-admin="wirausaha">
+                                    <label class="form-label">Modal Awal</label>
+                                    <input type="text" name="modal_awal" class="form-control form-control-solid" value="<?= esc($nilai($item, 'modal_awal'), 'attr') ?>">
+                                </div>
+                                <div class="col-md-6" data-tracer-section-admin="wirausaha">
+                                    <label class="form-label">Penghasilan Usaha</label>
+                                    <input type="text" name="penghasilan_usaha" class="form-control form-control-solid" value="<?= esc($nilai($item, 'penghasilan_usaha'), 'attr') ?>">
+                                </div>
+                                <div class="col-12" data-tracer-section-admin="rencana">
+                                    <label class="form-label">Rencana Kedepan</label>
+                                    <textarea name="rencana_kedepan" class="form-control form-control-solid" rows="3"><?= esc($nilai($item, 'rencana_kedepan')) ?></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
+                </div>
+            </form>
         </div>
     </div>
 <?php endforeach; ?>
@@ -468,6 +825,33 @@ $tracerRoleLabel = $tracerRoleLabel ?? 'Manajemen Sekolah';
     document.addEventListener('DOMContentLoaded', function () {
         var printButton = document.getElementById('kt_tracer_print_button');
         var config = window.ktTracerReportCharts || {};
+        var adminActivitySelects = Array.prototype.slice.call(document.querySelectorAll('[data-tracer-activity-admin]'));
+
+        function setAdminTracerSectionState(section, isActive) {
+            section.classList.toggle('d-none', !isActive);
+            section.querySelectorAll('input, select, textarea').forEach(function (field) {
+                field.disabled = !isActive;
+            });
+        }
+
+        function syncAdminTracerSections(activitySelect) {
+            var form = activitySelect.closest('form');
+            var selectedOption = activitySelect.options[activitySelect.selectedIndex];
+            var activeType = selectedOption ? selectedOption.getAttribute('data-tracer-type') : '';
+            var sections = form ? Array.prototype.slice.call(form.querySelectorAll('[data-tracer-section-admin]')) : [];
+
+            sections.forEach(function (section) {
+                var sectionTypes = (section.getAttribute('data-tracer-section-admin') || '').split(/\s+/);
+                setAdminTracerSectionState(section, activeType !== '' && sectionTypes.indexOf(activeType) !== -1);
+            });
+        }
+
+        adminActivitySelects.forEach(function (activitySelect) {
+            activitySelect.addEventListener('change', function () {
+                syncAdminTracerSections(activitySelect);
+            });
+            syncAdminTracerSections(activitySelect);
+        });
 
         if (printButton) {
             printButton.addEventListener('click', function () {

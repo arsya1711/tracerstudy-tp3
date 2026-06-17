@@ -9,9 +9,9 @@
 |
 | Alur kerja:
 | 1. Controller mengirim data alumni dan checklist onboarding.
-| 2. View menampilkan status akun, progress checklist, dan langkah
-|    berikutnya yang paling relevan.
-| 3. Checklist menampilkan langkah profil dan Tracer Study.
+| 2. View menampilkan status akun dan langkah berikutnya yang paling
+|    relevan ketika data belum lengkap.
+| 3. Checklist hanya menampilkan data yang masih perlu dilengkapi.
 |
 | Tips Debugging:
 | - Jika checklist kosong, periksa payload onboarding dari
@@ -79,9 +79,24 @@ $labelStatusPendaftaran = $statusPendaftaran !== '' ? ucwords(str_replace('_', '
 $kelasStatusPendaftaran = $menungguPersetujuan ? 'badge badge-light-warning' : 'badge badge-light-success';
 $isAlumni = (bool) ($isAlumni ?? false);
 $onboarding = $onboarding ?? ['steps' => [], 'next_step' => null, 'ready' => false, 'progress' => ['total' => 0, 'selesai' => 0, 'persen' => 0]];
-$progress = $onboarding['progress'] ?? ['total' => 0, 'selesai' => 0, 'persen' => 0];
 $nextStep = $onboarding['next_step'] ?? null;
 $siapMelamar = (bool) ($onboarding['ready'] ?? false);
+$langkahBelumSelesai = array_values(array_filter(
+    $onboarding['steps'] ?? [],
+    static fn (array $step): bool => empty($step['done'])
+));
+$tracerTerakhir = is_array($tracerTerakhir ?? null) ? $tracerTerakhir : [];
+$teks = static function (mixed $value, string $empty = '-'): string {
+    $value = trim((string) ($value ?? ''));
+    return $value !== '' ? $value : $empty;
+};
+$punyaProfilKuliah = $tracerTerakhir !== [] && (
+    trim((string) ($tracerTerakhir['universitas'] ?? '')) !== ''
+    || trim((string) ($tracerTerakhir['program_studi'] ?? '')) !== ''
+    || trim((string) ($tracerTerakhir['status_kuliah'] ?? '')) !== ''
+    || str_contains(strtolower((string) ($tracerTerakhir['nama_aktivitas'] ?? '')), 'kuliah')
+    || str_contains(strtolower((string) ($tracerTerakhir['nama_aktivitas'] ?? '')), 'studi')
+);
 
 $statusStep = static function (array $step, bool $menungguPersetujuan): array {
     if (! empty($step['done'])) {
@@ -135,7 +150,7 @@ $statusStep = static function (array $step, bool $menungguPersetujuan): array {
         <div class="card tracer-onboarding-hero mb-8">
             <div class="card-body p-8 p-lg-10">
                 <div class="row align-items-center g-8">
-                    <div class="col-lg-8">
+                    <div class="<?= $siapMelamar ? 'col-lg-12' : 'col-lg-8' ?>">
                         <span class="badge badge-light-success mb-4">Alumni</span>
                         <h1 class="text-white fw-bold mb-3">Selamat datang, <?= esc((string) ($alumni['nama_lengkap'] ?? 'Alumni')) ?></h1>
                         <p class="text-white opacity-75 fs-5 mb-0">
@@ -148,27 +163,21 @@ $statusStep = static function (array $step, bool $menungguPersetujuan): array {
                             <?php endif; ?>
                         </p>
                     </div>
+                    <?php if (! $siapMelamar): ?>
                     <div class="col-lg-4">
                         <div class="bg-white bg-opacity-10 rounded-4 p-6">
-                            <div class="d-flex justify-content-between align-items-center mb-3">
-                                <span class="text-white fw-semibold">Progress Kesiapan</span>
-                                <span class="text-white fw-bold"><?= (int) ($progress['persen'] ?? 0) ?>%</span>
-                            </div>
-                            <div class="progress h-8px bg-white bg-opacity-25 mb-4">
-                                <div class="progress-bar bg-success" role="progressbar" style="width: <?= (int) ($progress['persen'] ?? 0) ?>%"></div>
-                            </div>
-                            <div class="text-white opacity-75 fs-7 mb-5">
-                                <?= (int) ($progress['selesai'] ?? 0) ?> dari <?= (int) ($progress['total'] ?? 0) ?> langkah selesai
-                            </div>
                             <?php if (! $menungguPersetujuan && ! empty($nextStep['url'])): ?>
+                                <div class="text-white fw-semibold mb-2">Langkah Berikutnya</div>
+                                <div class="text-white opacity-75 fs-7 mb-5"><?= esc((string) ($nextStep['title'] ?? 'Lengkapi data')) ?></div>
                                 <a href="<?= esc((string) $nextStep['url']) ?>" class="btn btn-success w-100">
-                                    <?= esc((string) ($siapMelamar ? 'Lihat Tracer' : ($nextStep['button'] ?? 'Lanjutkan'))) ?>
+                                    <?= esc((string) ($nextStep['button'] ?? 'Lanjutkan')) ?>
                                 </a>
                             <?php else: ?>
                                 <button type="button" class="btn btn-light-warning w-100" disabled>Menunggu Aktivasi</button>
                             <?php endif; ?>
                         </div>
                     </div>
+                    <?php endif; ?>
                 </div>
             </div>
         </div>
@@ -232,21 +241,47 @@ $statusStep = static function (array $step, bool $menungguPersetujuan): array {
             </div>
         </div>
 
+        <?php if ($punyaProfilKuliah): ?>
+            <div class="card card-flush mb-8">
+                <div class="card-header pt-7">
+                    <div class="card-title flex-column">
+                        <h3 class="fw-bolder mb-1">Profil Kuliah</h3>
+                        <div class="text-muted fw-semibold fs-7">Ringkasan pendidikan lanjutan berdasarkan data tracer kamu.</div>
+                    </div>
+                    <div class="card-toolbar">
+                        <a href="<?= site_url('alumni/tracer') ?>" class="btn btn-sm btn-light-primary">Kelola Tracer</a>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row g-5">
+                        <div class="col-md-4">
+                            <div class="text-muted fs-7 text-uppercase fw-bold mb-1">Perguruan Tinggi</div>
+                            <div class="fs-5 fw-bold text-gray-900"><?= esc($teks($tracerTerakhir['universitas'] ?? null)) ?></div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="text-muted fs-7 text-uppercase fw-bold mb-1">Program Studi</div>
+                            <div class="fs-5 fw-bold text-gray-900"><?= esc($teks($tracerTerakhir['program_studi'] ?? null)) ?></div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="text-muted fs-7 text-uppercase fw-bold mb-1">Status Kuliah</div>
+                            <div><span class="badge badge-light-info fs-7"><?= esc($teks($tracerTerakhir['status_kuliah'] ?? null, 'Kuliah')) ?></span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        <?php endif; ?>
+
+        <?php if (! $siapMelamar && $langkahBelumSelesai !== []): ?>
         <div class="card">
             <div class="card-header border-0 pt-6">
                 <div class="card-title flex-column">
-                    <h2 class="mb-1">Linimasa Kesiapan Alumni</h2>
-                    <div class="text-muted fw-semibold fs-6">Ikuti langkah ini dari atas ke bawah sampai data tracer kamu lengkap.</div>
+                    <h2 class="mb-1">Data Yang Belum Lengkap</h2>
+                    <div class="text-muted fw-semibold fs-6">Lengkapi daftar berikut agar data tracer kamu selesai.</div>
                 </div>
-                <?php if ($siapMelamar && ! $menungguPersetujuan): ?>
-                    <div class="card-toolbar">
-                        <a href="<?= base_url('alumni/profil') ?>" class="btn btn-primary">Lihat Profil</a>
-                    </div>
-                <?php endif; ?>
             </div>
             <div class="card-body pt-0">
                 <div class="timeline timeline-border-dashed">
-                    <?php foreach (($onboarding['steps'] ?? []) as $step): ?>
+                    <?php foreach ($langkahBelumSelesai as $step): ?>
                         <?php
                         $stepStatus = $statusStep($step, $menungguPersetujuan);
                         $bolehKlik = ! $menungguPersetujuan && empty($step['done']) && ! empty($step['url']);
@@ -286,20 +321,9 @@ $statusStep = static function (array $step, bool $menungguPersetujuan): array {
                     <?php endforeach; ?>
                 </div>
 
-                <?php if ($siapMelamar && ! $menungguPersetujuan): ?>
-                    <div class="notice d-flex bg-light-success rounded border-success border border-dashed p-6 mt-4">
-                        <i class="ki-duotone ki-verify fs-2tx text-success me-4">
-                            <span class="path1"></span>
-                            <span class="path2"></span>
-                        </i>
-                        <div>
-                            <div class="fw-bold text-gray-900 mb-1">Data tracer lengkap!</div>
-                            <div class="text-gray-700 fs-6">Profil dan tracer study kamu sudah siap untuk rekap data alumni sekolah.</div>
-                        </div>
-                    </div>
-                <?php endif; ?>
             </div>
         </div>
+        <?php endif; ?>
     </div>
 </div>
 <?= $this->endSection() ?>

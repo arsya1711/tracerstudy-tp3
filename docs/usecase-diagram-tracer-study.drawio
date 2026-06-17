@@ -1,0 +1,97 @@
+<mxfile host="app.diagrams.net" modified="2026-06-09T00:00:00.000Z" agent="Codex" version="24.7.17" type="device">
+  <diagram id="usecase-tracer-study" name="Use Case Diagram">
+    <mxGraphModel dx="1800" dy="1100" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="system" value="Sistem Informasi Tracer Study SMK Teratai Putih Global 3 Bekasi" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#666666;dashed=1;fontStyle=1;verticalAlign=top;spacingTop=10;" vertex="1" parent="1">
+          <mxGeometry x="330" y="60" width="920" height="900" as="geometry" />
+        </mxCell>
+
+        <mxCell id="actor_alumni" value="Alumni" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;" vertex="1" parent="1">
+          <mxGeometry x="90" y="230" width="70" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="actor_admin" value="Admin Sekolah" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;" vertex="1" parent="1">
+          <mxGeometry x="90" y="500" width="70" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="actor_superadmin" value="Superadmin" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;" vertex="1" parent="1">
+          <mxGeometry x="1360" y="500" width="70" height="120" as="geometry" />
+        </mxCell>
+
+        <mxCell id="uc_register" value="Registrasi Akun Alumni" style="ellipse;whiteSpace=wrap;html=1;fillColor=#e8f5e9;strokeColor=#2e7d32;" vertex="1" parent="1">
+          <mxGeometry x="390" y="120" width="210" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="uc_login" value="Login" style="ellipse;whiteSpace=wrap;html=1;fillColor=#e3f2fd;strokeColor=#1565c0;" vertex="1" parent="1">
+          <mxGeometry x="690" y="120" width="160" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="uc_logout" value="Logout" style="ellipse;whiteSpace=wrap;html=1;fillColor=#e3f2fd;strokeColor=#1565c0;" vertex="1" parent="1">
+          <mxGeometry x="930" y="120" width="160" height="70" as="geometry" />
+        </mxCell>
+
+        <mxCell id="uc_alumni_dashboard" value="Melihat Dashboard Alumni" style="ellipse;whiteSpace=wrap;html=1;fillColor=#fff3e0;strokeColor=#ef6c00;" vertex="1" parent="1">
+          <mxGeometry x="390" y="240" width="220" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="uc_profile" value="Mengelola Profil Alumni" style="ellipse;whiteSpace=wrap;html=1;fillColor=#fff3e0;strokeColor=#ef6c00;" vertex="1" parent="1">
+          <mxGeometry x="650" y="240" width="220" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="uc_tracer" value="Mengisi Tracer Study" style="ellipse;whiteSpace=wrap;html=1;fillColor=#fff3e0;strokeColor=#ef6c00;" vertex="1" parent="1">
+          <mxGeometry x="910" y="240" width="220" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="uc_legalisir_alumni" value="Mengajukan Legalisir" style="ellipse;whiteSpace=wrap;html=1;fillColor=#fff3e0;strokeColor=#ef6c00;" vertex="1" parent="1">
+          <mxGeometry x="520" y="350" width="220" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="uc_notif" value="Membuka Notifikasi" style="ellipse;whiteSpace=wrap;html=1;fillColor=#fffde7;strokeColor=#f9a825;" vertex="1" parent="1">
+          <mxGeometry x="800" y="350" width="220" height="70" as="geometry" />
+        </mxCell>
+
+        <mxCell id="uc_admin_dashboard" value="Melihat Dashboard Admin" style="ellipse;whiteSpace=wrap;html=1;fillColor=#f3e5f5;strokeColor=#7b1fa2;" vertex="1" parent="1">
+          <mxGeometry x="390" y="500" width="220" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="uc_master" value="Mengelola Master Data&#xa;Angkatan, Kompetensi, Aktivitas" style="ellipse;whiteSpace=wrap;html=1;fillColor=#f3e5f5;strokeColor=#7b1fa2;" vertex="1" parent="1">
+          <mxGeometry x="660" y="480" width="250" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="uc_tracer_report" value="Melihat Data Tracer Alumni" style="ellipse;whiteSpace=wrap;html=1;fillColor=#f3e5f5;strokeColor=#7b1fa2;" vertex="1" parent="1">
+          <mxGeometry x="960" y="500" width="230" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="uc_legalisir_admin" value="Memproses Pengajuan Legalisir" style="ellipse;whiteSpace=wrap;html=1;fillColor=#f3e5f5;strokeColor=#7b1fa2;" vertex="1" parent="1">
+          <mxGeometry x="520" y="620" width="250" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="uc_admin_manage" value="Mengelola Akun Admin Sekolah" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffebee;strokeColor=#c62828;" vertex="1" parent="1">
+          <mxGeometry x="850" y="620" width="250" height="70" as="geometry" />
+        </mxCell>
+
+        <mxCell id="uc_landing" value="Melihat Landing Page&#xa;dan Statistik Publik" style="ellipse;whiteSpace=wrap;html=1;fillColor=#eeeeee;strokeColor=#616161;" vertex="1" parent="1">
+          <mxGeometry x="650" y="760" width="250" height="80" as="geometry" />
+        </mxCell>
+
+        <mxCell id="assoc_alumni_register" style="endArrow=none;html=1;rounded=0;" edge="1" parent="1" source="actor_alumni" target="uc_register"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="assoc_alumni_login" style="endArrow=none;html=1;rounded=0;" edge="1" parent="1" source="actor_alumni" target="uc_login"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="assoc_alumni_logout" style="endArrow=none;html=1;rounded=0;" edge="1" parent="1" source="actor_alumni" target="uc_logout"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="assoc_alumni_dash" style="endArrow=none;html=1;rounded=0;" edge="1" parent="1" source="actor_alumni" target="uc_alumni_dashboard"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="assoc_alumni_profile" style="endArrow=none;html=1;rounded=0;" edge="1" parent="1" source="actor_alumni" target="uc_profile"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="assoc_alumni_tracer" style="endArrow=none;html=1;rounded=0;" edge="1" parent="1" source="actor_alumni" target="uc_tracer"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="assoc_alumni_legalisir" style="endArrow=none;html=1;rounded=0;" edge="1" parent="1" source="actor_alumni" target="uc_legalisir_alumni"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="assoc_alumni_notif" style="endArrow=none;html=1;rounded=0;" edge="1" parent="1" source="actor_alumni" target="uc_notif"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="assoc_alumni_landing" style="endArrow=none;html=1;rounded=0;" edge="1" parent="1" source="actor_alumni" target="uc_landing"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+        <mxCell id="assoc_admin_login" style="endArrow=none;html=1;rounded=0;" edge="1" parent="1" source="actor_admin" target="uc_login"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="assoc_admin_logout" style="endArrow=none;html=1;rounded=0;" edge="1" parent="1" source="actor_admin" target="uc_logout"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="assoc_admin_dash" style="endArrow=none;html=1;rounded=0;" edge="1" parent="1" source="actor_admin" target="uc_admin_dashboard"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="assoc_admin_master" style="endArrow=none;html=1;rounded=0;" edge="1" parent="1" source="actor_admin" target="uc_master"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="assoc_admin_tracer_report" style="endArrow=none;html=1;rounded=0;" edge="1" parent="1" source="actor_admin" target="uc_tracer_report"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="assoc_admin_legalisir" style="endArrow=none;html=1;rounded=0;" edge="1" parent="1" source="actor_admin" target="uc_legalisir_admin"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="assoc_admin_notif" style="endArrow=none;html=1;rounded=0;" edge="1" parent="1" source="actor_admin" target="uc_notif"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+        <mxCell id="assoc_super_login" style="endArrow=none;html=1;rounded=0;" edge="1" parent="1" source="actor_superadmin" target="uc_login"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="assoc_super_logout" style="endArrow=none;html=1;rounded=0;" edge="1" parent="1" source="actor_superadmin" target="uc_logout"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="assoc_super_dash" style="endArrow=none;html=1;rounded=0;" edge="1" parent="1" source="actor_superadmin" target="uc_admin_dashboard"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="assoc_super_master" style="endArrow=none;html=1;rounded=0;" edge="1" parent="1" source="actor_superadmin" target="uc_master"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="assoc_super_tracer" style="endArrow=none;html=1;rounded=0;" edge="1" parent="1" source="actor_superadmin" target="uc_tracer_report"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="assoc_super_legalisir" style="endArrow=none;html=1;rounded=0;" edge="1" parent="1" source="actor_superadmin" target="uc_legalisir_admin"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="assoc_super_admin_manage" style="endArrow=none;html=1;rounded=0;" edge="1" parent="1" source="actor_superadmin" target="uc_admin_manage"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="assoc_super_notif" style="endArrow=none;html=1;rounded=0;" edge="1" parent="1" source="actor_superadmin" target="uc_notif"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

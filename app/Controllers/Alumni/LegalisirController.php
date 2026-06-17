@@ -6,17 +6,20 @@ use App\Controllers\BaseController;
 use App\Models\AlumniModel;
 use App\Models\NotifikasiModel;
 use App\Models\PengajuanLegalisirModel;
+use App\Models\TracerAlumniModel;
 use CodeIgniter\HTTP\RedirectResponse;
 
 class LegalisirController extends BaseController
 {
     protected AlumniModel $alumniModel;
     protected PengajuanLegalisirModel $legalisirModel;
+    protected TracerAlumniModel $tracerModel;
 
     public function __construct()
     {
         $this->alumniModel = new AlumniModel();
         $this->legalisirModel = new PengajuanLegalisirModel();
+        $this->tracerModel = new TracerAlumniModel();
     }
 
     public function index(): string|RedirectResponse
@@ -26,11 +29,15 @@ class LegalisirController extends BaseController
             return redirect()->to(site_url('logout'))->with('error', 'Profil alumni belum ditemukan.');
         }
 
+        $kesiapan = $this->cekKesiapanLegalisir($alumni);
+
         return view('alumni/legalisir/index', [
             'title' => 'Pengajuan Legalisir - Sistem Tracer Study',
             'alumni' => $alumni,
             'pengajuan' => $this->legalisirModel->ambilLengkap((int) $alumni['id_alumni']),
             'statusOptions' => $this->statusOptions(),
+            'bolehMengajukan' => $kesiapan['boleh'],
+            'alasanBlokir' => $kesiapan['alasan'],
         ]);
     }
 
@@ -39,6 +46,11 @@ class LegalisirController extends BaseController
         $alumni = $this->ambilAlumniLogin();
         if ($alumni === null) {
             return redirect()->to(site_url('logout'))->with('error', 'Profil alumni belum ditemukan.');
+        }
+
+        $kesiapan = $this->cekKesiapanLegalisir($alumni);
+        if (! $kesiapan['boleh']) {
+            return redirect()->to(site_url('alumni/legalisir'))->with('error', $kesiapan['alasan']);
         }
 
         $rules = [
@@ -71,6 +83,33 @@ class LegalisirController extends BaseController
         }
 
         return $this->alumniModel->ambilLengkapByPengguna((int) session()->get('id_pengguna'));
+    }
+
+    protected function cekKesiapanLegalisir(array $alumni): array
+    {
+        $profilLengkap = trim((string) ($alumni['nis'] ?? '')) !== ''
+            && ! empty($alumni['id_angkatan'])
+            && ! empty($alumni['id_kompetensi']);
+
+        if (! $profilLengkap) {
+            return [
+                'boleh' => false,
+                'alasan' => 'Lengkapi data profil alumni terlebih dahulu sebelum mengajukan legalisir.',
+            ];
+        }
+
+        $tracer = $this->tracerModel->ambilTerakhirByAlumni((int) $alumni['id_alumni']);
+        if ($tracer === null) {
+            return [
+                'boleh' => false,
+                'alasan' => 'Isi data tracer alumni terlebih dahulu sebelum mengajukan legalisir.',
+            ];
+        }
+
+        return [
+            'boleh' => true,
+            'alasan' => '',
+        ];
     }
 
     protected function kirimNotifikasiAdmin(string $namaAlumni): void

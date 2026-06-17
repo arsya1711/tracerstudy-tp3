@@ -59,6 +59,10 @@ class RegisterController extends BaseController
             'nis'                   => trim((string) $this->request->getPost('nis')),
             'id_angkatan'           => (int) ($this->request->getPost('id_angkatan') ?? 0),
             'id_kompetensi'         => (int) ($this->request->getPost('id_kompetensi') ?? 0),
+            'jenis_kelamin'          => trim((string) $this->request->getPost('jenis_kelamin')),
+            'tempat_lahir'           => trim((string) $this->request->getPost('tempat_lahir')),
+            'tanggal_lahir'          => trim((string) $this->request->getPost('tanggal_lahir')),
+            'alamat'                 => trim((string) $this->request->getPost('alamat')),
             'password'              => (string) $this->request->getPost('password'),
             'password_confirmation' => (string) $this->request->getPost('password_confirmation'),
         ];
@@ -85,6 +89,10 @@ class RegisterController extends BaseController
             'nis'                   => 'required|max_length[20]',
             'id_angkatan'           => 'required|integer|greater_than[0]',
             'id_kompetensi'         => 'required|integer|greater_than[0]',
+            'jenis_kelamin'          => 'required|in_list[Laki-laki,Perempuan]',
+            'tempat_lahir'           => 'required|min_length[2]|max_length[100]',
+            'tanggal_lahir'          => 'required|valid_date[Y-m-d]',
+            'alamat'                 => 'required|min_length[5]',
             'password'              => 'required|min_length[8]|max_length[72]',
             'password_confirmation' => 'required|matches[password]',
         ];
@@ -109,6 +117,20 @@ class RegisterController extends BaseController
             'id_kompetensi' => [
                 'required'     => 'Kompetensi keahlian wajib dipilih untuk alumni.',
                 'greater_than' => 'Kompetensi keahlian wajib dipilih untuk alumni.',
+            ],
+            'jenis_kelamin' => [
+                'required' => 'Jenis kelamin wajib dipilih.',
+                'in_list'  => 'Jenis kelamin belum valid.',
+            ],
+            'tempat_lahir' => [
+                'required' => 'Tempat lahir wajib diisi.',
+            ],
+            'tanggal_lahir' => [
+                'required'   => 'Tanggal lahir wajib diisi.',
+                'valid_date' => 'Tanggal lahir belum valid.',
+            ],
+            'alamat' => [
+                'required' => 'Alamat wajib diisi.',
             ],
         ])) {
             return redirect()->back()
@@ -147,6 +169,10 @@ class RegisterController extends BaseController
                 'nis'                 => $payload['nis'],
                 'id_angkatan'         => $payload['id_angkatan'],
                 'id_kompetensi'       => $payload['id_kompetensi'],
+                'jenis_kelamin'        => $payload['jenis_kelamin'],
+                'tempat_lahir'         => $payload['tempat_lahir'],
+                'tanggal_lahir'        => $payload['tanggal_lahir'],
+                'alamat'               => $payload['alamat'],
                 'status_verifikasi'   => 'menunggu_aktivasi',
                 'status_pendaftaran'  => 'aktif',
                 'terdaftar_pada'      => date('Y-m-d H:i:s'),

@@ -2,11 +2,10 @@
 $tracerAktivitas = is_array($tracer_aktivitas ?? null) ? $tracer_aktivitas : ['labels' => [], 'series' => [], 'map' => []];
 $tracerAngkatan = is_array($tracer_angkatan ?? null) ? $tracer_angkatan : ['labels' => [], 'series' => []];
 $cards = [
-    ['label' => 'Total Alumni', 'value' => (int) ($total_alumni ?? 0), 'url' => site_url('superadmin/alumni')],
-    ['label' => 'Alumni Aktif', 'value' => (int) ($alumni_aktif ?? 0), 'url' => site_url('superadmin/alumni')],
-    ['label' => 'Menunggu Aktivasi', 'value' => (int) ($alumni_menunggu ?? 0), 'url' => site_url('superadmin/alumni')],
     ['label' => 'Tracer Terisi', 'value' => (int) ($tracer_terkirim ?? 0), 'url' => site_url('superadmin/tracer')],
     ['label' => 'Belum Tracer', 'value' => (int) ($tracer_belum_lengkap ?? 0), 'url' => site_url('superadmin/tracer')],
+    ['label' => 'Pengajuan Legalisir', 'value' => (int) ($pengajuan_legalisir ?? 0), 'url' => site_url('superadmin/legalisir')],
+    ['label' => 'Total Alumni', 'value' => (int) ($total_alumni ?? 0), 'url' => site_url('superadmin/tracer')],
 ];
 ?>
 <?= $this->extend('layouts/main') ?>

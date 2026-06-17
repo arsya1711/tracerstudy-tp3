@@ -127,6 +127,24 @@
     <script src="<?= base_url('assets/plugins/global/plugins.bundle.js') ?>"></script>
     <script src="<?= base_url('assets/js/scripts.bundle.js') ?>"></script>
     <!--end::Global Javascript Bundle-->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelectorAll('[data-password-toggle]').forEach(function (button) {
+                button.addEventListener('click', function () {
+                    var wrapper = button.closest('.input-group') || button.parentElement;
+                    var input = wrapper ? wrapper.querySelector('[data-password-input]') : null;
+
+                    if (! input) {
+                        return;
+                    }
+
+                    var visible = input.type === 'text';
+                    input.type = visible ? 'password' : 'text';
+                    button.textContent = visible ? 'Lihat' : 'Sembunyikan';
+                });
+            });
+        });
+    </script>
     <!--begin::Custom Javascript(used for this page only)-->
     <script src="<?= base_url('assets/js/custom/authentication/sign-in/general.js') ?>"></script>
     <!--end::Custom Javascript-->

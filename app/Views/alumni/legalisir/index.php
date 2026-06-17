@@ -1,5 +1,7 @@
 <?php
 $statusOptions = is_array($statusOptions ?? null) ? $statusOptions : [];
+$bolehMengajukan = (bool) ($bolehMengajukan ?? true);
+$alasanBlokir = (string) ($alasanBlokir ?? '');
 $badgeClass = static function (string $status): string {
     return match ($status) {
         'diproses' => 'badge-light-primary',
@@ -49,11 +51,21 @@ $formatTanggal = static function (?string $tanggal): string {
                         <?php if (session()->getFlashdata('sukses')): ?>
                             <div class="alert alert-success"><?= esc((string) session()->getFlashdata('sukses')) ?></div>
                         <?php endif; ?>
+                        <?php if (! $bolehMengajukan): ?>
+                            <div class="alert alert-warning">
+                                <div class="fw-bold mb-1">Pengajuan belum bisa dikirim</div>
+                                <div><?= esc($alasanBlokir) ?></div>
+                                <div class="d-flex flex-wrap gap-2 mt-4">
+                                    <a href="<?= site_url('alumni/profil') ?>" class="btn btn-sm btn-light-primary">Lengkapi Profil</a>
+                                    <a href="<?= site_url('alumni/tracer') ?>" class="btn btn-sm btn-light-success">Tracer</a>
+                                </div>
+                            </div>
+                        <?php endif; ?>
                         <form method="post" action="<?= site_url('alumni/legalisir/simpan') ?>">
                             <?= csrf_field() ?>
                             <div class="mb-5">
                                 <label class="form-label required">Jenis Dokumen</label>
-                                <select name="jenis_dokumen" class="form-select form-select-solid" required>
+                                <select name="jenis_dokumen" class="form-select form-select-solid" required <?= $bolehMengajukan ? '' : 'disabled' ?>>
                                     <option value="">Pilih dokumen</option>
                                     <?php foreach (['Ijazah', 'SKL', 'Transkrip Nilai', 'Rapor'] as $dokumen): ?>
                                         <option value="<?= esc($dokumen, 'attr') ?>" <?= old('jenis_dokumen') === $dokumen ? 'selected' : '' ?>><?= esc($dokumen) ?></option>
@@ -62,13 +74,13 @@ $formatTanggal = static function (?string $tanggal): string {
                             </div>
                             <div class="mb-5">
                                 <label class="form-label required">Jumlah Lembar</label>
-                                <input type="number" name="jumlah_lembar" min="1" value="<?= esc((string) old('jumlah_lembar', '1'), 'attr') ?>" class="form-control form-control-solid" required>
+                                <input type="number" name="jumlah_lembar" min="1" value="<?= esc((string) old('jumlah_lembar', '1'), 'attr') ?>" class="form-control form-control-solid" required <?= $bolehMengajukan ? '' : 'disabled' ?>>
                             </div>
                             <div class="mb-6">
                                 <label class="form-label">Keperluan</label>
-                                <textarea name="keperluan" rows="4" class="form-control form-control-solid" placeholder="Contoh: persyaratan pendaftaran kerja"><?= esc((string) old('keperluan')) ?></textarea>
+                                <textarea name="keperluan" rows="4" class="form-control form-control-solid" placeholder="Contoh: persyaratan pendaftaran kerja" <?= $bolehMengajukan ? '' : 'disabled' ?>><?= esc((string) old('keperluan')) ?></textarea>
                             </div>
-                            <button type="submit" class="btn btn-primary w-100">Kirim Pengajuan</button>
+                            <button type="submit" class="btn btn-primary w-100" <?= $bolehMengajukan ? '' : 'disabled' ?>>Kirim Pengajuan</button>
                         </form>
                     </div>
                 </div>

@@ -80,7 +80,10 @@
     </div>
 
     <div class="fv-row mb-3">
-        <input type="password" placeholder="Password" name="password" autocomplete="off" class="form-control bg-transparent" />
+        <div class="input-group">
+            <input type="password" placeholder="Password" name="password" autocomplete="off" class="form-control bg-transparent" data-password-input />
+            <button type="button" class="btn btn-light" data-password-toggle>Lihat</button>
+        </div>
     </div>
 
     <div class="d-grid mb-10">

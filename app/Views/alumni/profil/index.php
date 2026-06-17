@@ -1,5 +1,6 @@
 <?php
 $alumni = is_array($alumni ?? null) ? $alumni : [];
+$tracerTerakhir = is_array($tracerTerakhir ?? null) ? $tracerTerakhir : [];
 $daftarAngkatan = is_array($daftarAngkatan ?? null) ? $daftarAngkatan : [];
 $daftarKompetensi = is_array($daftarKompetensi ?? null) ? $daftarKompetensi : [];
 $nilai = static function (string $key, string $default = '') use ($alumni): string {
@@ -11,6 +12,17 @@ $selected = static function (string $key, string $value) use ($alumni): string {
 $statusPendaftaran = (string) ($alumni['status_pendaftaran'] ?? '');
 $statusLabel = $statusPendaftaran !== '' ? ucwords(str_replace('_', ' ', $statusPendaftaran)) : 'Belum Diketahui';
 $statusClass = $statusPendaftaran === 'aktif' ? 'badge-light-success' : 'badge-light-warning';
+$teks = static function (mixed $value, string $empty = '-'): string {
+    $value = trim((string) ($value ?? ''));
+    return $value !== '' ? $value : $empty;
+};
+$punyaProfilKuliah = $tracerTerakhir !== [] && (
+    trim((string) ($tracerTerakhir['universitas'] ?? '')) !== ''
+    || trim((string) ($tracerTerakhir['program_studi'] ?? '')) !== ''
+    || trim((string) ($tracerTerakhir['status_kuliah'] ?? '')) !== ''
+    || str_contains(strtolower((string) ($tracerTerakhir['nama_aktivitas'] ?? '')), 'kuliah')
+    || str_contains(strtolower((string) ($tracerTerakhir['nama_aktivitas'] ?? '')), 'studi')
+);
 ?>
 <?= $this->extend('layouts/main') ?>
 
@@ -49,6 +61,36 @@ $statusClass = $statusPendaftaran === 'aktif' ? 'badge-light-success' : 'badge-l
                 <span class="badge <?= $statusClass ?> fs-7"><?= esc($statusLabel) ?></span>
             </div>
         </div>
+
+        <?php if ($punyaProfilKuliah): ?>
+            <div class="card card-flush mb-8">
+                <div class="card-header pt-7">
+                    <div class="card-title flex-column">
+                        <h3 class="fw-bolder mb-1">Profil Kuliah</h3>
+                        <div class="text-muted fw-semibold fs-7">Data kuliah ini diambil dari isian tracer alumni.</div>
+                    </div>
+                    <div class="card-toolbar">
+                        <a href="<?= site_url('alumni/tracer') ?>" class="btn btn-sm btn-light-primary">Edit di Tracer</a>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row g-5">
+                        <div class="col-md-4">
+                            <div class="text-muted fs-7 text-uppercase fw-bold mb-1">Perguruan Tinggi</div>
+                            <div class="fs-5 fw-bold text-gray-900"><?= esc($teks($tracerTerakhir['universitas'] ?? null)) ?></div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="text-muted fs-7 text-uppercase fw-bold mb-1">Program Studi</div>
+                            <div class="fs-5 fw-bold text-gray-900"><?= esc($teks($tracerTerakhir['program_studi'] ?? null)) ?></div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="text-muted fs-7 text-uppercase fw-bold mb-1">Status Kuliah</div>
+                            <div><span class="badge badge-light-info fs-7"><?= esc($teks($tracerTerakhir['status_kuliah'] ?? null, 'Kuliah')) ?></span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        <?php endif; ?>
 
         <div class="row g-5 g-xl-8">
             <div class="col-xl-8">
@@ -162,11 +204,17 @@ $statusClass = $statusPendaftaran === 'aktif' ? 'badge-light-success' : 'badge-l
                             <?= csrf_field() ?>
                             <div class="mb-5">
                                 <label class="form-label required">Password Baru</label>
-                                <input type="password" name="password" class="form-control form-control-solid" required minlength="8">
+                                <div class="input-group">
+                                    <input type="password" name="password" class="form-control form-control-solid" required minlength="8" data-password-input>
+                                    <button type="button" class="btn btn-light" data-password-toggle>Lihat</button>
+                                </div>
                             </div>
                             <div class="mb-6">
                                 <label class="form-label required">Konfirmasi Password</label>
-                                <input type="password" name="password_confirmation" class="form-control form-control-solid" required minlength="8">
+                                <div class="input-group">
+                                    <input type="password" name="password_confirmation" class="form-control form-control-solid" required minlength="8" data-password-input>
+                                    <button type="button" class="btn btn-light" data-password-toggle>Lihat</button>
+                                </div>
                             </div>
                             <button type="submit" class="btn btn-light-danger w-100">Simpan Password</button>
                         </form>

@@ -27,6 +27,7 @@ class DashboardController extends BaseController
             'total_tracer' => $this->hitungTabel('tb_tracer_alumni'),
             'alumni_menunggu' => $this->hitungAlumniByStatus('menunggu_aktivasi'),
             'alumni_aktif' => $this->hitungAlumniByStatus('aktif'),
+            'pengajuan_legalisir' => $this->hitungTabel('tb_pengajuan_legalisir'),
             'tracer_terkirim' => $this->hitungTracerTerkirim(),
             'tracer_belum_lengkap' => $this->hitungTracerBelumLengkap(),
             'grafik_aktivitas' => $this->ambilGrafikAktivitas(),
