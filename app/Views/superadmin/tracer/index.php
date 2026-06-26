@@ -55,7 +55,7 @@ $detailFields = [
     'bidang_instansi' => 'Bidang Instansi',
     'alamat_instansi' => 'Alamat Instansi',
     'tahun_mulai_kerja' => 'Tahun Mulai Kerja',
-    'relevan_jurusan' => 'Relevan Jurusan',
+    'relevan_jurusan' => 'Relevan Kompetensi',
     'penghasilan_range' => 'Penghasilan',
     'nama_usaha' => 'Nama Usaha',
     'bidang_usaha' => 'Bidang Usaha',
@@ -68,6 +68,15 @@ $dashboardUrl = $dashboardUrl ?? site_url('dashboard/superadmin');
 $tracerBaseUrl = $tracerBaseUrl ?? site_url('superadmin/tracer');
 $tracerRoleLabel = $tracerRoleLabel ?? 'Manajemen Sekolah';
 $tracerBaseUrl = rtrim($tracerBaseUrl, '/');
+$exportQuery = http_build_query([
+    'q' => (string) ($filters['search'] ?? ''),
+    'id_angkatan' => (int) ($filters['id_angkatan'] ?? 0),
+    'id_kompetensi' => (int) ($filters['id_kompetensi'] ?? 0),
+    'id_aktivitas' => (int) ($filters['id_aktivitas'] ?? 0),
+    'status' => (string) ($filters['status'] ?? ''),
+]);
+$exportUrl = $tracerBaseUrl . '/export' . ($exportQuery !== '' ? '?' . $exportQuery : '');
+$exportPdfUrl = $tracerBaseUrl . '/export-pdf' . ($exportQuery !== '' ? '?' . $exportQuery : '');
 
 $nilai = static function (array $row, string $field, string $default = ''): string {
     $value = $row[$field] ?? $default;
@@ -222,7 +231,7 @@ $penghasilanOptions = [
                                     <span class="path1"></span>
                                     <span class="path2"></span>
                                 </i>
-                                <input type="text" name="q" class="form-control form-control-solid w-250px ps-13" placeholder="Cari alumni / jurusan" value="<?= esc((string) ($filters['search'] ?? '')) ?>" />
+                                <input type="text" name="q" class="form-control form-control-solid w-250px ps-13" placeholder="Cari alumni / kompetensi" value="<?= esc((string) ($filters['search'] ?? '')) ?>" />
                             </div>
                         </div>
 
@@ -254,9 +263,9 @@ $penghasilanOptions = [
                                         </div>
 
                                         <div class="mb-8">
-                                            <label class="form-label fs-6 fw-semibold">Jurusan:</label>
+                                            <label class="form-label fs-6 fw-semibold">Kompetensi:</label>
                                             <select name="id_kompetensi" class="form-select form-select-solid">
-                                                <option value="">Semua Jurusan</option>
+                                                <option value="">Semua Kompetensi</option>
                                                 <?php foreach ($daftarKompetensi as $kompetensi): ?>
                                                     <option value="<?= (int) $kompetensi['id_kompetensi'] ?>" <?= (int) ($filters['id_kompetensi'] ?? 0) === (int) $kompetensi['id_kompetensi'] ? 'selected' : '' ?>>
                                                         <?= esc((string) ($kompetensi['nama_kompetensi'] ?? '-')) ?>
@@ -296,6 +305,20 @@ $penghasilanOptions = [
                                     </div>
                                 </div>
 
+                                <a href="<?= esc($exportUrl) ?>" class="btn btn-light-success me-3">
+                                    <i class="ki-duotone ki-file-down fs-2">
+                                        <span class="path1"></span>
+                                        <span class="path2"></span>
+                                    </i>Export Excel
+                                </a>
+
+                                <a href="<?= esc($exportPdfUrl) ?>" class="btn btn-light-danger me-3">
+                                    <i class="ki-duotone ki-file-down fs-2">
+                                        <span class="path1"></span>
+                                        <span class="path2"></span>
+                                    </i>Export PDF
+                                </a>
+
                                 <button type="button" class="btn btn-primary" id="kt_tracer_print_button">
                                     <i class="ki-duotone ki-printer fs-2">
                                         <span class="path1"></span>
@@ -334,7 +357,7 @@ $penghasilanOptions = [
                                 <tr class="text-start text-muted fw-bold fs-7 text-uppercase gs-0">
                                     <th class="min-w-250px">Alumni</th>
                                     <th class="min-w-120px">Angkatan</th>
-                                    <th class="min-w-220px">Jurusan</th>
+                                    <th class="min-w-220px">Kompetensi</th>
                                     <th class="min-w-160px">Kegiatan</th>
                                     <th class="min-w-140px">Status</th>
                                     <th class="text-end min-w-100px kt-tracer-no-print">Aksi</th>
@@ -492,7 +515,7 @@ $penghasilanOptions = [
                             <div class="fw-semibold text-gray-800"><?= esc($formatTanggal($item['tanggal_lahir'] ?? null)) ?></div>
                         </div>
                         <div class="col-md-6">
-                            <div class="text-muted fs-7 text-uppercase fw-bold mb-1">Jurusan</div>
+                            <div class="text-muted fs-7 text-uppercase fw-bold mb-1">Kompetensi</div>
                             <div class="fw-semibold text-gray-800"><?= esc($ringkasKompetensi($item)) ?></div>
                         </div>
                         <div class="col-md-6">
@@ -509,7 +532,7 @@ $penghasilanOptions = [
                         </div>
                         <div class="col-md-6">
                             <div class="text-muted fs-7 text-uppercase fw-bold mb-1">Status Akun Alumni</div>
-                            <div class="fw-semibold text-gray-800"><?= esc((string) (($item['status_verifikasi'] ?? '') !== '' ? ucwords(str_replace('_', ' ', $item['status_verifikasi'])) : '-')) ?></div>
+                            <div class="fw-semibold text-gray-800"><?= esc((string) (($item['status_pendaftaran'] ?? '') !== '' ? ucwords(str_replace('_', ' ', $item['status_pendaftaran'])) : '-')) ?></div>
                         </div>
                         <div class="col-12">
                             <div class="text-muted fs-7 text-uppercase fw-bold mb-1">Alamat</div>
@@ -681,14 +704,21 @@ $penghasilanOptions = [
                                     </select>
                                 </div>
                                 <div class="col-12">
-                                    <label class="form-label">Jurusan</label>
+                                    <label class="form-label">Kompetensi</label>
                                     <select name="id_kompetensi" class="form-select form-select-solid">
-                                        <option value="">Pilih jurusan</option>
+                                        <option value="">Pilih kompetensi</option>
                                         <?php foreach ($daftarKompetensi as $kompetensi): ?>
                                             <option value="<?= (int) $kompetensi['id_kompetensi'] ?>" <?= $selected($item['id_kompetensi'] ?? '', $kompetensi['id_kompetensi'] ?? '') ?>>
                                                 <?= esc((string) ($kompetensi['nama_kompetensi'] ?? '-')) ?>
                                             </option>
                                         <?php endforeach; ?>
+                                    </select>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label required">Status Akun Alumni</label>
+                                    <select name="status_pendaftaran" class="form-select form-select-solid" required>
+                                        <option value="menunggu_aktivasi" <?= $selected($item['status_pendaftaran'] ?? '', 'menunggu_aktivasi') ?>>Menunggu Aktivasi</option>
+                                        <option value="aktif" <?= $selected($item['status_pendaftaran'] ?? '', 'aktif') ?>>Aktif</option>
                                     </select>
                                 </div>
                                 <div class="col-12">
@@ -734,7 +764,7 @@ $penghasilanOptions = [
                                     <textarea name="alamat_instansi" class="form-control form-control-solid" rows="2"><?= esc($nilai($item, 'alamat_instansi')) ?></textarea>
                                 </div>
                                 <div class="col-md-6" data-tracer-section-admin="pekerjaan wirausaha">
-                                    <label class="form-label d-block">Relevan Jurusan</label>
+                                    <label class="form-label d-block">Relevan Kompetensi</label>
                                     <div class="d-flex gap-4">
                                         <label class="form-check form-check-custom form-check-solid">
                                             <input class="form-check-input" type="radio" name="relevan_jurusan" value="1" <?= $checked($item['relevan_jurusan'] ?? '', '1') ?>>

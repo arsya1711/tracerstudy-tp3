@@ -2,12 +2,53 @@
 
 namespace App\Controllers;
 
-use CodeIgniter\HTTP\RedirectResponse;
+use Config\Database;
 
 class Home extends BaseController
 {
-    public function index(): RedirectResponse
+    protected $db;
+
+    public function __construct()
     {
-        return redirect()->to(site_url('login'));
+        $this->db = Database::connect();
+    }
+
+    public function index(): string
+    {
+        return view('landing/index', [
+            'title'     => 'Tracer Study Alumni - SMK Teratai Putih 3',
+            'statistik' => [
+                'alumni'      => $this->hitungTabel('tb_alumni'),
+                'tracer'      => $this->hitungTabel('tb_tracer_alumni'),
+                'legalisir'   => $this->hitungTabel('tb_pengajuan_legalisir'),
+                'kompetensi'  => $this->hitungTabel('tb_kompetensi'),
+            ],
+            'aktivitas' => $this->ambilRingkasanAktivitas(),
+        ]);
+    }
+
+    protected function hitungTabel(string $table): int
+    {
+        if (! $this->db->tableExists($table)) {
+            return 0;
+        }
+
+        return (int) $this->db->table($table)->countAllResults();
+    }
+
+    protected function ambilRingkasanAktivitas(): array
+    {
+        if (! $this->db->tableExists('tb_tracer_alumni') || ! $this->db->tableExists('tb_aktivitas')) {
+            return [];
+        }
+
+        return $this->db->table('tb_tracer_alumni t')
+            ->select('a.nama_aktivitas, COUNT(*) AS total')
+            ->join('tb_aktivitas a', 'a.id_aktivitas = t.id_aktivitas', 'left')
+            ->groupBy('a.nama_aktivitas')
+            ->orderBy('total', 'DESC')
+            ->limit(4)
+            ->get()
+            ->getResultArray();
     }
 }

@@ -62,13 +62,47 @@ class AktivitasSeeder extends Seeder
                 'diperbarui_pada' => $waktuSekarang,
             ],
             [
-                'nama_aktivitas'  => 'Belum Bekerja',
-                'keterangan'      => 'Alumni belum bekerja atau masih mencari peluang kerja.',
+                'nama_aktivitas'  => 'Mencari Kerja',
+                'keterangan'      => 'Alumni sedang mencari peluang kerja setelah lulus.',
                 'status_aktif'    => 1,
                 'dibuat_pada'     => $waktuSekarang,
                 'diperbarui_pada' => $waktuSekarang,
             ],
         ];
+
+        $aktivitasMencariKerja = $this->db->table('tb_aktivitas')
+            ->select('id_aktivitas')
+            ->where('nama_aktivitas', 'Mencari Kerja')
+            ->get()
+            ->getRowArray();
+        $aktivitasBelumBekerja = $this->db->table('tb_aktivitas')
+            ->select('id_aktivitas')
+            ->where('nama_aktivitas', 'Belum Bekerja')
+            ->get()
+            ->getRowArray();
+
+        if ($aktivitasBelumBekerja !== null && $aktivitasMencariKerja === null) {
+            $this->db->table('tb_aktivitas')
+                ->where('id_aktivitas', (int) $aktivitasBelumBekerja['id_aktivitas'])
+                ->update([
+                    'nama_aktivitas'  => 'Mencari Kerja',
+                    'keterangan'      => 'Alumni sedang mencari peluang kerja setelah lulus.',
+                    'diperbarui_pada' => $waktuSekarang,
+                ]);
+        } elseif ($aktivitasBelumBekerja !== null && $aktivitasMencariKerja !== null) {
+            if ($this->db->tableExists('tb_tracer_alumni')) {
+                $this->db->table('tb_tracer_alumni')
+                    ->where('id_aktivitas', (int) $aktivitasBelumBekerja['id_aktivitas'])
+                    ->update(['id_aktivitas' => (int) $aktivitasMencariKerja['id_aktivitas']]);
+            }
+
+            $this->db->table('tb_aktivitas')
+                ->where('id_aktivitas', (int) $aktivitasBelumBekerja['id_aktivitas'])
+                ->update([
+                    'status_aktif'    => 0,
+                    'diperbarui_pada' => $waktuSekarang,
+                ]);
+        }
 
         foreach ($data as $baris) {
             $sudahAda = $this->db->table('tb_aktivitas')

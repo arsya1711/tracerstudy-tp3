@@ -25,7 +25,7 @@ class PeranSeeder extends Seeder
     |-------------------------------------------------------------------
     | METHOD RUN
     |-------------------------------------------------------------------
-    | Method ini memasukkan lima data role utama ke tabel tb_peran
+    | Method ini memasukkan tiga data role utama ke tabel tb_peran
     | sebagai referensi hak akses aplikasi.
     | Alur kerja: CI4 memanggil method ini saat seeder dijalankan
     | manual atau dirangkai dari seeder lain.

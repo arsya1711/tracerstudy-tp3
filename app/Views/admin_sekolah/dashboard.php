@@ -1,11 +1,26 @@
 <?php
 $grafikAktivitas = is_array($grafik_aktivitas ?? null) ? $grafik_aktivitas : ['labels' => [], 'series' => [], 'map' => []];
 $grafikAngkatan = is_array($grafik_angkatan ?? null) ? $grafik_angkatan : ['labels' => [], 'series' => []];
+$legalisirMenunggu = (int) ($legalisir_menunggu ?? 0);
+$legalisirDiproses = (int) ($legalisir_diproses ?? 0);
+
+/*
+| Card legalisir menggunakan status "diajukan" sebagai indikator utama.
+| Warna kuning dan border tebal membantu admin sekolah melihat adanya
+| pengajuan baru tanpa harus membuka menu legalisir terlebih dahulu.
+*/
 $cards = [
-    ['label' => 'Tracer Terisi', 'value' => (int) ($tracer_terkirim ?? 0), 'url' => site_url('admin-sekolah/tracer')],
-    ['label' => 'Belum Tracer', 'value' => (int) ($tracer_belum_lengkap ?? 0), 'url' => site_url('admin-sekolah/tracer')],
-    ['label' => 'Pengajuan Legalisir', 'value' => (int) ($pengajuan_legalisir ?? 0), 'url' => site_url('admin-sekolah/legalisir')],
-    ['label' => 'Total Alumni', 'value' => (int) ($total_alumni ?? 0), 'url' => site_url('admin-sekolah/tracer')],
+    ['label' => 'Tracer Terisi', 'value' => (int) ($tracer_terkirim ?? 0), 'url' => site_url('admin-sekolah/tracer'), 'class' => ''],
+    ['label' => 'Belum Tracer', 'value' => (int) ($tracer_belum_lengkap ?? 0), 'url' => site_url('admin-sekolah/tracer'), 'class' => ''],
+    [
+        'label' => 'Pengajuan Legalisir',
+        'value' => $legalisirMenunggu,
+        'url' => site_url('admin-sekolah/legalisir'),
+        'class' => $legalisirMenunggu > 0 ? 'bg-light-warning border border-warning border-2' : 'bg-light',
+        'hint' => $legalisirMenunggu > 0 ? $legalisirMenunggu . ' pengajuan baru perlu ditindaklanjuti' : $legalisirDiproses . ' pengajuan sedang diproses',
+        'valueClass' => $legalisirMenunggu > 0 ? 'text-warning' : 'text-gray-900',
+    ],
+    ['label' => 'Total Alumni', 'value' => (int) ($total_alumni ?? 0), 'url' => site_url('admin-sekolah/tracer'), 'class' => ''],
 ];
 $formatTanggal = static function (?string $tanggal): string {
     if ($tanggal === null || trim($tanggal) === '') {
@@ -38,10 +53,13 @@ $formatTanggal = static function (?string $tanggal): string {
         <div class="row g-5 g-xl-8 mb-8">
             <?php foreach ($cards as $card): ?>
                 <div class="col-md-6 col-xl">
-                    <a href="<?= esc($card['url']) ?>" class="card card-flush h-100 hover-elevate-up">
+                    <a href="<?= esc($card['url']) ?>" class="card card-flush h-100 hover-elevate-up <?= esc($card['class'] ?? '') ?>">
                         <div class="card-body">
                             <div class="text-gray-500 fw-semibold fs-7 mb-2"><?= esc($card['label']) ?></div>
-                            <div class="text-gray-900 fw-bolder fs-2hx"><?= number_format($card['value'], 0, ',', '.') ?></div>
+                            <div class="<?= esc($card['valueClass'] ?? 'text-gray-900') ?> fw-bolder fs-2hx"><?= number_format($card['value'], 0, ',', '.') ?></div>
+                            <?php if (! empty($card['hint'])): ?>
+                                <div class="fw-semibold fs-7 text-gray-700 mt-2"><?= esc((string) $card['hint']) ?></div>
+                            <?php endif; ?>
                         </div>
                     </a>
                 </div>

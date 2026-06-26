@@ -3,6 +3,7 @@
 namespace App\Controllers\Superadmin;
 
 use App\Controllers\BaseController;
+use App\Models\PengajuanLegalisirModel;
 use CodeIgniter\HTTP\RedirectResponse;
 
 class DashboardController extends BaseController
@@ -29,6 +30,8 @@ class DashboardController extends BaseController
             'alumni_menunggu' => $this->hitungAlumniByStatus('menunggu_aktivasi'),
             'alumni_aktif' => $this->hitungAlumniByStatus('aktif'),
             'pengajuan_legalisir' => $this->hitungTabel('tb_pengajuan_legalisir'),
+            'legalisir_menunggu' => (new PengajuanLegalisirModel())->hitungByStatusList(['diajukan']),
+            'legalisir_diproses' => (new PengajuanLegalisirModel())->hitungByStatusList(['diproses']),
             'tracer_terkirim' => $this->hitungTracerTerkirim(),
             'tracer_belum_lengkap' => $this->hitungTracerBelumLengkap(),
             'tracer_aktivitas' => $tracerAktivitas,
@@ -81,7 +84,7 @@ class DashboardController extends BaseController
 
     protected function ambilGrafikTracerAktivitas(): array
     {
-        $map = ['Bekerja' => 0, 'Kuliah' => 0, 'Wirausaha' => 0, 'Belum Bekerja' => 0];
+        $map = ['Bekerja' => 0, 'Kuliah' => 0, 'Wirausaha' => 0, 'Mencari Kerja' => 0];
 
         if (! $this->db->tableExists('tb_tracer_alumni') || ! $this->db->tableExists('tb_aktivitas')) {
             return ['labels' => array_keys($map), 'series' => array_values($map), 'map' => $map];

@@ -7,6 +7,7 @@ use App\Models\AlumniModel;
 use App\Models\AktivitasModel;
 use App\Models\AngkatanModel;
 use App\Models\KompetensiModel;
+use App\Models\PengajuanLegalisirModel;
 use App\Models\PenggunaModel;
 use App\Models\TracerAlumniModel;
 use CodeIgniter\HTTP\RedirectResponse;
@@ -18,6 +19,7 @@ class DashboardController extends BaseController
     protected AktivitasModel $aktivitasModel;
     protected AngkatanModel $angkatanModel;
     protected KompetensiModel $kompetensiModel;
+    protected PengajuanLegalisirModel $legalisirModel;
     protected PenggunaModel $penggunaModel;
     protected TracerAlumniModel $tracerModel;
     protected $db;
@@ -28,6 +30,7 @@ class DashboardController extends BaseController
         $this->aktivitasModel = new AktivitasModel();
         $this->angkatanModel = new AngkatanModel();
         $this->kompetensiModel = new KompetensiModel();
+        $this->legalisirModel = new PengajuanLegalisirModel();
         $this->penggunaModel = new PenggunaModel();
         $this->tracerModel = new TracerAlumniModel();
         $this->db = db_connect();
@@ -48,6 +51,7 @@ class DashboardController extends BaseController
             'alumni' => $alumni,
             'isAlumni' => true,
             'tracerTerakhir' => $tracerTerakhir,
+            'legalisirTerbaru' => $this->legalisirModel->ambilTerbaruByAlumni((int) $alumni['id_alumni']),
             'onboarding' => $onboarding,
         ]);
     }

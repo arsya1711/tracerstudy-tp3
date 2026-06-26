@@ -48,12 +48,17 @@ class LegalisirController extends BaseController
         ];
 
         $this->legalisirModel->update($id, $payload);
-        $this->kirimNotifikasiAlumni((int) $pengajuan['id_alumni'], $status);
+        $this->kirimNotifikasiAlumni((int) $pengajuan['id_alumni'], $status, (string) ($payload['catatan_admin'] ?? ''));
 
         return redirect()->back()->with('sukses', 'Status pengajuan legalisir berhasil diperbarui.');
     }
 
-    protected function kirimNotifikasiAlumni(int $idAlumni, string $status): void
+    /*
+    | Setelah admin mengubah status legalisir, alumni menerima notifikasi.
+    | Catatan admin ikut dikirim agar alasan diproses/ditolak/selesai
+    | tetap terbaca dari bell notifikasi maupun halaman legalisir alumni.
+    */
+    protected function kirimNotifikasiAlumni(int $idAlumni, string $status, string $catatan = ''): void
     {
         $db = db_connect();
         if (! $db->tableExists('tb_alumni')) {
@@ -70,11 +75,16 @@ class LegalisirController extends BaseController
             return;
         }
 
+        $pesan = 'Pengajuan legalisir kamu sekarang berstatus ' . ($this->statusOptions()[$status] ?? $status) . '.';
+        if (trim($catatan) !== '') {
+            $pesan .= ' Catatan admin: ' . trim($catatan);
+        }
+
         (new NotifikasiModel())->buatUntukPengguna(
             [(int) $alumni['id_pengguna']],
             'legalisir_status',
             'Status legalisir diperbarui',
-            'Pengajuan legalisir kamu sekarang berstatus ' . ($this->statusOptions()[$status] ?? $status) . '.',
+            $pesan,
             site_url('alumni/legalisir')
         );
     }

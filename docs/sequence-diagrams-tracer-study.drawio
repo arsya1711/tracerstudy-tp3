@@ -1,0 +1,1065 @@
+<mxfile host="app.diagrams.net" modified="2026-06-25T00:00:00.000Z" agent="Codex" version="24.7.17" type="device">
+  <diagram id="seq-login" name="Sequence Login">
+    <mxGraphModel fold="1" pageWidth="1500" dx="1700" tooltips="1" guides="1" connect="1" grid="1" shadow="0" math="0" pageHeight="1050" dy="1100" gridSize="10" pageScale="1" page="1" arrows="1">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="seq-login_frame" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#000000;strokeWidth=2" vertex="1" parent="1">
+          <mxGeometry x="20" y="20" width="1435" height="970" as="geometry" />
+        </mxCell>
+        <mxCell id="seq-login_title" value="Sequence Diagram - Login" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=13;fontStyle=2" vertex="1" parent="1">
+          <mxGeometry x="30" y="24" width="430" height="24" as="geometry" />
+        </mxCell>
+        <mxCell id="login_actor" value="Pengguna" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;fontSize=13;strokeWidth=2" vertex="1" parent="1">
+          <mxGeometry x="65" y="70" width="50" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="login_life_actor" value="" style="endArrow=none;html=1;rounded=0;dashed=1;strokeColor=#000000;strokeWidth=1.5" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="90" y="155" as="sourcePoint" />
+            <mxPoint x="90" y="935" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="login_page_head" value="" style="ellipse;whiteSpace=wrap;html=1;fillColor=#fff4e6;strokeColor=#000000;strokeWidth=2;fontSize=13" vertex="1" parent="1">
+          <mxGeometry x="285" y="75" width="60" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="login_page_life" value="" style="endArrow=none;html=1;rounded=0;dashed=1;strokeColor=#000000;strokeWidth=1.5" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="315" y="135" as="sourcePoint" />
+            <mxPoint x="315" y="935" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="login_ctrl_head" value="" style="ellipse;whiteSpace=wrap;html=1;fillColor=#fff4e6;strokeColor=#000000;strokeWidth=2;fontSize=13" vertex="1" parent="1">
+          <mxGeometry x="540" y="75" width="60" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="login_ctrl_life" value="" style="endArrow=none;html=1;rounded=0;dashed=1;strokeColor=#000000;strokeWidth=1.5" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="570" y="135" as="sourcePoint" />
+            <mxPoint x="570" y="935" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="login_user_head" value="" style="ellipse;whiteSpace=wrap;html=1;fillColor=#fff4e6;strokeColor=#000000;strokeWidth=2;fontSize=13" vertex="1" parent="1">
+          <mxGeometry x="820" y="75" width="60" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="login_user_life" value="" style="endArrow=none;html=1;rounded=0;dashed=1;strokeColor=#000000;strokeWidth=1.5" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="850" y="135" as="sourcePoint" />
+            <mxPoint x="850" y="935" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="login_role_head" value="" style="ellipse;whiteSpace=wrap;html=1;fillColor=#fff4e6;strokeColor=#000000;strokeWidth=2;fontSize=13" vertex="1" parent="1">
+          <mxGeometry x="1080" y="75" width="60" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="login_role_life" value="" style="endArrow=none;html=1;rounded=0;dashed=1;strokeColor=#000000;strokeWidth=1.5" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1110" y="135" as="sourcePoint" />
+            <mxPoint x="1110" y="935" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="login_act_page" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff4e6;strokeColor=#000000;strokeWidth=2" vertex="1" parent="1">
+          <mxGeometry x="308" y="220" width="14" height="520" as="geometry" />
+        </mxCell>
+        <mxCell id="login_act_ctrl" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff4e6;strokeColor=#000000;strokeWidth=2" vertex="1" parent="1">
+          <mxGeometry x="563" y="320" width="14" height="455" as="geometry" />
+        </mxCell>
+        <mxCell id="login_act_user" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff4e6;strokeColor=#000000;strokeWidth=2" vertex="1" parent="1">
+          <mxGeometry x="843" y="390" width="14" height="170" as="geometry" />
+        </mxCell>
+        <mxCell id="login_act_role" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff4e6;strokeColor=#000000;strokeWidth=2" vertex="1" parent="1">
+          <mxGeometry x="1103" y="455" width="14" height="75" as="geometry" />
+        </mxCell>
+        <mxCell id="login_m1" value="1. Membuka halaman login" style="endArrow=block;html=1;rounded=0;fontSize=12;endFill=1;strokeColor=#000000;strokeWidth=1.7" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="90" y="235" as="sourcePoint" />
+            <mxPoint x="315" y="235" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="login_m2" value="2. Menampilkan form login" style="endArrow=block;html=1;rounded=0;fontSize=12;endFill=1;strokeColor=#000000;strokeWidth=1.7;dashed=1" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="315" y="285" as="sourcePoint" />
+            <mxPoint x="90" y="285" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="login_m3" value="3. Mengisi email dan password" style="endArrow=block;html=1;rounded=0;fontSize=12;endFill=1;strokeColor=#000000;strokeWidth=1.7" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="90" y="335" as="sourcePoint" />
+            <mxPoint x="315" y="335" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="login_m4" value="4. Mengirim data login" style="endArrow=block;html=1;rounded=0;fontSize=12;endFill=1;strokeColor=#000000;strokeWidth=1.7" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="315" y="380" as="sourcePoint" />
+            <mxPoint x="570" y="380" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="login_m5" value="5. Validasi input" style="endArrow=block;html=1;rounded=0;fontSize=12;endFill=1;strokeColor=#000000;strokeWidth=1.7" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="570" y="430" as="sourcePoint" />
+            <mxPoint x="570" y="430" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="login_m6" value="6. Cek akun berdasarkan email" style="endArrow=block;html=1;rounded=0;fontSize=12;endFill=1;strokeColor=#000000;strokeWidth=1.7" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="570" y="470" as="sourcePoint" />
+            <mxPoint x="850" y="470" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="login_m7" value="7. Ambil role pengguna" style="endArrow=block;html=1;rounded=0;fontSize=12;endFill=1;strokeColor=#000000;strokeWidth=1.7" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="850" y="515" as="sourcePoint" />
+            <mxPoint x="1110" y="515" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="login_m8" value="8. Data akun dan role" style="endArrow=block;html=1;rounded=0;fontSize=12;endFill=1;strokeColor=#000000;strokeWidth=1.7;dashed=1" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1110" y="560" as="sourcePoint" />
+            <mxPoint x="570" y="560" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="login_alt" value="alt  login valid?" style="shape=umlFrame;whiteSpace=wrap;html=1;pointerEvents=0;fillColor=none;strokeColor=#000000;strokeWidth=2;align=left;verticalAlign=top;fontSize=13;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="250" y="600" width="1020" height="270" as="geometry" />
+        </mxCell>
+        <mxCell id="login_alt_sep" value="" style="endArrow=none;html=1;rounded=0;dashed=1;strokeColor=#000000;strokeWidth=1.5" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="250" y="735" as="sourcePoint" />
+            <mxPoint x="1270" y="735" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="login_alt_top" value="[ya]" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;fontSize=12" vertex="1" parent="1">
+          <mxGeometry x="265" y="638" width="260" height="24" as="geometry" />
+        </mxCell>
+        <mxCell id="login_alt_bottom" value="[tidak]" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;fontSize=12" vertex="1" parent="1">
+          <mxGeometry x="265" y="745" width="260" height="24" as="geometry" />
+        </mxCell>
+        <mxCell id="login_m9" value="9. Membuat session pengguna" style="endArrow=block;html=1;rounded=0;fontSize=12;endFill=1;strokeColor=#000000;strokeWidth=1.7" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="570" y="645" as="sourcePoint" />
+            <mxPoint x="570" y="645" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="login_m10" value="10. Redirect ke dashboard sesuai role" style="endArrow=block;html=1;rounded=0;fontSize=12;endFill=1;strokeColor=#000000;strokeWidth=1.7" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="570" y="700" as="sourcePoint" />
+            <mxPoint x="90" y="700" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="login_m11" value="11. Menampilkan pesan gagal login" style="endArrow=block;html=1;rounded=0;fontSize=12;endFill=1;strokeColor=#000000;strokeWidth=1.7;dashed=1" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="570" y="810" as="sourcePoint" />
+            <mxPoint x="315" y="810" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="login_page_head_label" value=":HalamanLogin" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=13;fontStyle=4" vertex="1" parent="1">
+          <mxGeometry x="230" y="137" width="170" height="28" as="geometry" />
+        </mxCell>
+        <mxCell id="login_page_head_boundary_line" value="" style="endArrow=none;html=1;rounded=0;strokeColor=#000000;strokeWidth=2" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="275" y="83" as="sourcePoint" />
+            <mxPoint x="275" y="127" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="login_page_head_boundary_stub" value="" style="endArrow=none;html=1;rounded=0;strokeColor=#000000;strokeWidth=2" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="275" y="105" as="sourcePoint" />
+            <mxPoint x="285" y="105" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="login_ctrl_head_label" value=":LoginController" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=13;fontStyle=4" vertex="1" parent="1">
+          <mxGeometry x="485" y="137" width="170" height="28" as="geometry" />
+        </mxCell>
+        <mxCell id="login_ctrl_head_control_tail" value="" style="endArrow=none;html=1;rounded=0;strokeColor=#000000;strokeWidth=2" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="556" y="70" as="sourcePoint" />
+            <mxPoint x="568" y="81" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="login_ctrl_head_control_arrow" value="" style="endArrow=block;endFill=1;html=1;rounded=0;strokeColor=#000000;strokeWidth=2" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="556" y="70" as="sourcePoint" />
+            <mxPoint x="544" y="79" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="login_user_head_label" value=":tb_pengguna" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=13;fontStyle=4" vertex="1" parent="1">
+          <mxGeometry x="765" y="137" width="170" height="28" as="geometry" />
+        </mxCell>
+        <mxCell id="login_user_head_entity_under" value="" style="endArrow=none;html=1;rounded=0;strokeColor=#000000;strokeWidth=2" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="828" y="139" as="sourcePoint" />
+            <mxPoint x="872" y="139" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="login_role_head_label" value=":tb_peran" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=13;fontStyle=4" vertex="1" parent="1">
+          <mxGeometry x="1025" y="137" width="170" height="28" as="geometry" />
+        </mxCell>
+        <mxCell id="login_role_head_entity_under" value="" style="endArrow=none;html=1;rounded=0;strokeColor=#000000;strokeWidth=2" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1088" y="139" as="sourcePoint" />
+            <mxPoint x="1132" y="139" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="seq-tracer" name="Sequence Pengisian Tracer">
+    <mxGraphModel fold="1" pageWidth="1500" dx="1700" tooltips="1" guides="1" connect="1" grid="1" shadow="0" math="0" pageHeight="1050" dy="1100" gridSize="10" pageScale="1" page="1" arrows="1">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="seq-tracer_frame" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#000000;strokeWidth=2" vertex="1" parent="1">
+          <mxGeometry x="20" y="20" width="1435" height="970" as="geometry" />
+        </mxCell>
+        <mxCell id="seq-tracer_title" value="Sequence Diagram - Mengisi Tracer Study" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=13;fontStyle=2" vertex="1" parent="1">
+          <mxGeometry x="30" y="24" width="430" height="24" as="geometry" />
+        </mxCell>
+        <mxCell id="tracer_actor" value="Alumni" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;fontSize=13;strokeWidth=2" vertex="1" parent="1">
+          <mxGeometry x="65" y="70" width="50" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="tracer_life_actor" value="" style="endArrow=none;html=1;rounded=0;dashed=1;strokeColor=#000000;strokeWidth=1.5" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="90" y="155" as="sourcePoint" />
+            <mxPoint x="90" y="935" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="tracer_profile_head" value="" style="ellipse;whiteSpace=wrap;html=1;fillColor=#fff4e6;strokeColor=#000000;strokeWidth=2;fontSize=13" vertex="1" parent="1">
+          <mxGeometry x="285" y="75" width="60" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="tracer_profile_life" value="" style="endArrow=none;html=1;rounded=0;dashed=1;strokeColor=#000000;strokeWidth=1.5" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="315" y="135" as="sourcePoint" />
+            <mxPoint x="315" y="935" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="tracer_page_head" value="" style="ellipse;whiteSpace=wrap;html=1;fillColor=#fff4e6;strokeColor=#000000;strokeWidth=2;fontSize=13" vertex="1" parent="1">
+          <mxGeometry x="495" y="75" width="60" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="tracer_page_life" value="" style="endArrow=none;html=1;rounded=0;dashed=1;strokeColor=#000000;strokeWidth=1.5" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="525" y="135" as="sourcePoint" />
+            <mxPoint x="525" y="935" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="tracer_ctrl_head" value="" style="ellipse;whiteSpace=wrap;html=1;fillColor=#fff4e6;strokeColor=#000000;strokeWidth=2;fontSize=13" vertex="1" parent="1">
+          <mxGeometry x="730" y="75" width="60" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="tracer_ctrl_life" value="" style="endArrow=none;html=1;rounded=0;dashed=1;strokeColor=#000000;strokeWidth=1.5" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="760" y="135" as="sourcePoint" />
+            <mxPoint x="760" y="935" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="tracer_table_head" value="" style="ellipse;whiteSpace=wrap;html=1;fillColor=#fff4e6;strokeColor=#000000;strokeWidth=2;fontSize=13" vertex="1" parent="1">
+          <mxGeometry x="1020" y="75" width="60" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="tracer_table_life" value="" style="endArrow=none;html=1;rounded=0;dashed=1;strokeColor=#000000;strokeWidth=1.5" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1050" y="135" as="sourcePoint" />
+            <mxPoint x="1050" y="935" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="tracer_alumni_head" value="" style="ellipse;whiteSpace=wrap;html=1;fillColor=#fff4e6;strokeColor=#000000;strokeWidth=2;fontSize=13" vertex="1" parent="1">
+          <mxGeometry x="1260" y="75" width="60" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="tracer_alumni_life" value="" style="endArrow=none;html=1;rounded=0;dashed=1;strokeColor=#000000;strokeWidth=1.5" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1290" y="135" as="sourcePoint" />
+            <mxPoint x="1290" y="935" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="tracer_act_profile" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff4e6;strokeColor=#000000;strokeWidth=2" vertex="1" parent="1">
+          <mxGeometry x="308" y="225" width="14" height="570" as="geometry" />
+        </mxCell>
+        <mxCell id="tracer_act_page" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff4e6;strokeColor=#000000;strokeWidth=2" vertex="1" parent="1">
+          <mxGeometry x="518" y="365" width="14" height="430" as="geometry" />
+        </mxCell>
+        <mxCell id="tracer_act_ctrl" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff4e6;strokeColor=#000000;strokeWidth=2" vertex="1" parent="1">
+          <mxGeometry x="753" y="520" width="14" height="355" as="geometry" />
+        </mxCell>
+        <mxCell id="tracer_act_table" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff4e6;strokeColor=#000000;strokeWidth=2" vertex="1" parent="1">
+          <mxGeometry x="1043" y="585" width="14" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="tracer_act_alumni" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff4e6;strokeColor=#000000;strokeWidth=2" vertex="1" parent="1">
+          <mxGeometry x="1283" y="640" width="14" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="tracer_m1" value="1. Membuka halaman profil" style="endArrow=block;html=1;rounded=0;fontSize=12;endFill=1;strokeColor=#000000;strokeWidth=1.7" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="90" y="240" as="sourcePoint" />
+            <mxPoint x="315" y="240" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="tracer_m2" value="2. Menampilkan halaman profil dengan tab Tracer Study" style="endArrow=block;html=1;rounded=0;fontSize=12;endFill=1;strokeColor=#000000;strokeWidth=1.7;dashed=1" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="315" y="290" as="sourcePoint" />
+            <mxPoint x="90" y="290" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="tracer_m3" value="3. Membuka tab Tracer Study" style="endArrow=block;html=1;rounded=0;fontSize=12;endFill=1;strokeColor=#000000;strokeWidth=1.7" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="90" y="340" as="sourcePoint" />
+            <mxPoint x="315" y="340" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="tracer_m4" value="4. Memilih tombol Edit / Isi Tracer Study" style="endArrow=block;html=1;rounded=0;fontSize=12;endFill=1;strokeColor=#000000;strokeWidth=1.7" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="90" y="390" as="sourcePoint" />
+            <mxPoint x="525" y="390" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="tracer_m5" value="5. Menampilkan modal form Tracer Study" style="endArrow=block;html=1;rounded=0;fontSize=12;endFill=1;strokeColor=#000000;strokeWidth=1.7;dashed=1" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="525" y="440" as="sourcePoint" />
+            <mxPoint x="90" y="440" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="tracer_m6" value="6. Mengisi data tracer study sesuai aktivitas" style="endArrow=block;html=1;rounded=0;fontSize=12;endFill=1;strokeColor=#000000;strokeWidth=1.7" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="90" y="490" as="sourcePoint" />
+            <mxPoint x="525" y="490" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="tracer_m7" value="7. Memilih aksi Simpan Data / Kirim Tracer" style="endArrow=block;html=1;rounded=0;fontSize=12;endFill=1;strokeColor=#000000;strokeWidth=1.7" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="90" y="540" as="sourcePoint" />
+            <mxPoint x="525" y="540" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="tracer_m8" value="8. Mengirim data tracer study" style="endArrow=block;html=1;rounded=0;fontSize=12;endFill=1;strokeColor=#000000;strokeWidth=1.7" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="525" y="585" as="sourcePoint" />
+            <mxPoint x="760" y="585" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="tracer_m9" value="9. Validasi data tracer" style="endArrow=block;html=1;rounded=0;fontSize=12;endFill=1;strokeColor=#000000;strokeWidth=1.7" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="760" y="630" as="sourcePoint" />
+            <mxPoint x="760" y="630" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="tracer_alt" value="alt  data valid?" style="shape=umlFrame;whiteSpace=wrap;html=1;pointerEvents=0;fillColor=none;strokeColor=#000000;strokeWidth=2;align=left;verticalAlign=top;fontSize=13;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="45" y="665" width="1365" height="250" as="geometry" />
+        </mxCell>
+        <mxCell id="tracer_alt_sep" value="" style="endArrow=none;html=1;rounded=0;dashed=1;strokeColor=#000000;strokeWidth=1.5" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="45" y="790" as="sourcePoint" />
+            <mxPoint x="1410" y="790" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="tracer_alt_top" value="[data valid]" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;fontSize=12" vertex="1" parent="1">
+          <mxGeometry x="60" y="703" width="260" height="24" as="geometry" />
+        </mxCell>
+        <mxCell id="tracer_alt_bottom" value="[data tidak valid]" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;fontSize=12" vertex="1" parent="1">
+          <mxGeometry x="60" y="800" width="260" height="24" as="geometry" />
+        </mxCell>
+        <mxCell id="tracer_m10" value="10. Menyimpan atau memperbarui data tracer" style="endArrow=block;html=1;rounded=0;fontSize=12;endFill=1;strokeColor=#000000;strokeWidth=1.7" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="760" y="705" as="sourcePoint" />
+            <mxPoint x="1050" y="705" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="tracer_m11" value="11. Data berhasil tersimpan" style="endArrow=block;html=1;rounded=0;fontSize=12;endFill=1;strokeColor=#000000;strokeWidth=1.7;dashed=1" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1050" y="750" as="sourcePoint" />
+            <mxPoint x="760" y="750" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="tracer_m12" value="12. Memperbarui data alumni/tracer lengkap" style="endArrow=block;html=1;rounded=0;fontSize=12;endFill=1;strokeColor=#000000;strokeWidth=1.7" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="760" y="795" as="sourcePoint" />
+            <mxPoint x="1290" y="795" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="tracer_m13" value="13. Data berhasil diperbarui" style="endArrow=block;html=1;rounded=0;fontSize=12;endFill=1;strokeColor=#000000;strokeWidth=1.7;dashed=1" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1290" y="840" as="sourcePoint" />
+            <mxPoint x="760" y="840" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="tracer_m14" value="14. Mengirim pesan berhasil" style="endArrow=block;html=1;rounded=0;fontSize=12;endFill=1;strokeColor=#000000;strokeWidth=1.7;dashed=1" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="760" y="875" as="sourcePoint" />
+            <mxPoint x="525" y="875" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="tracer_m15" value="15. Menampilkan pesan error" style="endArrow=block;html=1;rounded=0;fontSize=12;endFill=1;strokeColor=#000000;strokeWidth=1.7;dashed=1" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="760" y="925" as="sourcePoint" />
+            <mxPoint x="525" y="925" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="tracer_profile_head_label" value=":HalamanProfil" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=13;fontStyle=4" vertex="1" parent="1">
+          <mxGeometry x="230" y="137" width="170" height="28" as="geometry" />
+        </mxCell>
+        <mxCell id="tracer_profile_head_boundary_line" value="" style="endArrow=none;html=1;rounded=0;strokeColor=#000000;strokeWidth=2" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="275" y="83" as="sourcePoint" />
+            <mxPoint x="275" y="127" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="tracer_profile_head_boundary_stub" value="" style="endArrow=none;html=1;rounded=0;strokeColor=#000000;strokeWidth=2" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="275" y="105" as="sourcePoint" />
+            <mxPoint x="285" y="105" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="tracer_page_head_label" value=":HalamanTracer" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=13;fontStyle=4" vertex="1" parent="1">
+          <mxGeometry x="440" y="137" width="170" height="28" as="geometry" />
+        </mxCell>
+        <mxCell id="tracer_page_head_boundary_line" value="" style="endArrow=none;html=1;rounded=0;strokeColor=#000000;strokeWidth=2" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="485" y="83" as="sourcePoint" />
+            <mxPoint x="485" y="127" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="tracer_page_head_boundary_stub" value="" style="endArrow=none;html=1;rounded=0;strokeColor=#000000;strokeWidth=2" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="485" y="105" as="sourcePoint" />
+            <mxPoint x="495" y="105" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="tracer_ctrl_head_label" value=":DashboardController" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=13;fontStyle=4" vertex="1" parent="1">
+          <mxGeometry x="675" y="137" width="170" height="28" as="geometry" />
+        </mxCell>
+        <mxCell id="tracer_ctrl_head_control_tail" value="" style="endArrow=none;html=1;rounded=0;strokeColor=#000000;strokeWidth=2" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="746" y="70" as="sourcePoint" />
+            <mxPoint x="758" y="81" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="tracer_ctrl_head_control_arrow" value="" style="endArrow=block;endFill=1;html=1;rounded=0;strokeColor=#000000;strokeWidth=2" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="746" y="70" as="sourcePoint" />
+            <mxPoint x="734" y="79" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="tracer_table_head_label" value=":tb_tracer_alumni" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=13;fontStyle=4" vertex="1" parent="1">
+          <mxGeometry x="965" y="137" width="170" height="28" as="geometry" />
+        </mxCell>
+        <mxCell id="tracer_table_head_entity_under" value="" style="endArrow=none;html=1;rounded=0;strokeColor=#000000;strokeWidth=2" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1028" y="139" as="sourcePoint" />
+            <mxPoint x="1072" y="139" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="tracer_alumni_head_label" value=":tb_alumni" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=13;fontStyle=4" vertex="1" parent="1">
+          <mxGeometry x="1205" y="137" width="170" height="28" as="geometry" />
+        </mxCell>
+        <mxCell id="tracer_alumni_head_entity_under" value="" style="endArrow=none;html=1;rounded=0;strokeColor=#000000;strokeWidth=2" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1268" y="139" as="sourcePoint" />
+            <mxPoint x="1312" y="139" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="seq-legalisir" name="Sequence Pengajuan Legalisir">
+    <mxGraphModel fold="1" pageWidth="1500" dx="1700" tooltips="1" guides="1" connect="1" grid="1" shadow="0" math="0" pageHeight="1050" dy="1100" gridSize="10" pageScale="1" page="1" arrows="1">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="seq-legalisir_frame" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#000000;strokeWidth=2" vertex="1" parent="1">
+          <mxGeometry x="20" y="20" width="1435" height="970" as="geometry" />
+        </mxCell>
+        <mxCell id="seq-legalisir_title" value="Sequence Diagram - Pengajuan Legalisir" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=13;fontStyle=2" vertex="1" parent="1">
+          <mxGeometry x="30" y="24" width="430" height="24" as="geometry" />
+        </mxCell>
+        <mxCell id="leg_actor" value="Alumni" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;fontSize=13;strokeWidth=2" vertex="1" parent="1">
+          <mxGeometry x="65" y="70" width="50" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="leg_life_actor" value="" style="endArrow=none;html=1;rounded=0;dashed=1;strokeColor=#000000;strokeWidth=1.5" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="90" y="155" as="sourcePoint" />
+            <mxPoint x="90" y="935" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="leg_page_head" value="" style="ellipse;whiteSpace=wrap;html=1;fillColor=#fff4e6;strokeColor=#000000;strokeWidth=2;fontSize=13" vertex="1" parent="1">
+          <mxGeometry x="290" y="75" width="60" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="leg_page_life" value="" style="endArrow=none;html=1;rounded=0;dashed=1;strokeColor=#000000;strokeWidth=1.5" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="320" y="135" as="sourcePoint" />
+            <mxPoint x="320" y="935" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="leg_ctrl_head" value="" style="ellipse;whiteSpace=wrap;html=1;fillColor=#fff4e6;strokeColor=#000000;strokeWidth=2;fontSize=13" vertex="1" parent="1">
+          <mxGeometry x="560" y="75" width="60" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="leg_ctrl_life" value="" style="endArrow=none;html=1;rounded=0;dashed=1;strokeColor=#000000;strokeWidth=1.5" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="590" y="135" as="sourcePoint" />
+            <mxPoint x="590" y="935" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="leg_table_head" value="" style="ellipse;whiteSpace=wrap;html=1;fillColor=#fff4e6;strokeColor=#000000;strokeWidth=2;fontSize=13" vertex="1" parent="1">
+          <mxGeometry x="870" y="75" width="60" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="leg_table_life" value="" style="endArrow=none;html=1;rounded=0;dashed=1;strokeColor=#000000;strokeWidth=1.5" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="900" y="135" as="sourcePoint" />
+            <mxPoint x="900" y="935" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="leg_notif_head" value="" style="ellipse;whiteSpace=wrap;html=1;fillColor=#fff4e6;strokeColor=#000000;strokeWidth=2;fontSize=13" vertex="1" parent="1">
+          <mxGeometry x="1170" y="75" width="60" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="leg_notif_life" value="" style="endArrow=none;html=1;rounded=0;dashed=1;strokeColor=#000000;strokeWidth=1.5" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1200" y="135" as="sourcePoint" />
+            <mxPoint x="1200" y="935" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="leg_act_page" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff4e6;strokeColor=#000000;strokeWidth=2" vertex="1" parent="1">
+          <mxGeometry x="313" y="225" width="14" height="550" as="geometry" />
+        </mxCell>
+        <mxCell id="leg_act_ctrl" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff4e6;strokeColor=#000000;strokeWidth=2" vertex="1" parent="1">
+          <mxGeometry x="583" y="340" width="14" height="470" as="geometry" />
+        </mxCell>
+        <mxCell id="leg_act_table" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff4e6;strokeColor=#000000;strokeWidth=2" vertex="1" parent="1">
+          <mxGeometry x="893" y="395" width="14" height="210" as="geometry" />
+        </mxCell>
+        <mxCell id="leg_act_notif" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff4e6;strokeColor=#000000;strokeWidth=2" vertex="1" parent="1">
+          <mxGeometry x="1193" y="675" width="14" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="leg_m1" value="1. Membuka halaman legalisir" style="endArrow=block;html=1;rounded=0;fontSize=12;endFill=1;strokeColor=#000000;strokeWidth=1.7" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="90" y="240" as="sourcePoint" />
+            <mxPoint x="320" y="240" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="leg_m2" value="2. Meminta riwayat pengajuan" style="endArrow=block;html=1;rounded=0;fontSize=12;endFill=1;strokeColor=#000000;strokeWidth=1.7" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="320" y="300" as="sourcePoint" />
+            <mxPoint x="590" y="300" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="leg_m3" value="3. Mengambil data pengajuan legalisir" style="endArrow=block;html=1;rounded=0;fontSize=12;endFill=1;strokeColor=#000000;strokeWidth=1.7" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="590" y="350" as="sourcePoint" />
+            <mxPoint x="900" y="350" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="leg_m4" value="4. Data riwayat pengajuan" style="endArrow=block;html=1;rounded=0;fontSize=12;endFill=1;strokeColor=#000000;strokeWidth=1.7;dashed=1" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="900" y="405" as="sourcePoint" />
+            <mxPoint x="590" y="405" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="leg_m5" value="5. Menampilkan form dan riwayat legalisir" style="endArrow=block;html=1;rounded=0;fontSize=12;endFill=1;strokeColor=#000000;strokeWidth=1.7;dashed=1" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="590" y="455" as="sourcePoint" />
+            <mxPoint x="90" y="455" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="leg_m6" value="6. Mengisi jenis dokumen dan keperluan" style="endArrow=block;html=1;rounded=0;fontSize=12;endFill=1;strokeColor=#000000;strokeWidth=1.7" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="90" y="520" as="sourcePoint" />
+            <mxPoint x="320" y="520" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="leg_m7" value="7. Mengirim pengajuan legalisir" style="endArrow=block;html=1;rounded=0;fontSize=12;endFill=1;strokeColor=#000000;strokeWidth=1.7" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="320" y="570" as="sourcePoint" />
+            <mxPoint x="590" y="570" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="leg_m8" value="8. Validasi data pengajuan" style="endArrow=block;html=1;rounded=0;fontSize=12;endFill=1;strokeColor=#000000;strokeWidth=1.7" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="590" y="620" as="sourcePoint" />
+            <mxPoint x="590" y="620" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="leg_alt" value="alt  pengajuan valid?" style="shape=umlFrame;whiteSpace=wrap;html=1;pointerEvents=0;fillColor=none;strokeColor=#000000;strokeWidth=2;align=left;verticalAlign=top;fontSize=13;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="250" y="650" width="1050" height="240" as="geometry" />
+        </mxCell>
+        <mxCell id="leg_alt_sep" value="" style="endArrow=none;html=1;rounded=0;dashed=1;strokeColor=#000000;strokeWidth=1.5" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="250" y="770" as="sourcePoint" />
+            <mxPoint x="1300" y="770" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="leg_alt_top" value="[valid]" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;fontSize=12" vertex="1" parent="1">
+          <mxGeometry x="265" y="688" width="260" height="24" as="geometry" />
+        </mxCell>
+        <mxCell id="leg_alt_bottom" value="[tidak valid]" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;fontSize=12" vertex="1" parent="1">
+          <mxGeometry x="265" y="780" width="260" height="24" as="geometry" />
+        </mxCell>
+        <mxCell id="leg_m9" value="9. Simpan pengajuan legalisir" style="endArrow=block;html=1;rounded=0;fontSize=12;endFill=1;strokeColor=#000000;strokeWidth=1.7" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="590" y="695" as="sourcePoint" />
+            <mxPoint x="900" y="695" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="leg_m10" value="10. Membuat notifikasi untuk admin" style="endArrow=block;html=1;rounded=0;fontSize=12;endFill=1;strokeColor=#000000;strokeWidth=1.7" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="590" y="745" as="sourcePoint" />
+            <mxPoint x="1200" y="745" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="leg_m11" value="11. Menampilkan pesan pengajuan berhasil" style="endArrow=block;html=1;rounded=0;fontSize=12;endFill=1;strokeColor=#000000;strokeWidth=1.7" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="590" y="800" as="sourcePoint" />
+            <mxPoint x="90" y="800" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="leg_m12" value="12. Menampilkan pesan kesalahan" style="endArrow=block;html=1;rounded=0;fontSize=12;endFill=1;strokeColor=#000000;strokeWidth=1.7;dashed=1" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="590" y="870" as="sourcePoint" />
+            <mxPoint x="320" y="870" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="leg_page_head_label" value=":HalamanLegalisir" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=13;fontStyle=4" vertex="1" parent="1">
+          <mxGeometry x="235" y="137" width="170" height="28" as="geometry" />
+        </mxCell>
+        <mxCell id="leg_page_head_boundary_line" value="" style="endArrow=none;html=1;rounded=0;strokeColor=#000000;strokeWidth=2" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="280" y="83" as="sourcePoint" />
+            <mxPoint x="280" y="127" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="leg_page_head_boundary_stub" value="" style="endArrow=none;html=1;rounded=0;strokeColor=#000000;strokeWidth=2" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="280" y="105" as="sourcePoint" />
+            <mxPoint x="290" y="105" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="leg_ctrl_head_label" value=":LegalisirController" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=13;fontStyle=4" vertex="1" parent="1">
+          <mxGeometry x="505" y="137" width="170" height="28" as="geometry" />
+        </mxCell>
+        <mxCell id="leg_ctrl_head_control_tail" value="" style="endArrow=none;html=1;rounded=0;strokeColor=#000000;strokeWidth=2" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="576" y="70" as="sourcePoint" />
+            <mxPoint x="588" y="81" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="leg_ctrl_head_control_arrow" value="" style="endArrow=block;endFill=1;html=1;rounded=0;strokeColor=#000000;strokeWidth=2" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="576" y="70" as="sourcePoint" />
+            <mxPoint x="564" y="79" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="leg_table_head_label" value=":tb_pengajuan_legalisir" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=13;fontStyle=4" vertex="1" parent="1">
+          <mxGeometry x="815" y="137" width="170" height="28" as="geometry" />
+        </mxCell>
+        <mxCell id="leg_table_head_entity_under" value="" style="endArrow=none;html=1;rounded=0;strokeColor=#000000;strokeWidth=2" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="878" y="139" as="sourcePoint" />
+            <mxPoint x="922" y="139" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="leg_notif_head_label" value=":tb_notifikasi" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=13;fontStyle=4" vertex="1" parent="1">
+          <mxGeometry x="1115" y="137" width="170" height="28" as="geometry" />
+        </mxCell>
+        <mxCell id="leg_notif_head_entity_under" value="" style="endArrow=none;html=1;rounded=0;strokeColor=#000000;strokeWidth=2" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1178" y="139" as="sourcePoint" />
+            <mxPoint x="1222" y="139" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="seq-register" name="Sequence Registrasi Alumni">
+    <mxGraphModel fold="1" pageWidth="1500" dx="1700" tooltips="1" guides="1" connect="1" grid="1" shadow="0" math="0" pageHeight="1050" dy="1100" gridSize="10" pageScale="1" page="1" arrows="1">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="seq-register_frame" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#000000;strokeWidth=2" vertex="1" parent="1">
+          <mxGeometry x="20" y="20" width="1435" height="970" as="geometry" />
+        </mxCell>
+        <mxCell id="seq-register_title" value="Sequence Diagram - Registrasi Alumni" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=13;fontStyle=2" vertex="1" parent="1">
+          <mxGeometry x="30" y="24" width="430" height="24" as="geometry" />
+        </mxCell>
+        <mxCell id="reg_actor" value="Calon Alumni" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;fontSize=13;strokeWidth=2" vertex="1" parent="1">
+          <mxGeometry x="65" y="70" width="50" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="reg_life_actor" value="" style="endArrow=none;html=1;rounded=0;dashed=1;strokeColor=#000000;strokeWidth=1.5" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="90" y="155" as="sourcePoint" />
+            <mxPoint x="90" y="935" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="reg_form_head" value="" style="ellipse;whiteSpace=wrap;html=1;fillColor=#fff4e6;strokeColor=#000000;strokeWidth=2;fontSize=13" vertex="1" parent="1">
+          <mxGeometry x="295" y="75" width="60" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="reg_form_life" value="" style="endArrow=none;html=1;rounded=0;dashed=1;strokeColor=#000000;strokeWidth=1.5" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="325" y="135" as="sourcePoint" />
+            <mxPoint x="325" y="935" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="reg_ctrl_head" value="" style="ellipse;whiteSpace=wrap;html=1;fillColor=#fff4e6;strokeColor=#000000;strokeWidth=2;fontSize=13" vertex="1" parent="1">
+          <mxGeometry x="580" y="75" width="60" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="reg_ctrl_life" value="" style="endArrow=none;html=1;rounded=0;dashed=1;strokeColor=#000000;strokeWidth=1.5" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="610" y="135" as="sourcePoint" />
+            <mxPoint x="610" y="935" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="reg_user_head" value="" style="ellipse;whiteSpace=wrap;html=1;fillColor=#fff4e6;strokeColor=#000000;strokeWidth=2;fontSize=13" vertex="1" parent="1">
+          <mxGeometry x="870" y="75" width="60" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="reg_user_life" value="" style="endArrow=none;html=1;rounded=0;dashed=1;strokeColor=#000000;strokeWidth=1.5" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="900" y="135" as="sourcePoint" />
+            <mxPoint x="900" y="935" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="reg_alumni_head" value="" style="ellipse;whiteSpace=wrap;html=1;fillColor=#fff4e6;strokeColor=#000000;strokeWidth=2;fontSize=13" vertex="1" parent="1">
+          <mxGeometry x="1160" y="75" width="60" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="reg_alumni_life" value="" style="endArrow=none;html=1;rounded=0;dashed=1;strokeColor=#000000;strokeWidth=1.5" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1190" y="135" as="sourcePoint" />
+            <mxPoint x="1190" y="935" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="reg_act_form" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff4e6;strokeColor=#000000;strokeWidth=2" vertex="1" parent="1">
+          <mxGeometry x="318" y="225" width="14" height="570" as="geometry" />
+        </mxCell>
+        <mxCell id="reg_act_ctrl" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff4e6;strokeColor=#000000;strokeWidth=2" vertex="1" parent="1">
+          <mxGeometry x="603" y="335" width="14" height="500" as="geometry" />
+        </mxCell>
+        <mxCell id="reg_act_user" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff4e6;strokeColor=#000000;strokeWidth=2" vertex="1" parent="1">
+          <mxGeometry x="893" y="620" width="14" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="reg_act_alumni" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff4e6;strokeColor=#000000;strokeWidth=2" vertex="1" parent="1">
+          <mxGeometry x="1183" y="700" width="14" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="reg_m1" value="1. Membuka halaman daftar alumni" style="endArrow=block;html=1;rounded=0;fontSize=12;endFill=1;strokeColor=#000000;strokeWidth=1.7" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="90" y="240" as="sourcePoint" />
+            <mxPoint x="325" y="240" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="reg_m2" value="2. Menampilkan form registrasi" style="endArrow=block;html=1;rounded=0;fontSize=12;endFill=1;strokeColor=#000000;strokeWidth=1.7;dashed=1" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="325" y="295" as="sourcePoint" />
+            <mxPoint x="90" y="295" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="reg_m3" value="3. Mengisi akun, akademik, dan data pribadi" style="endArrow=block;html=1;rounded=0;fontSize=12;endFill=1;strokeColor=#000000;strokeWidth=1.7" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="90" y="360" as="sourcePoint" />
+            <mxPoint x="325" y="360" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="reg_m4" value="4. Mengirim data registrasi" style="endArrow=block;html=1;rounded=0;fontSize=12;endFill=1;strokeColor=#000000;strokeWidth=1.7" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="325" y="415" as="sourcePoint" />
+            <mxPoint x="610" y="415" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="reg_m5" value="5. Validasi data registrasi" style="endArrow=block;html=1;rounded=0;fontSize=12;endFill=1;strokeColor=#000000;strokeWidth=1.7" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="610" y="470" as="sourcePoint" />
+            <mxPoint x="610" y="470" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="reg_m6" value="6. Cek email / role alumni" style="endArrow=block;html=1;rounded=0;fontSize=12;endFill=1;strokeColor=#000000;strokeWidth=1.7" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="610" y="530" as="sourcePoint" />
+            <mxPoint x="900" y="530" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="reg_m7" value="7. Data pengecekan" style="endArrow=block;html=1;rounded=0;fontSize=12;endFill=1;strokeColor=#000000;strokeWidth=1.7;dashed=1" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="900" y="585" as="sourcePoint" />
+            <mxPoint x="610" y="585" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="reg_alt" value="alt  data valid?" style="shape=umlFrame;whiteSpace=wrap;html=1;pointerEvents=0;fillColor=none;strokeColor=#000000;strokeWidth=2;align=left;verticalAlign=top;fontSize=13;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="250" y="610" width="1040" height="250" as="geometry" />
+        </mxCell>
+        <mxCell id="reg_alt_sep" value="" style="endArrow=none;html=1;rounded=0;dashed=1;strokeColor=#000000;strokeWidth=1.5" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="250" y="735" as="sourcePoint" />
+            <mxPoint x="1290" y="735" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="reg_alt_top" value="[valid]" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;fontSize=12" vertex="1" parent="1">
+          <mxGeometry x="265" y="648" width="260" height="24" as="geometry" />
+        </mxCell>
+        <mxCell id="reg_alt_bottom" value="[tidak valid]" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;fontSize=12" vertex="1" parent="1">
+          <mxGeometry x="265" y="745" width="260" height="24" as="geometry" />
+        </mxCell>
+        <mxCell id="reg_m8" value="8. Simpan akun pengguna" style="endArrow=block;html=1;rounded=0;fontSize=12;endFill=1;strokeColor=#000000;strokeWidth=1.7" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="610" y="655" as="sourcePoint" />
+            <mxPoint x="900" y="655" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="reg_m9" value="9. Simpan profil alumni" style="endArrow=block;html=1;rounded=0;fontSize=12;endFill=1;strokeColor=#000000;strokeWidth=1.7" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="610" y="735" as="sourcePoint" />
+            <mxPoint x="1190" y="735" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="reg_m10" value="10. Redirect ke login dengan pesan sukses" style="endArrow=block;html=1;rounded=0;fontSize=12;endFill=1;strokeColor=#000000;strokeWidth=1.7" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="610" y="805" as="sourcePoint" />
+            <mxPoint x="90" y="805" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="reg_m11" value="11. Kembali ke form dan tampilkan error" style="endArrow=block;html=1;rounded=0;fontSize=12;endFill=1;strokeColor=#000000;strokeWidth=1.7;dashed=1" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="610" y="875" as="sourcePoint" />
+            <mxPoint x="325" y="875" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="reg_form_head_label" value=":FormRegistrasi" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=13;fontStyle=4" vertex="1" parent="1">
+          <mxGeometry x="240" y="137" width="170" height="28" as="geometry" />
+        </mxCell>
+        <mxCell id="reg_form_head_boundary_line" value="" style="endArrow=none;html=1;rounded=0;strokeColor=#000000;strokeWidth=2" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="285" y="83" as="sourcePoint" />
+            <mxPoint x="285" y="127" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="reg_form_head_boundary_stub" value="" style="endArrow=none;html=1;rounded=0;strokeColor=#000000;strokeWidth=2" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="285" y="105" as="sourcePoint" />
+            <mxPoint x="295" y="105" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="reg_ctrl_head_label" value=":RegisterController" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=13;fontStyle=4" vertex="1" parent="1">
+          <mxGeometry x="525" y="137" width="170" height="28" as="geometry" />
+        </mxCell>
+        <mxCell id="reg_ctrl_head_control_tail" value="" style="endArrow=none;html=1;rounded=0;strokeColor=#000000;strokeWidth=2" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="596" y="70" as="sourcePoint" />
+            <mxPoint x="608" y="81" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="reg_ctrl_head_control_arrow" value="" style="endArrow=block;endFill=1;html=1;rounded=0;strokeColor=#000000;strokeWidth=2" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="596" y="70" as="sourcePoint" />
+            <mxPoint x="584" y="79" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="reg_user_head_label" value=":tb_pengguna" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=13;fontStyle=4" vertex="1" parent="1">
+          <mxGeometry x="815" y="137" width="170" height="28" as="geometry" />
+        </mxCell>
+        <mxCell id="reg_user_head_entity_under" value="" style="endArrow=none;html=1;rounded=0;strokeColor=#000000;strokeWidth=2" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="878" y="139" as="sourcePoint" />
+            <mxPoint x="922" y="139" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="reg_alumni_head_label" value=":tb_alumni" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=13;fontStyle=4" vertex="1" parent="1">
+          <mxGeometry x="1105" y="137" width="170" height="28" as="geometry" />
+        </mxCell>
+        <mxCell id="reg_alumni_head_entity_under" value="" style="endArrow=none;html=1;rounded=0;strokeColor=#000000;strokeWidth=2" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1168" y="139" as="sourcePoint" />
+            <mxPoint x="1212" y="139" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="seq-export" name="Sequence Laporan Export">
+    <mxGraphModel fold="1" pageWidth="1500" dx="1700" tooltips="1" guides="1" connect="1" grid="1" shadow="0" math="0" pageHeight="1050" dy="1100" gridSize="10" pageScale="1" page="1" arrows="1">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="seq-export_frame" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#000000;strokeWidth=2" vertex="1" parent="1">
+          <mxGeometry x="20" y="20" width="1435" height="970" as="geometry" />
+        </mxCell>
+        <mxCell id="seq-export_title" value="Sequence Diagram - Laporan / Export" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=13;fontStyle=2" vertex="1" parent="1">
+          <mxGeometry x="30" y="24" width="430" height="24" as="geometry" />
+        </mxCell>
+        <mxCell id="exp_actor" value="Admin" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;fontSize=13;strokeWidth=2" vertex="1" parent="1">
+          <mxGeometry x="65" y="70" width="50" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="exp_life_actor" value="" style="endArrow=none;html=1;rounded=0;dashed=1;strokeColor=#000000;strokeWidth=1.5" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="90" y="155" as="sourcePoint" />
+            <mxPoint x="90" y="935" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="exp_page_head" value="" style="ellipse;whiteSpace=wrap;html=1;fillColor=#fff4e6;strokeColor=#000000;strokeWidth=2;fontSize=13" vertex="1" parent="1">
+          <mxGeometry x="290" y="75" width="60" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="exp_page_life" value="" style="endArrow=none;html=1;rounded=0;dashed=1;strokeColor=#000000;strokeWidth=1.5" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="320" y="135" as="sourcePoint" />
+            <mxPoint x="320" y="935" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="exp_ctrl_head" value="" style="ellipse;whiteSpace=wrap;html=1;fillColor=#fff4e6;strokeColor=#000000;strokeWidth=2;fontSize=13" vertex="1" parent="1">
+          <mxGeometry x="570" y="75" width="60" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="exp_ctrl_life" value="" style="endArrow=none;html=1;rounded=0;dashed=1;strokeColor=#000000;strokeWidth=1.5" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="600" y="135" as="sourcePoint" />
+            <mxPoint x="600" y="935" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="exp_db_head" value="" style="ellipse;whiteSpace=wrap;html=1;fillColor=#fff4e6;strokeColor=#000000;strokeWidth=2;fontSize=13" vertex="1" parent="1">
+          <mxGeometry x="870" y="75" width="60" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="exp_db_life" value="" style="endArrow=none;html=1;rounded=0;dashed=1;strokeColor=#000000;strokeWidth=1.5" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="900" y="135" as="sourcePoint" />
+            <mxPoint x="900" y="935" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="exp_file_head" value="" style="ellipse;whiteSpace=wrap;html=1;fillColor=#fff4e6;strokeColor=#000000;strokeWidth=2;fontSize=13" vertex="1" parent="1">
+          <mxGeometry x="1170" y="75" width="60" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="exp_file_life" value="" style="endArrow=none;html=1;rounded=0;dashed=1;strokeColor=#000000;strokeWidth=1.5" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1200" y="135" as="sourcePoint" />
+            <mxPoint x="1200" y="935" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="exp_act_page" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff4e6;strokeColor=#000000;strokeWidth=2" vertex="1" parent="1">
+          <mxGeometry x="313" y="225" width="14" height="560" as="geometry" />
+        </mxCell>
+        <mxCell id="exp_act_ctrl" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff4e6;strokeColor=#000000;strokeWidth=2" vertex="1" parent="1">
+          <mxGeometry x="593" y="335" width="14" height="490" as="geometry" />
+        </mxCell>
+        <mxCell id="exp_act_db" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff4e6;strokeColor=#000000;strokeWidth=2" vertex="1" parent="1">
+          <mxGeometry x="893" y="390" width="14" height="210" as="geometry" />
+        </mxCell>
+        <mxCell id="exp_act_file" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff4e6;strokeColor=#000000;strokeWidth=2" vertex="1" parent="1">
+          <mxGeometry x="1193" y="690" width="14" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="exp_m1" value="1. Membuka halaman laporan tracer" style="endArrow=block;html=1;rounded=0;fontSize=12;endFill=1;strokeColor=#000000;strokeWidth=1.7" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="90" y="240" as="sourcePoint" />
+            <mxPoint x="320" y="240" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="exp_m2" value="2. Meminta data laporan sesuai filter" style="endArrow=block;html=1;rounded=0;fontSize=12;endFill=1;strokeColor=#000000;strokeWidth=1.7" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="320" y="300" as="sourcePoint" />
+            <mxPoint x="600" y="300" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="exp_m3" value="3. Query data tracer" style="endArrow=block;html=1;rounded=0;fontSize=12;endFill=1;strokeColor=#000000;strokeWidth=1.7" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="600" y="355" as="sourcePoint" />
+            <mxPoint x="900" y="355" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="exp_m4" value="4. Data laporan tracer" style="endArrow=block;html=1;rounded=0;fontSize=12;endFill=1;strokeColor=#000000;strokeWidth=1.7;dashed=1" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="900" y="415" as="sourcePoint" />
+            <mxPoint x="600" y="415" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="exp_m5" value="5. Menampilkan tabel dan grafik" style="endArrow=block;html=1;rounded=0;fontSize=12;endFill=1;strokeColor=#000000;strokeWidth=1.7;dashed=1" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="600" y="470" as="sourcePoint" />
+            <mxPoint x="90" y="470" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="exp_m6" value="6. Memilih Export Excel / PDF" style="endArrow=block;html=1;rounded=0;fontSize=12;endFill=1;strokeColor=#000000;strokeWidth=1.7" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="90" y="540" as="sourcePoint" />
+            <mxPoint x="320" y="540" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="exp_m7" value="7. Mengirim request export" style="endArrow=block;html=1;rounded=0;fontSize=12;endFill=1;strokeColor=#000000;strokeWidth=1.7" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="320" y="590" as="sourcePoint" />
+            <mxPoint x="600" y="590" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="exp_m8" value="8. Query ulang data export" style="endArrow=block;html=1;rounded=0;fontSize=12;endFill=1;strokeColor=#000000;strokeWidth=1.7" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="600" y="640" as="sourcePoint" />
+            <mxPoint x="900" y="640" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="exp_alt" value="alt  format export?" style="shape=umlFrame;whiteSpace=wrap;html=1;pointerEvents=0;fillColor=none;strokeColor=#000000;strokeWidth=2;align=left;verticalAlign=top;fontSize=13;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="250" y="665" width="1040" height="230" as="geometry" />
+        </mxCell>
+        <mxCell id="exp_alt_sep" value="" style="endArrow=none;html=1;rounded=0;dashed=1;strokeColor=#000000;strokeWidth=1.5" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="250" y="780" as="sourcePoint" />
+            <mxPoint x="1290" y="780" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="exp_alt_top" value="[Excel]" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;fontSize=12" vertex="1" parent="1">
+          <mxGeometry x="265" y="703" width="260" height="24" as="geometry" />
+        </mxCell>
+        <mxCell id="exp_alt_bottom" value="[PDF]" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;fontSize=12" vertex="1" parent="1">
+          <mxGeometry x="265" y="790" width="260" height="24" as="geometry" />
+        </mxCell>
+        <mxCell id="exp_m9" value="9. Membuat file Excel" style="endArrow=block;html=1;rounded=0;fontSize=12;endFill=1;strokeColor=#000000;strokeWidth=1.7" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="600" y="710" as="sourcePoint" />
+            <mxPoint x="1200" y="710" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="exp_m10" value="10. Download file .xls" style="endArrow=block;html=1;rounded=0;fontSize=12;endFill=1;strokeColor=#000000;strokeWidth=1.7" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="600" y="775" as="sourcePoint" />
+            <mxPoint x="90" y="775" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="exp_m11" value="11. Membuat file PDF" style="endArrow=block;html=1;rounded=0;fontSize=12;endFill=1;strokeColor=#000000;strokeWidth=1.7" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="600" y="855" as="sourcePoint" />
+            <mxPoint x="1200" y="855" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="exp_m12" value="12. Download file .pdf" style="endArrow=block;html=1;rounded=0;fontSize=12;endFill=1;strokeColor=#000000;strokeWidth=1.7" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="600" y="920" as="sourcePoint" />
+            <mxPoint x="90" y="920" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="exp_page_head_label" value=":HalamanLaporan" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=13;fontStyle=4" vertex="1" parent="1">
+          <mxGeometry x="235" y="137" width="170" height="28" as="geometry" />
+        </mxCell>
+        <mxCell id="exp_page_head_boundary_line" value="" style="endArrow=none;html=1;rounded=0;strokeColor=#000000;strokeWidth=2" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="280" y="83" as="sourcePoint" />
+            <mxPoint x="280" y="127" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="exp_page_head_boundary_stub" value="" style="endArrow=none;html=1;rounded=0;strokeColor=#000000;strokeWidth=2" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="280" y="105" as="sourcePoint" />
+            <mxPoint x="290" y="105" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="exp_ctrl_head_label" value=":TracerController" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=13;fontStyle=4" vertex="1" parent="1">
+          <mxGeometry x="515" y="137" width="170" height="28" as="geometry" />
+        </mxCell>
+        <mxCell id="exp_ctrl_head_control_tail" value="" style="endArrow=none;html=1;rounded=0;strokeColor=#000000;strokeWidth=2" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="586" y="70" as="sourcePoint" />
+            <mxPoint x="598" y="81" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="exp_ctrl_head_control_arrow" value="" style="endArrow=block;endFill=1;html=1;rounded=0;strokeColor=#000000;strokeWidth=2" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="586" y="70" as="sourcePoint" />
+            <mxPoint x="574" y="79" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="exp_db_head_label" value=":Database" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=13;fontStyle=4" vertex="1" parent="1">
+          <mxGeometry x="815" y="137" width="170" height="28" as="geometry" />
+        </mxCell>
+        <mxCell id="exp_db_head_entity_under" value="" style="endArrow=none;html=1;rounded=0;strokeColor=#000000;strokeWidth=2" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="878" y="139" as="sourcePoint" />
+            <mxPoint x="922" y="139" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="exp_file_head_label" value=":FileExcel/PDF" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=13;fontStyle=4" vertex="1" parent="1">
+          <mxGeometry x="1115" y="137" width="170" height="28" as="geometry" />
+        </mxCell>
+        <mxCell id="exp_file_head_entity_under" value="" style="endArrow=none;html=1;rounded=0;strokeColor=#000000;strokeWidth=2" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1178" y="139" as="sourcePoint" />
+            <mxPoint x="1222" y="139" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

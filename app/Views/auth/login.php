@@ -61,34 +61,43 @@
 <form class="form w-100" novalidate="novalidate" id="kt_sign_in_form" action="<?= base_url('login') ?>" method="POST">
     <?= csrf_field() ?>
 
-    <div class="text-center mb-11">
-        <h1 class="text-dark fw-bolder mb-3">Sign In</h1>
-        <div class="text-gray-500 fw-semibold fs-6">Login untuk mengakses dashboard sistem</div>
-    </div>
-
-    <div class="text-center mb-8">
-        <span class="text-gray-500 fw-semibold fs-6">Belum punya akun?</span>
-        <a href="<?= base_url('daftar') ?>" class="link-primary fw-bold">Daftar sebagai alumni</a>
-    </div>
-
-    <div class="separator separator-content my-14">
-        <span class="w-125px text-gray-500 fw-semibold fs-7">Or with email</span>
-    </div>
-
-    <div class="fv-row mb-8">
-        <input type="text" placeholder="Email" name="email" autocomplete="off" class="form-control bg-transparent" value="<?= esc(old('email')) ?>" />
-    </div>
-
-    <div class="fv-row mb-3">
-        <div class="input-group">
-            <input type="password" placeholder="Password" name="password" autocomplete="off" class="form-control bg-transparent" data-password-input />
-            <button type="button" class="btn btn-light" data-password-toggle>Lihat</button>
+    <div class="auth-login-hero text-center mb-9">
+        <div class="auth-school-logo mx-auto mb-5">
+            <img src="<?= base_url('assets/media/logos/logo-smk-teratai-putih-3.svg') ?>" alt="Logo SMK Teratai Putih 3">
+        </div>
+        <div class="badge badge-light-primary fw-bold px-4 py-2 mb-4">Sistem Informasi Tracer Study</div>
+        <h1 class="text-dark fw-bolder mb-3">Selamat Datang</h1>
+        <div class="text-gray-600 fw-semibold fs-6 lh-lg">
+            Masuk untuk mengelola data alumni<br>
+            <span class="text-primary fw-bold">SMK Teratai Putih 3</span>
         </div>
     </div>
 
-    <div class="d-grid mb-10">
-        <button type="submit" id="kt_sign_in_submit" class="btn btn-primary">
-            <span class="indicator-label">Sign In</span>
+    <div class="auth-register-callout d-flex flex-column flex-sm-row align-items-center justify-content-between gap-3 mb-8">
+        <span class="text-gray-600 fw-semibold">Belum punya akun alumni?</span>
+        <a href="<?= base_url('daftar') ?>" class="btn btn-light-primary btn-sm fw-bold">Daftar Alumni</a>
+    </div>
+
+    <div class="separator separator-content my-8">
+        <span class="w-150px text-gray-500 fw-semibold fs-7">Masuk dengan email</span>
+    </div>
+
+    <div class="fv-row mb-8">
+        <label class="form-label fw-bold text-gray-700">Email</label>
+        <input type="email" placeholder="nama@email.com" name="email" autocomplete="username" class="form-control form-control-lg form-control-solid auth-input" value="<?= esc(old('email')) ?>" />
+    </div>
+
+    <div class="fv-row mb-6">
+        <label class="form-label fw-bold text-gray-700">Password</label>
+        <div class="input-group">
+            <input type="password" placeholder="Masukkan password" name="password" autocomplete="current-password" class="form-control form-control-lg form-control-solid auth-input" data-password-input />
+            <button type="button" class="btn btn-light-primary fw-bold px-6" data-password-toggle>Lihat</button>
+        </div>
+    </div>
+
+    <div class="d-grid mb-2">
+        <button type="submit" id="kt_sign_in_submit" class="btn btn-primary btn-lg fw-bold">
+            <span class="indicator-label">Masuk</span>
             <span class="indicator-progress">Please wait...
                 <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
             </span>

@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Tabel Pengujian Black Box - Sistem Informasi Tracer Study</title>
+    <style>
+        body {
+            font-family: "Times New Roman", serif;
+            font-size: 12pt;
+            color: #000;
+            line-height: 1.35;
+        }
+        h1 {
+            text-align: center;
+            font-size: 14pt;
+            margin-bottom: 6pt;
+            text-transform: uppercase;
+        }
+        p {
+            margin: 0 0 10pt;
+            text-align: justify;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10pt;
+        }
+        th, td {
+            border: 1px solid #000;
+            padding: 6pt;
+            vertical-align: top;
+        }
+        th {
+            background: #d9eaf7;
+            text-align: center;
+            font-weight: bold;
+        }
+        .center {
+            text-align: center;
+        }
+        .nowrap {
+            white-space: nowrap;
+        }
+    </style>
+</head>
+<body>
+    <h1>Tabel Pengujian Black Box</h1>
+    <p>
+        Pengujian black box dilakukan untuk memastikan setiap fungsi utama pada Sistem Informasi Tracer Study
+        Alumni berjalan sesuai kebutuhan pengguna tanpa melihat struktur kode program. Pengujian berfokus pada
+        masukan, proses, dan keluaran yang ditampilkan oleh sistem.
+    </p>
+
+    <table>
+        <thead>
+            <tr>
+                <th style="width: 5%;">No</th>
+                <th style="width: 16%;">Fitur yang Diuji</th>
+                <th style="width: 24%;">Skenario Pengujian</th>
+                <th style="width: 24%;">Data Uji</th>
+                <th style="width: 23%;">Hasil yang Diharapkan</th>
+                <th style="width: 8%;">Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="center">1</td>
+                <td>Landing Page</td>
+                <td>Pengguna membuka halaman utama sistem.</td>
+                <td>Akses URL halaman utama.</td>
+                <td>Sistem menampilkan landing page berisi informasi tracer study, tombol login, dan tombol daftar alumni.</td>
+                <td class="center">Valid</td>
+            </tr>
+            <tr>
+                <td class="center">2</td>
+                <td>Landing Page</td>
+                <td>Pengguna menekan tombol Login.</td>
+                <td>Klik tombol Login.</td>
+                <td>Sistem mengarahkan pengguna ke halaman login.</td>
+                <td class="center">Valid</td>
+            </tr>
+            <tr>
+                <td class="center">3</td>
+                <td>Landing Page</td>
+                <td>Pengguna menekan tombol Daftar Alumni.</td>
+                <td>Klik tombol Daftar Alumni.</td>
+                <td>Sistem mengarahkan pengguna ke halaman registrasi alumni.</td>
+                <td class="center">Valid</td>
+            </tr>
+            <tr>
+                <td class="center">4</td>
+                <td>Login</td>
+                <td>Pengguna login menggunakan email dan password yang benar.</td>
+                <td>Email dan password terdaftar.</td>
+                <td>Sistem berhasil masuk dan mengarahkan pengguna ke dashboard sesuai role.</td>
+                <td class="center">Valid</td>
+            </tr>
+            <tr>
+                <td class="center">5</td>
+                <td>Login</td>
+                <td>Pengguna login dengan password salah.</td>
+                <td>Email benar, password salah.</td>
+                <td>Sistem menolak login dan menampilkan pesan gagal login.</td>
+                <td class="center">Valid</td>
+            </tr>
+            <tr>
+                <td class="center">6</td>
+                <td>Login</td>
+                <td>Pengguna login dengan field kosong.</td>
+                <td>Email dan password kosong.</td>
+                <td>Sistem menampilkan validasi bahwa email dan password wajib diisi.</td>
+                <td class="center">Valid</td>
+            </tr>
+            <tr>
+                <td class="center">7</td>
+                <td>Registrasi Alumni</td>
+                <td>Calon alumni melakukan registrasi dengan data lengkap.</td>
+                <td>Nama, email, password, NIS, angkatan, kompetensi, dan data diri valid.</td>
+                <td>Data akun dan profil alumni berhasil disimpan dengan status menunggu aktivasi.</td>
+                <td class="center">Valid</td>
+            </tr>
+            <tr>
+                <td class="center">8</td>
+                <td>Registrasi Alumni</td>
+                <td>Calon alumni mengosongkan field wajib.</td>
+                <td>Beberapa field wajib dikosongkan.</td>
+                <td>Sistem menolak registrasi dan menampilkan pesan validasi.</td>
+                <td class="center">Valid</td>
+            </tr>
+            <tr>
+                <td class="center">9</td>
+                <td>Registrasi Alumni</td>
+                <td>Calon alumni menggunakan email yang sudah terdaftar.</td>
+                <td>Email yang sudah ada pada sistem.</td>
+                <td>Sistem menolak registrasi karena email sudah digunakan.</td>
+                <td class="center">Valid</td>
+            </tr>
+            <tr>
+                <td class="center">10</td>
+                <td>Aktivasi Alumni</td>
+                <td>Admin mengubah status akun alumni menjadi aktif.</td>
+                <td>Status akun alumni: Aktif.</td>
+                <td>Sistem menyimpan perubahan status dan alumni dapat mengakses menu alumni.</td>
+                <td class="center">Valid</td>
+            </tr>
+            <tr>
+                <td class="center">11</td>
+                <td>Profil Alumni</td>
+                <td>Alumni mengubah data profil dengan data valid.</td>
+                <td>Data alamat, nomor telepon, dan identitas valid.</td>
+                <td>Sistem menyimpan perubahan profil alumni.</td>
+                <td class="center">Valid</td>
+            </tr>
+            <tr>
+                <td class="center">12</td>
+                <td>Profil Alumni</td>
+                <td>Alumni mengubah password dengan data valid.</td>
+                <td>Password lama benar dan password baru valid.</td>
+                <td>Sistem berhasil mengubah password akun alumni.</td>
+                <td class="center">Valid</td>
+            </tr>
+            <tr>
+                <td class="center">13</td>
+                <td>Tracer Study</td>
+                <td>Alumni mengisi tracer dengan aktivitas bekerja.</td>
+                <td>Aktivitas bekerja, nama instansi, posisi kerja, dan data pekerjaan.</td>
+                <td>Sistem menyimpan data tracer alumni kategori bekerja.</td>
+                <td class="center">Valid</td>
+            </tr>
+            <tr>
+                <td class="center">14</td>
+                <td>Tracer Study</td>
+                <td>Alumni mengisi tracer dengan aktivitas kuliah.</td>
+                <td>Aktivitas kuliah, universitas, program studi, dan status kuliah.</td>
+                <td>Sistem menyimpan data tracer alumni kategori kuliah.</td>
+                <td class="center">Valid</td>
+            </tr>
+            <tr>
+                <td class="center">15</td>
+                <td>Tracer Study</td>
+                <td>Alumni mengisi tracer dengan aktivitas wirausaha.</td>
+                <td>Aktivitas wirausaha, nama usaha, bidang usaha, dan data usaha.</td>
+                <td>Sistem menyimpan data tracer alumni kategori wirausaha.</td>
+                <td class="center">Valid</td>
+            </tr>
+            <tr>
+                <td class="center">16</td>
+                <td>Tracer Study</td>
+                <td>Alumni mengisi tracer dengan aktivitas mencari kerja.</td>
+                <td>Aktivitas mencari kerja dan rencana kedepan.</td>
+                <td>Sistem menyimpan data tracer alumni kategori mencari kerja.</td>
+                <td class="center">Valid</td>
+            </tr>
+            <tr>
+                <td class="center">17</td>
+                <td>Tracer Study</td>
+                <td>Alumni mengirim form tracer tanpa memilih aktivitas.</td>
+                <td>Field aktivitas kosong.</td>
+                <td>Sistem menolak penyimpanan dan menampilkan pesan validasi.</td>
+                <td class="center">Valid</td>
+            </tr>
+            <tr>
+                <td class="center">18</td>
+                <td>Legalisir Alumni</td>
+                <td>Alumni mengajukan legalisir dengan data lengkap.</td>
+                <td>Jenis dokumen dan keperluan diisi.</td>
+                <td>Sistem menyimpan pengajuan legalisir dan mengirim notifikasi kepada admin.</td>
+                <td class="center">Valid</td>
+            </tr>
+            <tr>
+                <td class="center">19</td>
+                <td>Legalisir Alumni</td>
+                <td>Alumni mengajukan legalisir dengan field wajib kosong.</td>
+                <td>Jenis dokumen atau keperluan kosong.</td>
+                <td>Sistem menolak pengajuan dan menampilkan pesan validasi.</td>
+                <td class="center">Valid</td>
+            </tr>
+            <tr>
+                <td class="center">20</td>
+                <td>Legalisir Admin</td>
+                <td>Admin mengubah status pengajuan legalisir menjadi diproses.</td>
+                <td>Status: Diproses.</td>
+                <td>Sistem menyimpan status pengajuan dan alumni dapat melihat perubahan status.</td>
+                <td class="center">Valid</td>
+            </tr>
+            <tr>
+                <td class="center">21</td>
+                <td>Legalisir Admin</td>
+                <td>Admin menolak pengajuan legalisir dengan catatan.</td>
+                <td>Status: Ditolak, catatan admin diisi.</td>
+                <td>Sistem menyimpan status ditolak dan menampilkan catatan kepada alumni.</td>
+                <td class="center">Valid</td>
+            </tr>
+            <tr>
+                <td class="center">22</td>
+                <td>Notifikasi</td>
+                <td>Pengguna membuka notifikasi yang diterima.</td>
+                <td>Klik salah satu notifikasi.</td>
+                <td>Sistem menandai notifikasi sebagai dibaca dan mengarahkan pengguna ke halaman terkait.</td>
+                <td class="center">Valid</td>
+            </tr>
+            <tr>
+                <td class="center">23</td>
+                <td>Master Data</td>
+                <td>Admin menambah data kompetensi keahlian.</td>
+                <td>Nama kompetensi valid.</td>
+                <td>Sistem menyimpan data kompetensi dan menampilkannya pada daftar master data.</td>
+                <td class="center">Valid</td>
+            </tr>
+            <tr>
+                <td class="center">24</td>
+                <td>Master Data</td>
+                <td>Admin mengubah data angkatan.</td>
+                <td>Tahun lulus valid.</td>
+                <td>Sistem menyimpan perubahan data angkatan.</td>
+                <td class="center">Valid</td>
+            </tr>
+            <tr>
+                <td class="center">25</td>
+                <td>Laporan Tracer</td>
+                <td>Admin membuka halaman laporan/data tracer alumni.</td>
+                <td>Akses menu Data Tracer Alumni.</td>
+                <td>Sistem menampilkan data alumni, status tracer, filter, grafik, dan tombol export.</td>
+                <td class="center">Valid</td>
+            </tr>
+            <tr>
+                <td class="center">26</td>
+                <td>Export Excel</td>
+                <td>Admin melakukan export laporan tracer ke Excel.</td>
+                <td>Klik tombol Export Excel.</td>
+                <td>Sistem mengunduh file laporan dalam format Excel.</td>
+                <td class="center">Valid</td>
+            </tr>
+            <tr>
+                <td class="center">27</td>
+                <td>Export PDF</td>
+                <td>Admin melakukan export laporan tracer ke PDF.</td>
+                <td>Klik tombol Export PDF.</td>
+                <td>Sistem mengunduh file laporan dalam format PDF.</td>
+                <td class="center">Valid</td>
+            </tr>
+            <tr>
+                <td class="center">28</td>
+                <td>Hak Akses</td>
+                <td>Alumni mencoba membuka URL dashboard admin.</td>
+                <td>Akses URL admin saat login sebagai alumni.</td>
+                <td>Sistem menolak akses dan mengarahkan pengguna sesuai hak akses.</td>
+                <td class="center">Valid</td>
+            </tr>
+            <tr>
+                <td class="center">29</td>
+                <td>Logout</td>
+                <td>Pengguna keluar dari sistem.</td>
+                <td>Klik tombol logout.</td>
+                <td>Sistem menghapus session dan mengarahkan pengguna ke halaman login.</td>
+                <td class="center">Valid</td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+</html>

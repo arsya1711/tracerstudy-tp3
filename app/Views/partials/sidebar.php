@@ -14,6 +14,38 @@ switch ($slugPeran) {
         break;
 }
 
+$legalisirBadgeCount = 0;
+try {
+    /*
+    | Badge legalisir dihitung langsung di sidebar karena partial ini
+    | dipakai oleh semua role. Admin melihat jumlah pengajuan baru,
+    | alumni melihat pengajuan miliknya yang masih perlu perhatian.
+    */
+    $dbSidebar = db_connect();
+    if ($dbSidebar->tableExists('tb_pengajuan_legalisir')) {
+        if ($isAdminSekolah || (! $isAlumni && $slugPeran === 'superadmin')) {
+            $legalisirBadgeCount = (int) $dbSidebar->table('tb_pengajuan_legalisir')
+                ->where('status', 'diajukan')
+                ->countAllResults();
+        } elseif ($isAlumni && $dbSidebar->tableExists('tb_alumni')) {
+            $alumniSidebar = $dbSidebar->table('tb_alumni')
+                ->select('id_alumni')
+                ->where('id_pengguna', (int) session()->get('id_pengguna'))
+                ->get()
+                ->getRowArray();
+
+            if ($alumniSidebar !== null) {
+                $legalisirBadgeCount = (int) $dbSidebar->table('tb_pengajuan_legalisir')
+                    ->where('id_alumni', (int) $alumniSidebar['id_alumni'])
+                    ->whereIn('status', ['diajukan', 'diproses', 'ditolak'])
+                    ->countAllResults();
+            }
+        }
+    }
+} catch (Throwable) {
+    $legalisirBadgeCount = 0;
+}
+
 $menuItems = [];
 
 if ($isAlumni) {
@@ -21,13 +53,13 @@ if ($isAlumni) {
         ['label' => 'Dashboard', 'url' => base_url('alumni/dashboard'), 'active' => uri_string() === 'alumni/dashboard'],
         ['label' => 'Profil', 'url' => base_url('alumni/profil'), 'active' => uri_string() === 'alumni/profil'],
         ['label' => 'Tracer', 'url' => base_url('alumni/tracer'), 'active' => uri_string() === 'alumni/tracer'],
-        ['label' => 'Legalisir', 'url' => base_url('alumni/legalisir'), 'active' => uri_string() === 'alumni/legalisir'],
+        ['label' => 'Legalisir', 'url' => base_url('alumni/legalisir'), 'active' => uri_string() === 'alumni/legalisir', 'badge' => $legalisirBadgeCount],
     ];
 } elseif ($isAdminSekolah) {
     $menuItems = [
         ['label' => 'Dashboard', 'url' => base_url('admin-sekolah/dashboard'), 'active' => in_array(uri_string(), ['admin-sekolah/dashboard', 'dashboard/admin-sekolah'], true)],
         ['label' => 'Tracer Alumni', 'url' => base_url('admin-sekolah/tracer'), 'active' => uri_string() === 'admin-sekolah/tracer'],
-        ['label' => 'Legalisir', 'url' => base_url('admin-sekolah/legalisir'), 'active' => uri_string() === 'admin-sekolah/legalisir'],
+        ['label' => 'Legalisir', 'url' => base_url('admin-sekolah/legalisir'), 'active' => uri_string() === 'admin-sekolah/legalisir', 'badge' => $legalisirBadgeCount],
         ['label' => 'Angkatan', 'url' => base_url('admin-sekolah/angkatan'), 'active' => uri_string() === 'admin-sekolah/angkatan'],
         ['label' => 'Kompetensi', 'url' => base_url('admin-sekolah/kompetensi'), 'active' => uri_string() === 'admin-sekolah/kompetensi'],
         ['label' => 'Aktivitas', 'url' => base_url('admin-sekolah/aktivitas'), 'active' => uri_string() === 'admin-sekolah/aktivitas'],
@@ -36,7 +68,7 @@ if ($isAlumni) {
     $menuItems = [
         ['label' => 'Dashboard', 'url' => base_url('dashboard/superadmin'), 'active' => uri_string() === 'dashboard/superadmin'],
         ['label' => 'Tracer Alumni', 'url' => base_url('superadmin/tracer'), 'active' => uri_string() === 'superadmin/tracer'],
-        ['label' => 'Legalisir', 'url' => base_url('superadmin/legalisir'), 'active' => uri_string() === 'superadmin/legalisir'],
+        ['label' => 'Legalisir', 'url' => base_url('superadmin/legalisir'), 'active' => uri_string() === 'superadmin/legalisir', 'badge' => $legalisirBadgeCount],
         ['label' => 'Angkatan', 'url' => base_url('superadmin/angkatan'), 'active' => uri_string() === 'superadmin/angkatan'],
         ['label' => 'Kompetensi', 'url' => base_url('superadmin/kompetensi'), 'active' => uri_string() === 'superadmin/kompetensi'],
         ['label' => 'Aktivitas', 'url' => base_url('superadmin/aktivitas'), 'active' => uri_string() === 'superadmin/aktivitas'],
@@ -95,6 +127,11 @@ if ($isAlumni) {
                                                     <i class="ki-duotone ki-element-11 fs-2"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span></i>
                                                 </span>
                                                 <span class="menu-title"><?= esc($item['label']) ?></span>
+                                                <?php if ((int) ($item['badge'] ?? 0) > 0): ?>
+                                                    <span class="menu-badge">
+                                                        <span class="badge badge-danger fw-bold"><?= (int) $item['badge'] ?></span>
+                                                    </span>
+                                                <?php endif; ?>
                                             </a>
                                         </div>
                                     <?php endforeach; ?>

@@ -26,6 +26,11 @@ class PengajuanLegalisirModel extends Model
     protected $createdField  = 'dibuat_pada';
     protected $updatedField  = 'diperbarui_pada';
 
+    /*
+    | Mengambil data pengajuan legalisir beserta profil alumni,
+    | kompetensi, angkatan, dan admin pemroses. Dipakai oleh halaman admin
+    | maupun halaman alumni agar format data konsisten.
+    */
     public function ambilLengkap(?int $idAlumni = null): array
     {
         if (! $this->db->tableExists($this->table)) {
@@ -82,5 +87,36 @@ class PengajuanLegalisirModel extends Model
         }
 
         return $hasil;
+    }
+
+    /*
+    | Menghitung status tertentu untuk badge dan card notifikasi.
+    | Contoh: admin hanya perlu melihat status "diajukan", sedangkan
+    | alumni perlu melihat status "diajukan", "diproses", dan "ditolak".
+    */
+    public function hitungByStatusList(array $statusList, ?int $idAlumni = null): int
+    {
+        if (! $this->db->tableExists($this->table) || $statusList === []) {
+            return 0;
+        }
+
+        $builder = $this->builder()->whereIn('status', $statusList);
+
+        if ($idAlumni !== null && $idAlumni > 0) {
+            $builder->where('id_alumni', $idAlumni);
+        }
+
+        return (int) $builder->countAllResults();
+    }
+
+    /*
+    | Mengambil pengajuan terbaru milik alumni untuk alert status di
+    | dashboard alumni dan ringkasan halaman legalisir.
+    */
+    public function ambilTerbaruByAlumni(int $idAlumni): ?array
+    {
+        $rows = $this->ambilLengkap($idAlumni);
+
+        return $rows[0] ?? null;
     }
 }

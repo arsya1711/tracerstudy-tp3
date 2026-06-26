@@ -2,12 +2,27 @@
 $statusOptions = is_array($statusOptions ?? null) ? $statusOptions : [];
 $bolehMengajukan = (bool) ($bolehMengajukan ?? true);
 $alasanBlokir = (string) ($alasanBlokir ?? '');
+$pengajuan = is_array($pengajuan ?? null) ? $pengajuan : [];
+$pengajuanTerbaru = $pengajuan[0] ?? null;
+
+/*
+| Helper tampilan status legalisir. Badge dipakai di tabel riwayat,
+| sedangkan alert dipakai untuk ringkasan pengajuan terbaru.
+*/
 $badgeClass = static function (string $status): string {
     return match ($status) {
         'diproses' => 'badge-light-primary',
         'selesai' => 'badge-light-success',
         'ditolak' => 'badge-light-danger',
         default => 'badge-light-warning',
+    };
+};
+$alertClass = static function (string $status): string {
+    return match ($status) {
+        'diproses' => 'alert-primary',
+        'selesai' => 'alert-success',
+        'ditolak' => 'alert-danger',
+        default => 'alert-warning',
     };
 };
 $formatTanggal = static function (?string $tanggal): string {
@@ -38,6 +53,31 @@ $formatTanggal = static function (?string $tanggal): string {
 
 <div id="kt_app_content" class="app-content flex-column-fluid">
     <div id="kt_app_content_container" class="app-container container-xxl">
+        <?php if (is_array($pengajuanTerbaru)): ?>
+            <?php $statusTerbaru = (string) ($pengajuanTerbaru['status'] ?? 'diajukan'); ?>
+            <div class="alert <?= esc($alertClass($statusTerbaru)) ?> d-flex align-items-start gap-3 mb-8">
+                <i class="ki-duotone ki-information-5 fs-2hx">
+                    <span class="path1"></span>
+                    <span class="path2"></span>
+                    <span class="path3"></span>
+                </i>
+                <div class="flex-grow-1">
+                    <div class="fw-bold mb-1">Status pengajuan terbaru: <?= esc($statusOptions[$statusTerbaru] ?? ucfirst($statusTerbaru)) ?></div>
+                    <div class="text-gray-700">
+                        <?= esc((string) ($pengajuanTerbaru['jenis_dokumen'] ?? '-')) ?>,
+                        <?= (int) ($pengajuanTerbaru['jumlah_lembar'] ?? 0) ?> lembar,
+                        diajukan pada <?= esc($formatTanggal($pengajuanTerbaru['dibuat_pada'] ?? null)) ?>.
+                    </div>
+                    <?php if (trim((string) ($pengajuanTerbaru['catatan_admin'] ?? '')) !== ''): ?>
+                        <div class="mt-3 p-3 bg-white bg-opacity-75 rounded border border-gray-300">
+                            <div class="fw-bold fs-7 mb-1">Catatan admin</div>
+                            <div><?= esc((string) $pengajuanTerbaru['catatan_admin']) ?></div>
+                        </div>
+                    <?php endif; ?>
+                </div>
+            </div>
+        <?php endif; ?>
+
         <div class="row g-5 g-xl-8">
             <div class="col-xl-4">
                 <div class="card card-flush">
@@ -104,7 +144,7 @@ $formatTanggal = static function (?string $tanggal): string {
                                     </tr>
                                 </thead>
                                 <tbody class="fw-semibold text-gray-700">
-                                    <?php if (($pengajuan ?? []) === []): ?>
+                                    <?php if ($pengajuan === []): ?>
                                         <tr><td colspan="5" class="text-center text-muted py-8">Belum ada pengajuan legalisir.</td></tr>
                                     <?php else: ?>
                                         <?php foreach ($pengajuan as $item): ?>

@@ -75,35 +75,62 @@
         <style>
             body { background-image: url('<?= base_url('assets/media/auth/bg10.jpeg') ?>'); }
             [data-bs-theme="dark"] body { background-image: url('<?= base_url('assets/media/auth/bg10-dark.jpeg') ?>'); }
+            .auth-card {
+                box-shadow: 0 24px 70px rgba(15, 23, 42, 0.08);
+                border: 1px solid rgba(226, 232, 240, 0.72);
+            }
+            .auth-login-hero {
+                padding: 10px 8px 0;
+            }
+            .auth-school-logo {
+                width: 116px;
+                height: 116px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border-radius: 26px;
+                background: linear-gradient(180deg, #f8fbff 0%, #eef6ff 100%);
+                border: 1px solid #dbeafe;
+                box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9), 0 14px 30px rgba(37, 99, 235, 0.12);
+            }
+            .auth-school-logo img {
+                width: 82px;
+                height: 82px;
+                object-fit: contain;
+            }
+            .auth-register-callout {
+                padding: 14px 16px;
+                border-radius: 14px;
+                background: #f8fafc;
+                border: 1px solid #e2e8f0;
+            }
+            .auth-input {
+                border: 1px solid #dbe3ef !important;
+                background-color: #fbfdff !important;
+            }
+            .auth-input:focus {
+                border-color: #3b82f6 !important;
+                box-shadow: 0 0 0 0.2rem rgba(59, 130, 246, 0.1);
+            }
+            @media (max-width: 575.98px) {
+                .auth-school-logo {
+                    width: 96px;
+                    height: 96px;
+                    border-radius: 22px;
+                }
+                .auth-school-logo img {
+                    width: 70px;
+                    height: 70px;
+                }
+            }
         </style>
         <!--end::Page bg image-->
         <!--begin::Authentication - Sign-in -->
         <div class="d-flex flex-column flex-lg-row flex-column-fluid">
-            <!--begin::Aside-->
-            <div class="d-flex flex-lg-row-fluid">
-                <!--begin::Content-->
-                <div class="d-flex flex-column flex-center pb-0 pb-lg-10 p-10 w-100">
-                    <!--begin::Image-->
-                    <img class="theme-light-show mx-auto mw-100 w-150px w-lg-300px mb-10 mb-lg-20" src="<?= base_url('assets/media/auth/agency.png') ?>" alt="Ilustrasi autentikasi" />
-                    <img class="theme-dark-show mx-auto mw-100 w-150px w-lg-300px mb-10 mb-lg-20" src="<?= base_url('assets/media/auth/agency-dark.png') ?>" alt="Ilustrasi autentikasi dark" />
-                    <!--end::Image-->
-                    <!--begin::Title-->
-                    <h1 class="text-gray-800 fs-2qx fw-bold text-center mb-7">Fast, Efficient and Productive</h1>
-                    <!--end::Title-->
-                    <!--begin::Text-->
-                    <div class="text-gray-600 fs-base text-center fw-semibold">
-                        Sistem ini membantu proses tracer study dan pengelolaan
-                        <br />bursa kerja khusus sekolah secara terintegrasi.
-                    </div>
-                    <!--end::Text-->
-                </div>
-                <!--end::Content-->
-            </div>
-            <!--begin::Aside-->
             <!--begin::Body-->
-            <div class="d-flex flex-column-fluid flex-lg-row-auto justify-content-center justify-content-lg-end p-12">
+            <div class="d-flex flex-column-fluid justify-content-center align-items-center p-12">
                 <!--begin::Wrapper-->
-                <div class="bg-body d-flex flex-column flex-center rounded-4 w-md-600px p-10">
+                <div class="bg-body auth-card d-flex flex-column flex-center rounded-4 w-md-600px p-10">
                     <!--begin::Content-->
                     <div class="d-flex flex-center flex-column align-items-stretch h-lg-100 w-md-400px">
                         <!--begin::Wrapper-->

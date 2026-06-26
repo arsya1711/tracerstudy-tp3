@@ -4,6 +4,7 @@ namespace App\Controllers\Superadmin;
 
 use App\Controllers\BaseController;
 use CodeIgniter\HTTP\RedirectResponse;
+use CodeIgniter\HTTP\ResponseInterface;
 use Config\Database;
 
 /*
@@ -48,13 +49,7 @@ class TracerController extends BaseController
             return redirect()->to('/login')->with('error', 'Akses ditolak.');
         }
 
-        $filters = [
-            'search'        => trim((string) $this->request->getGet('q')),
-            'id_angkatan'   => (int) ($this->request->getGet('id_angkatan') ?? 0),
-            'id_kompetensi' => (int) ($this->request->getGet('id_kompetensi') ?? 0),
-            'id_aktivitas'  => (int) ($this->request->getGet('id_aktivitas') ?? 0),
-            'status'        => trim((string) $this->request->getGet('status')),
-        ];
+        $filters = $this->ambilFilterDariRequest();
 
         $tracer = $this->ambilDataTracer($filters);
 
@@ -72,6 +67,50 @@ class TracerController extends BaseController
             'tracerBaseUrl'    => $this->getTracerBaseUrl(),
             'tracerRoleLabel'  => $this->getTracerRoleLabel(),
         ]);
+    }
+
+    public function export(): ResponseInterface|RedirectResponse
+    {
+        if (! $this->isSuperadmin()) {
+            return redirect()->to('/login')->with('error', 'Akses ditolak.');
+        }
+
+        $filters = $this->ambilFilterDariRequest();
+        $rows = $this->ambilDataTracer($filters);
+        $filename = 'laporan-tracer-alumni-' . date('Ymd-His') . '.xls';
+
+        return $this->response
+            ->setHeader('Content-Type', 'application/vnd.ms-excel; charset=UTF-8')
+            ->setHeader('Content-Disposition', 'attachment; filename="' . $filename . '"')
+            ->setHeader('Cache-Control', 'max-age=0, no-cache, no-store, must-revalidate')
+            ->setHeader('Pragma', 'no-cache')
+            ->setHeader('Expires', '0')
+            ->setBody($this->bangunExcelTracer($rows, $filters));
+    }
+
+    /*
+    | Export PDF laporan tracer.
+    | Dibuat tanpa dependency tambahan karena Composer tidak tersedia di
+    | environment lokal. PDF digambar langsung dari data tracer yang sama
+    | dengan tabel dan export Excel.
+    */
+    public function exportPdf(): ResponseInterface|RedirectResponse
+    {
+        if (! $this->isSuperadmin()) {
+            return redirect()->to('/login')->with('error', 'Akses ditolak.');
+        }
+
+        $filters = $this->ambilFilterDariRequest();
+        $rows = $this->ambilDataTracer($filters);
+        $filename = 'laporan-tracer-alumni-' . date('Ymd-His') . '.pdf';
+
+        return $this->response
+            ->setHeader('Content-Type', 'application/pdf')
+            ->setHeader('Content-Disposition', 'attachment; filename="' . $filename . '"')
+            ->setHeader('Cache-Control', 'max-age=0, no-cache, no-store, must-revalidate')
+            ->setHeader('Pragma', 'no-cache')
+            ->setHeader('Expires', '0')
+            ->setBody($this->bangunPdfTracer($rows, $filters));
     }
 
     public function update(int $idAlumni): RedirectResponse
@@ -96,6 +135,7 @@ class TracerController extends BaseController
             'id_kompetensi' => 'permit_empty|integer',
             'id_aktivitas'  => 'permit_empty|integer',
             'tanggal_lahir' => 'permit_empty|valid_date[Y-m-d]',
+            'status_pendaftaran' => 'required|in_list[menunggu_aktivasi,aktif]',
         ];
 
         if (! $this->validate($rules)) {
@@ -124,19 +164,31 @@ class TracerController extends BaseController
                 'nomor_telepon' => $this->ambilStringKosongJadiNull('nomor_telepon'),
             ]);
 
+        $statusPendaftaran = (string) $this->request->getPost('status_pendaftaran');
+        $statusVerifikasi = $statusPendaftaran === 'aktif' ? 'aktif' : 'menunggu_aktivasi';
+
+        $payloadAlumni = [
+            'nis'                 => $this->ambilStringKosongJadiNull('nis'),
+            'nisn'                => $this->ambilStringKosongJadiNull('nisn'),
+            'no_ijazah'           => $this->ambilStringKosongJadiNull('no_ijazah'),
+            'jenis_kelamin'       => $this->ambilStringKosongJadiNull('jenis_kelamin'),
+            'tempat_lahir'        => $this->ambilStringKosongJadiNull('tempat_lahir'),
+            'tanggal_lahir'       => $this->ambilStringKosongJadiNull('tanggal_lahir'),
+            'id_angkatan'         => $this->ambilIntegerKosongJadiNull('id_angkatan'),
+            'id_kompetensi'       => $this->ambilIntegerKosongJadiNull('id_kompetensi'),
+            'alamat'              => $this->ambilStringKosongJadiNull('alamat'),
+            'status_pendaftaran'  => $statusPendaftaran,
+            'status_verifikasi'   => $statusVerifikasi,
+        ];
+
+        if ($statusPendaftaran === 'aktif') {
+            $payloadAlumni['diverifikasi_oleh'] = (int) session()->get('id_pengguna') ?: null;
+            $payloadAlumni['diverifikasi_pada'] = date('Y-m-d H:i:s');
+        }
+
         $this->db->table('tb_alumni')
             ->where('id_alumni', $idAlumni)
-            ->update([
-                'nis'           => $this->ambilStringKosongJadiNull('nis'),
-                'nisn'          => $this->ambilStringKosongJadiNull('nisn'),
-                'no_ijazah'     => $this->ambilStringKosongJadiNull('no_ijazah'),
-                'jenis_kelamin' => $this->ambilStringKosongJadiNull('jenis_kelamin'),
-                'tempat_lahir'  => $this->ambilStringKosongJadiNull('tempat_lahir'),
-                'tanggal_lahir' => $this->ambilStringKosongJadiNull('tanggal_lahir'),
-                'id_angkatan'   => $this->ambilIntegerKosongJadiNull('id_angkatan'),
-                'id_kompetensi' => $this->ambilIntegerKosongJadiNull('id_kompetensi'),
-                'alamat'        => $this->ambilStringKosongJadiNull('alamat'),
-            ]);
+            ->update($payloadAlumni);
 
         if ($idAktivitas > 0 && $this->db->tableExists('tb_tracer_alumni')) {
             $payloadTracer = $this->bangunPayloadTracer($idAlumni, $idAktivitas);
@@ -238,6 +290,7 @@ class TracerController extends BaseController
                 'al.tanggal_lahir',
                 'al.alamat',
                 'al.status_verifikasi',
+                'al.status_pendaftaran',
                 'CONCAT("ALM-", LPAD(al.id_alumni, 5, "0")) AS account_id',
                 'u.nama_lengkap',
                 'u.email',
@@ -288,6 +341,467 @@ class TracerController extends BaseController
             ->orderBy('t.id_tracer', 'DESC')
             ->get()
             ->getResultArray();
+    }
+
+    protected function ambilFilterDariRequest(): array
+    {
+        return [
+            'search'        => trim((string) $this->request->getGet('q')),
+            'id_angkatan'   => (int) ($this->request->getGet('id_angkatan') ?? 0),
+            'id_kompetensi' => (int) ($this->request->getGet('id_kompetensi') ?? 0),
+            'id_aktivitas'  => (int) ($this->request->getGet('id_aktivitas') ?? 0),
+            'status'        => trim((string) $this->request->getGet('status')),
+        ];
+    }
+
+    protected function bangunExcelTracer(array $rows, array $filters): string
+    {
+        $total = count($rows);
+        $sudahTracer = 0;
+        $belumTracer = 0;
+
+        foreach ($rows as $index => $row) {
+            if ((int) ($row['id_tracer'] ?? 0) > 0) {
+                $sudahTracer++;
+            } else {
+                $belumTracer++;
+            }
+        }
+
+        $filterText = $this->formatFilterExcel($filters);
+        $dibuatPada = date('d/m/Y H:i');
+
+        $html = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">';
+        $html .= '<head><meta charset="UTF-8">';
+        $html .= '<!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>Laporan Tracer</x:Name><x:WorksheetOptions><x:FreezePanes/><x:FrozenNoSplit/><x:SplitHorizontal>7</x:SplitHorizontal><x:TopRowBottomPane>7</x:TopRowBottomPane><x:ActivePane>2</x:ActivePane></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]-->';
+        $html .= '<style>';
+        $html .= 'body{font-family:Calibri,Arial,sans-serif;font-size:11pt;color:#1f2937;}';
+        $html .= 'table{border-collapse:collapse;}';
+        $html .= '.title{font-size:18pt;font-weight:700;color:#0b1f4d;}';
+        $html .= '.subtitle{font-size:10pt;color:#64748b;}';
+        $html .= '.summary-label{background:#eef4ff;font-weight:700;color:#0b1f4d;border:1px solid #c7d7fe;padding:8px;}';
+        $html .= '.summary-value{background:#f8fbff;border:1px solid #c7d7fe;padding:8px;text-align:center;font-weight:700;}';
+        $html .= '.header{background:#0b1f4d;color:#ffffff;font-weight:700;border:1px solid #243b6b;padding:8px;text-align:center;}';
+        $html .= '.cell{border:1px solid #d9e2ec;padding:7px;vertical-align:top;}';
+        $html .= '.alt{background:#f8fafc;}';
+        $html .= '.status-ok{background:#dcfce7;color:#166534;font-weight:700;text-align:center;}';
+        $html .= '.status-warn{background:#fef3c7;color:#92400e;font-weight:700;text-align:center;}';
+        $html .= '.text{mso-number-format:"\\@";}';
+        $html .= '.center{text-align:center;}';
+        $html .= 'td{white-space:normal;}';
+        $html .= '</style></head><body>';
+        $html .= '<table>';
+        $html .= '<col width="45"><col width="115"><col width="190"><col width="220"><col width="100"><col width="115"><col width="90"><col width="220"><col width="150"><col width="170"><col width="130"><col width="160"><col width="220"><col width="220"><col width="150"><col width="130"><col width="170"><col width="240">';
+        $html .= '<tr><td colspan="18" class="title">Laporan Tracer Alumni</td></tr>';
+        $html .= '<tr><td colspan="18" class="subtitle">Sistem Informasi Tracer Study</td></tr>';
+        $html .= '<tr><td colspan="18" class="subtitle">Dibuat pada: ' . $this->excelCell($dibuatPada) . '</td></tr>';
+        $html .= '<tr><td colspan="18" class="subtitle">Filter: ' . $this->excelCell($filterText) . '</td></tr>';
+        $html .= '<tr><td colspan="18">&nbsp;</td></tr>';
+        $html .= '<tr>';
+        $html .= '<td class="summary-label" colspan="3">Total Alumni</td><td class="summary-value">' . $total . '</td>';
+        $html .= '<td class="summary-label" colspan="3">Sudah Mengisi Tracer</td><td class="summary-value">' . $sudahTracer . '</td>';
+        $html .= '<td class="summary-label" colspan="3">Belum Mengisi Tracer</td><td class="summary-value">' . $belumTracer . '</td>';
+        $html .= '</tr>';
+        $html .= '<tr><td colspan="18">&nbsp;</td></tr>';
+        $html .= '<tr>';
+
+        $headers = [
+            'No',
+            'Account ID',
+            'Nama Alumni',
+            'Email',
+            'NIS',
+            'NISN',
+            'Angkatan',
+            'Kompetensi',
+            'Aktivitas',
+            'Status Tracer',
+            'Tanggal Pengisian',
+            'Posisi Kerja',
+            'Nama Instansi',
+            'Universitas',
+            'Program Studi',
+            'Status Kuliah',
+            'Nama Usaha',
+            'Rencana Kedepan',
+        ];
+
+        foreach ($headers as $header) {
+            $html .= '<td class="header">' . $this->excelCell($header) . '</td>';
+        }
+
+        $html .= '</tr>';
+
+        foreach ($rows as $index => $row) {
+            $sudahMengisi = (int) ($row['id_tracer'] ?? 0) > 0;
+            $rowClass = $index % 2 === 1 ? ' alt' : '';
+            $statusClass = $sudahMengisi ? 'status-ok' : 'status-warn';
+
+            $values = [
+                $index + 1,
+                $this->excelValue($row['account_id'] ?? ''),
+                $this->excelValue($row['nama_lengkap'] ?? ''),
+                $this->excelValue($row['email'] ?? ''),
+                $this->excelValue($row['nis'] ?? ''),
+                $this->excelValue($row['nisn'] ?? ''),
+                $this->excelValue($row['tahun_lulus'] ?? ''),
+                $this->formatKompetensiExcel($row),
+                $this->excelValue($row['nama_aktivitas'] ?? 'Belum Mengisi Tracer'),
+                $sudahMengisi ? 'Sudah Mengisi Tracer' : 'Belum Mengisi Tracer',
+                $this->excelValue($row['tanggal_pengisian'] ?? ''),
+                $this->excelValue($row['posisi_kerja'] ?? ''),
+                $this->excelValue($row['nama_instansi'] ?? ''),
+                $this->excelValue($row['universitas'] ?? ''),
+                $this->excelValue($row['program_studi'] ?? ''),
+                $this->excelValue($row['status_kuliah'] ?? ''),
+                $this->excelValue($row['nama_usaha'] ?? ''),
+                $this->excelValue($row['rencana_kedepan'] ?? ''),
+            ];
+
+            $html .= '<tr>';
+
+            foreach ($values as $columnIndex => $value) {
+                $class = $columnIndex === 9 ? 'cell ' . $statusClass : 'cell text' . $rowClass;
+                $html .= '<td class="' . $class . '">' . $this->excelCell((string) $value) . '</td>';
+            }
+
+            $html .= '</tr>';
+        }
+
+        $html .= '</table></body></html>';
+
+        return "\xEF\xBB\xBF" . $html;
+    }
+
+    protected function excelValue(mixed $value): string
+    {
+        $value = trim((string) ($value ?? ''));
+
+        return $value !== '' ? $value : '-';
+    }
+
+    protected function formatKompetensiExcel(array $row): string
+    {
+        $nama = trim((string) ($row['nama_kompetensi'] ?? ''));
+        $akronim = trim((string) ($row['akronim'] ?? ''));
+
+        if ($nama !== '' && $akronim !== '') {
+            return $nama . ' (' . $akronim . ')';
+        }
+
+        return $nama !== '' ? $nama : ($akronim !== '' ? $akronim : '-');
+    }
+
+    protected function formatFilterExcel(array $filters): string
+    {
+        $items = [];
+
+        if (($filters['search'] ?? '') !== '') {
+            $items[] = 'Pencarian: ' . $filters['search'];
+        }
+
+        if (($filters['id_angkatan'] ?? 0) > 0) {
+            $items[] = 'ID Angkatan: ' . (int) $filters['id_angkatan'];
+        }
+
+        if (($filters['id_kompetensi'] ?? 0) > 0) {
+            $items[] = 'ID Kompetensi: ' . (int) $filters['id_kompetensi'];
+        }
+
+        if (($filters['id_aktivitas'] ?? 0) > 0) {
+            $items[] = 'ID Aktivitas: ' . (int) $filters['id_aktivitas'];
+        }
+
+        if (($filters['status'] ?? '') !== '') {
+            $items[] = 'Status: ' . $filters['status'];
+        }
+
+        return $items !== [] ? implode(', ', $items) : 'Semua data';
+    }
+
+    protected function excelCell(string $value): string
+    {
+        return htmlspecialchars($value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+    }
+
+    /*
+    | Generator PDF ringan untuk laporan tracer.
+    | Bagian ini menyusun halaman landscape, header, ringkasan, tabel,
+    | dan pagination memakai sintaks PDF dasar.
+    */
+    protected function bangunPdfTracer(array $rows, array $filters): string
+    {
+        $pageWidth = 842.0;
+        $pageHeight = 595.0;
+        $margin = 24.0;
+        $contentWidth = $pageWidth - ($margin * 2);
+        $columns = [
+            ['label' => 'No', 'width' => 24],
+            ['label' => 'ID', 'width' => 55],
+            ['label' => 'Nama Alumni', 'width' => 90],
+            ['label' => 'Email', 'width' => 115],
+            ['label' => 'Angk.', 'width' => 45],
+            ['label' => 'Kompetensi', 'width' => 100],
+            ['label' => 'Aktivitas', 'width' => 75],
+            ['label' => 'Status', 'width' => 80],
+            ['label' => 'Kuliah', 'width' => 90],
+            ['label' => 'Instansi / Usaha', 'width' => 120],
+        ];
+
+        $total = count($rows);
+        $sudahTracer = 0;
+        foreach ($rows as $row) {
+            if ((int) ($row['id_tracer'] ?? 0) > 0) {
+                $sudahTracer++;
+            }
+        }
+
+        $pages = [];
+        $current = [];
+        $y = $pageHeight - $margin;
+        $pageNumber = 1;
+
+        $addPageHeader = function () use (&$current, &$y, $pageHeight, $margin, $contentWidth, $filters, $total, $sudahTracer): void {
+            $belumTracer = $total - $sudahTracer;
+            $current[] = '0.043 0.122 0.302 rg';
+            $current[] = $this->pdfText($margin, $y - 4, 'Laporan Tracer Alumni', 18, 'F2');
+            $y -= 26;
+            $current[] = '0.392 0.455 0.545 rg';
+            $current[] = $this->pdfText($margin, $y, 'Sistem Informasi Tracer Study', 9, 'F1');
+            $y -= 14;
+            $current[] = $this->pdfText($margin, $y, 'Dibuat pada: ' . date('d/m/Y H:i') . '   |   Filter: ' . $this->formatFilterExcel($filters), 8, 'F1');
+            $y -= 20;
+
+            $boxWidth = 155;
+            $gap = 10;
+            $summary = [
+                ['Total Alumni', (string) $total],
+                ['Sudah Tracer', (string) $sudahTracer],
+                ['Belum Tracer', (string) $belumTracer],
+            ];
+
+            foreach ($summary as $index => $item) {
+                $x = $margin + (($boxWidth + $gap) * $index);
+                $current[] = '0.933 0.957 1 rg';
+                $current[] = $this->pdfRect($x, $y - 28, $boxWidth, 32, true);
+                $current[] = '0.780 0.843 0.996 RG';
+                $current[] = $this->pdfRect($x, $y - 28, $boxWidth, 32);
+                $current[] = '0.043 0.122 0.302 rg';
+                $current[] = $this->pdfText($x + 8, $y - 9, $item[0], 8, 'F2');
+                $current[] = $this->pdfText($x + 8, $y - 23, $item[1], 13, 'F2');
+            }
+
+            $current[] = '0.859 0.886 0.925 RG';
+            $current[] = $this->pdfLine($margin, $y - 42, $margin + $contentWidth, $y - 42);
+            $y -= 60;
+        };
+
+        $addTableHeader = function () use (&$current, &$y, $margin, $columns): void {
+            $x = $margin;
+            $height = 24;
+            foreach ($columns as $column) {
+                $current[] = '0.043 0.122 0.302 rg';
+                $current[] = $this->pdfRect($x, $y - $height, (float) $column['width'], $height, true);
+                $current[] = '1 1 1 rg';
+                $current[] = $this->pdfText($x + 4, $y - 15, (string) $column['label'], 7, 'F2');
+                $x += (float) $column['width'];
+            }
+            $y -= $height;
+        };
+
+        $finishPage = function () use (&$pages, &$current, &$y, $pageHeight, $margin, &$pageNumber): void {
+            $current[] = '0.392 0.455 0.545 rg';
+            $current[] = $this->pdfText($margin, 18, 'Halaman ' . $pageNumber, 8, 'F1');
+            $pages[] = implode("\n", $current);
+            $current = [];
+            $y = $pageHeight - $margin;
+            $pageNumber++;
+        };
+
+        $addPageHeader();
+        $addTableHeader();
+
+        foreach ($rows as $index => $row) {
+            $sudahMengisi = (int) ($row['id_tracer'] ?? 0) > 0;
+            $kuliah = trim((string) ($row['universitas'] ?? ''));
+            $programStudi = trim((string) ($row['program_studi'] ?? ''));
+            $instansi = trim((string) ($row['nama_instansi'] ?? ''));
+            $usaha = trim((string) ($row['nama_usaha'] ?? ''));
+
+            $values = [
+                (string) ($index + 1),
+                $this->pdfValue($row['account_id'] ?? ''),
+                $this->pdfValue($row['nama_lengkap'] ?? ''),
+                $this->pdfValue($row['email'] ?? ''),
+                $this->pdfValue($row['tahun_lulus'] ?? ''),
+                $this->formatKompetensiExcel($row),
+                $this->pdfValue($row['nama_aktivitas'] ?? 'Belum Mengisi Tracer'),
+                $sudahMengisi ? 'Sudah' : 'Belum',
+                $kuliah !== '' ? trim($kuliah . ' ' . $programStudi) : '-',
+                $instansi !== '' ? $instansi : ($usaha !== '' ? $usaha : '-'),
+            ];
+
+            $wrapped = [];
+            $maxLines = 1;
+            foreach ($values as $columnIndex => $value) {
+                $maxChars = max(4, (int) floor(((float) $columns[$columnIndex]['width']) / 4.2));
+                $lines = $this->pdfWrapText((string) $value, $maxChars, 3);
+                $wrapped[] = $lines;
+                $maxLines = max($maxLines, count($lines));
+            }
+
+            $rowHeight = max(22, 10 + ($maxLines * 9));
+            if ($y - $rowHeight < 42) {
+                $finishPage();
+                $addPageHeader();
+                $addTableHeader();
+            }
+
+            $x = $margin;
+            $fill = $index % 2 === 1 ? '0.973 0.980 0.988 rg' : '1 1 1 rg';
+            foreach ($columns as $columnIndex => $column) {
+                $current[] = $fill;
+                $current[] = $this->pdfRect($x, $y - $rowHeight, (float) $column['width'], $rowHeight, true);
+                $current[] = '0.851 0.886 0.925 RG';
+                $current[] = $this->pdfRect($x, $y - $rowHeight, (float) $column['width'], $rowHeight);
+                $current[] = '0.122 0.161 0.216 rg';
+                foreach ($wrapped[$columnIndex] as $lineIndex => $line) {
+                    $current[] = $this->pdfText($x + 4, $y - 12 - ($lineIndex * 9), $line, 7, 'F1');
+                }
+                $x += (float) $column['width'];
+            }
+
+            $y -= $rowHeight;
+        }
+
+        if ($rows === []) {
+            $current[] = '0.392 0.455 0.545 rg';
+            $current[] = $this->pdfText($margin + 6, $y - 20, 'Tidak ada data tracer sesuai filter.', 9, 'F1');
+        }
+
+        $finishPage();
+
+        return $this->composePdf($pages, $pageWidth, $pageHeight);
+    }
+
+    protected function composePdf(array $pageStreams, float $pageWidth, float $pageHeight): string
+    {
+        $objects = [
+            '<< /Type /Catalog /Pages 2 0 R >>',
+            '',
+            '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>',
+            '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >>',
+        ];
+
+        $pageObjectIds = [];
+        foreach ($pageStreams as $stream) {
+            $contentObjectId = count($objects) + 1;
+            $streamObject = "<< /Length " . strlen($stream) . " >>\nstream\n" . $stream . "\nendstream";
+            $objects[] = $streamObject;
+
+            $pageObjectId = count($objects) + 1;
+            $pageObjectIds[] = $pageObjectId;
+            $objects[] = '<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ' . $pageWidth . ' ' . $pageHeight . '] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents ' . $contentObjectId . ' 0 R >>';
+        }
+
+        $objects[1] = '<< /Type /Pages /Kids [' . implode(' ', array_map(static fn (int $id): string => $id . ' 0 R', $pageObjectIds)) . '] /Count ' . count($pageObjectIds) . ' >>';
+
+        $pdf = "%PDF-1.4\n";
+        $offsets = [0];
+        foreach ($objects as $index => $object) {
+            $offsets[$index + 1] = strlen($pdf);
+            $pdf .= ($index + 1) . " 0 obj\n" . $object . "\nendobj\n";
+        }
+
+        $xrefOffset = strlen($pdf);
+        $pdf .= "xref\n0 " . (count($objects) + 1) . "\n";
+        $pdf .= "0000000000 65535 f \n";
+        for ($i = 1; $i <= count($objects); $i++) {
+            $pdf .= sprintf("%010d 00000 n \n", $offsets[$i]);
+        }
+
+        $pdf .= "trailer\n<< /Size " . (count($objects) + 1) . " /Root 1 0 R >>\nstartxref\n" . $xrefOffset . "\n%%EOF";
+
+        return $pdf;
+    }
+
+    protected function pdfText(float $x, float $y, string $text, int $size = 8, string $font = 'F1'): string
+    {
+        return 'BT /' . $font . ' ' . $size . ' Tf 1 0 0 1 ' . $this->pdfNumber($x) . ' ' . $this->pdfNumber($y) . ' Tm (' . $this->pdfEscape($text) . ') Tj ET';
+    }
+
+    protected function pdfRect(float $x, float $y, float $width, float $height, bool $fill = false): string
+    {
+        return $this->pdfNumber($x) . ' ' . $this->pdfNumber($y) . ' ' . $this->pdfNumber($width) . ' ' . $this->pdfNumber($height) . ' re ' . ($fill ? 'f' : 'S');
+    }
+
+    protected function pdfLine(float $x1, float $y1, float $x2, float $y2): string
+    {
+        return $this->pdfNumber($x1) . ' ' . $this->pdfNumber($y1) . ' m ' . $this->pdfNumber($x2) . ' ' . $this->pdfNumber($y2) . ' l S';
+    }
+
+    protected function pdfNumber(float $number): string
+    {
+        return rtrim(rtrim(number_format($number, 2, '.', ''), '0'), '.');
+    }
+
+    protected function pdfEscape(string $text): string
+    {
+        $text = html_entity_decode($text, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+        $converted = iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $text);
+        $text = $converted !== false ? $converted : $text;
+        $text = preg_replace('/[^\x20-\x7E]/', '', $text) ?? '';
+
+        return str_replace(['\\', '(', ')'], ['\\\\', '\\(', '\\)'], $text);
+    }
+
+    protected function pdfValue(mixed $value): string
+    {
+        $value = trim((string) ($value ?? ''));
+
+        return $value !== '' ? $value : '-';
+    }
+
+    protected function pdfWrapText(string $text, int $maxChars, int $maxLines): array
+    {
+        $text = $this->pdfValue($text);
+        $words = preg_split('/\s+/', $text) ?: [];
+        $lines = [];
+        $line = '';
+
+        foreach ($words as $word) {
+            while (strlen($word) > $maxChars) {
+                $chunk = substr($word, 0, $maxChars);
+                $word = substr($word, $maxChars);
+                if ($line !== '') {
+                    $lines[] = $line;
+                    $line = '';
+                }
+                $lines[] = $chunk;
+            }
+
+            $candidate = $line === '' ? $word : $line . ' ' . $word;
+            if (strlen($candidate) <= $maxChars) {
+                $line = $candidate;
+            } else {
+                if ($line !== '') {
+                    $lines[] = $line;
+                }
+                $line = $word;
+            }
+        }
+
+        if ($line !== '') {
+            $lines[] = $line;
+        }
+
+        $lines = array_slice($lines !== [] ? $lines : ['-'], 0, $maxLines);
+        if (count($lines) === $maxLines && strlen(implode(' ', $words)) > strlen(implode(' ', $lines))) {
+            $last = $lines[$maxLines - 1];
+            $lines[$maxLines - 1] = strlen($last) > 3 ? substr($last, 0, -3) . '...' : $last;
+        }
+
+        return $lines;
     }
 
     protected function ambilDaftarAngkatan(): array

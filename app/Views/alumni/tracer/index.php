@@ -193,7 +193,7 @@ $tipeAktivitas = static function (string $nama): string {
                             </select>
                         </div>
                         <div class="col-lg-6" data-tracer-section="pekerjaan wirausaha">
-                            <label class="form-label">Kesesuaian Jurusan</label>
+                            <label class="form-label">Kesesuaian Kompetensi</label>
                             <div class="d-flex gap-6 pt-3">
                                 <label class="form-check form-check-custom form-check-solid">
                                     <input class="form-check-input" type="radio" name="relevan_jurusan" value="1" <?= $checked('relevan_jurusan', '1') ?>>

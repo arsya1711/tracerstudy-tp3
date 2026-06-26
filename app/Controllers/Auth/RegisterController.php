@@ -174,7 +174,7 @@ class RegisterController extends BaseController
                 'tanggal_lahir'        => $payload['tanggal_lahir'],
                 'alamat'               => $payload['alamat'],
                 'status_verifikasi'   => 'menunggu_aktivasi',
-                'status_pendaftaran'  => 'aktif',
+                'status_pendaftaran'  => 'menunggu_aktivasi',
                 'terdaftar_pada'      => date('Y-m-d H:i:s'),
             ], true);
 

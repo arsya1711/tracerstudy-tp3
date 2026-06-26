@@ -86,9 +86,36 @@ $langkahBelumSelesai = array_values(array_filter(
     static fn (array $step): bool => empty($step['done'])
 ));
 $tracerTerakhir = is_array($tracerTerakhir ?? null) ? $tracerTerakhir : [];
+$legalisirTerbaru = is_array($legalisirTerbaru ?? null) ? $legalisirTerbaru : [];
 $teks = static function (mixed $value, string $empty = '-'): string {
     $value = trim((string) ($value ?? ''));
     return $value !== '' ? $value : $empty;
+};
+
+/*
+| Status legalisir terbaru ditampilkan sebagai alert di dashboard alumni.
+| Tujuannya agar alumni langsung melihat apakah pengajuan masih diajukan,
+| sedang diproses, selesai, atau ditolak beserta catatan adminnya.
+*/
+$statusLegalisirOptions = [
+    'diajukan' => 'Diajukan',
+    'diproses' => 'Diproses',
+    'selesai' => 'Selesai',
+    'ditolak' => 'Ditolak',
+];
+$legalisirStatus = (string) ($legalisirTerbaru['status'] ?? '');
+$legalisirAlertClass = match ($legalisirStatus) {
+    'diproses' => 'alert-primary',
+    'selesai' => 'alert-success',
+    'ditolak' => 'alert-danger',
+    'diajukan' => 'alert-warning',
+    default => 'alert-info',
+};
+$legalisirIconClass = match ($legalisirStatus) {
+    'diproses' => 'text-primary',
+    'selesai' => 'text-success',
+    'ditolak' => 'text-danger',
+    default => 'text-warning',
 };
 $punyaProfilKuliah = $tracerTerakhir !== [] && (
     trim((string) ($tracerTerakhir['universitas'] ?? '')) !== ''
@@ -181,6 +208,32 @@ $statusStep = static function (array $step, bool $menungguPersetujuan): array {
                 </div>
             </div>
         </div>
+
+        <?php if ($legalisirTerbaru !== []): ?>
+            <div class="alert <?= esc($legalisirAlertClass) ?> d-flex align-items-start gap-3 mb-8">
+                <i class="ki-duotone ki-information-5 fs-2hx <?= esc($legalisirIconClass) ?>">
+                    <span class="path1"></span>
+                    <span class="path2"></span>
+                    <span class="path3"></span>
+                </i>
+                <div class="flex-grow-1">
+                    <div class="d-flex flex-wrap align-items-center gap-2 mb-1">
+                        <div class="fw-bold">Status pengajuan legalisir terbaru: <?= esc($statusLegalisirOptions[$legalisirStatus] ?? ucfirst($legalisirStatus)) ?></div>
+                        <a href="<?= site_url('alumni/legalisir') ?>" class="btn btn-sm btn-light">Lihat Riwayat</a>
+                    </div>
+                    <div class="text-gray-700 fs-6">
+                        <?= esc($teks($legalisirTerbaru['jenis_dokumen'] ?? null, 'Dokumen')) ?>
+                        <?= ! empty($legalisirTerbaru['jumlah_lembar']) ? '- ' . (int) $legalisirTerbaru['jumlah_lembar'] . ' lembar' : '' ?>
+                    </div>
+                    <?php if (trim((string) ($legalisirTerbaru['catatan_admin'] ?? '')) !== ''): ?>
+                        <div class="mt-3 p-3 bg-white bg-opacity-75 rounded border border-gray-300">
+                            <div class="fw-bold fs-7 mb-1">Catatan admin</div>
+                            <div class="text-gray-700"><?= esc((string) $legalisirTerbaru['catatan_admin']) ?></div>
+                        </div>
+                    <?php endif; ?>
+                </div>
+            </div>
+        <?php endif; ?>
 
         <?php if ($menungguPersetujuan): ?>
             <div class="alert alert-warning d-flex align-items-start gap-3 mb-8">
