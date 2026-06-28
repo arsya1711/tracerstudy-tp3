@@ -15,6 +15,7 @@ switch ($slugPeran) {
 }
 
 $legalisirBadgeCount = 0;
+$alumniMenungguBadgeCount = 0;
 try {
     /*
     | Badge legalisir dihitung langsung di sidebar karena partial ini
@@ -42,8 +43,15 @@ try {
             }
         }
     }
+
+    if (($isAdminSekolah || (! $isAlumni && $slugPeran === 'superadmin')) && $dbSidebar->tableExists('tb_alumni')) {
+        $alumniMenungguBadgeCount = (int) $dbSidebar->table('tb_alumni')
+            ->where('status_pendaftaran', 'menunggu_aktivasi')
+            ->countAllResults();
+    }
 } catch (Throwable) {
     $legalisirBadgeCount = 0;
+    $alumniMenungguBadgeCount = 0;
 }
 
 $menuItems = [];
@@ -58,7 +66,8 @@ if ($isAlumni) {
 } elseif ($isAdminSekolah) {
     $menuItems = [
         ['label' => 'Dashboard', 'url' => base_url('admin-sekolah/dashboard'), 'active' => in_array(uri_string(), ['admin-sekolah/dashboard', 'dashboard/admin-sekolah'], true)],
-        ['label' => 'Tracer Alumni', 'url' => base_url('admin-sekolah/tracer'), 'active' => uri_string() === 'admin-sekolah/tracer'],
+        ['label' => 'Aktivasi Alumni', 'url' => base_url('admin-sekolah/tracer?status_akun=menunggu_aktivasi'), 'active' => uri_string() === 'admin-sekolah/tracer' && ($_GET['status_akun'] ?? '') === 'menunggu_aktivasi', 'badge' => $alumniMenungguBadgeCount],
+        ['label' => 'Tracer Alumni', 'url' => base_url('admin-sekolah/tracer'), 'active' => uri_string() === 'admin-sekolah/tracer' && ($_GET['status_akun'] ?? '') === ''],
         ['label' => 'Legalisir', 'url' => base_url('admin-sekolah/legalisir'), 'active' => uri_string() === 'admin-sekolah/legalisir', 'badge' => $legalisirBadgeCount],
         ['label' => 'Angkatan', 'url' => base_url('admin-sekolah/angkatan'), 'active' => uri_string() === 'admin-sekolah/angkatan'],
         ['label' => 'Kompetensi', 'url' => base_url('admin-sekolah/kompetensi'), 'active' => uri_string() === 'admin-sekolah/kompetensi'],
@@ -67,7 +76,8 @@ if ($isAlumni) {
 } else {
     $menuItems = [
         ['label' => 'Dashboard', 'url' => base_url('dashboard/superadmin'), 'active' => uri_string() === 'dashboard/superadmin'],
-        ['label' => 'Tracer Alumni', 'url' => base_url('superadmin/tracer'), 'active' => uri_string() === 'superadmin/tracer'],
+        ['label' => 'Aktivasi Alumni', 'url' => base_url('superadmin/tracer?status_akun=menunggu_aktivasi'), 'active' => uri_string() === 'superadmin/tracer' && ($_GET['status_akun'] ?? '') === 'menunggu_aktivasi', 'badge' => $alumniMenungguBadgeCount],
+        ['label' => 'Tracer Alumni', 'url' => base_url('superadmin/tracer'), 'active' => uri_string() === 'superadmin/tracer' && ($_GET['status_akun'] ?? '') === ''],
         ['label' => 'Legalisir', 'url' => base_url('superadmin/legalisir'), 'active' => uri_string() === 'superadmin/legalisir', 'badge' => $legalisirBadgeCount],
         ['label' => 'Angkatan', 'url' => base_url('superadmin/angkatan'), 'active' => uri_string() === 'superadmin/angkatan'],
         ['label' => 'Kompetensi', 'url' => base_url('superadmin/kompetensi'), 'active' => uri_string() === 'superadmin/kompetensi'],

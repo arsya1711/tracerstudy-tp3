@@ -216,6 +216,30 @@ class TracerController extends BaseController
         return redirect()->to($this->getTracerBaseUrl())->with('success', 'Data alumni dan tracer berhasil diperbarui.');
     }
 
+    public function aktivasiAlumni(int $idAlumni): RedirectResponse
+    {
+        if (! $this->isSuperadmin()) {
+            return redirect()->to('/login')->with('error', 'Akses ditolak.');
+        }
+
+        $alumni = $this->ambilAlumniDasar($idAlumni);
+        if ($alumni === null) {
+            return redirect()->to($this->getTracerBaseUrl())->with('error', 'Data alumni tidak ditemukan.');
+        }
+
+        $this->db->table('tb_alumni')
+            ->where('id_alumni', $idAlumni)
+            ->update([
+                'status_pendaftaran' => 'aktif',
+                'status_verifikasi'  => 'aktif',
+                'diverifikasi_oleh'  => (int) session()->get('id_pengguna') ?: null,
+                'diverifikasi_pada'  => date('Y-m-d H:i:s'),
+            ]);
+
+        return redirect()->to($this->getTracerBaseUrl() . '?status_akun=menunggu_aktivasi')
+            ->with('success', 'Akun alumni berhasil diaktifkan.');
+    }
+
     public function hapusTracer(int $idAlumni): RedirectResponse
     {
         if (! $this->isSuperadmin()) {
@@ -324,6 +348,10 @@ class TracerController extends BaseController
             $builder->where('t.id_tracer IS NULL', null, false);
         }
 
+        if (($filters['status_akun'] ?? '') !== '') {
+            $builder->where('al.status_pendaftaran', $filters['status_akun']);
+        }
+
         $keyword = trim((string) ($filters['search'] ?? ''));
         if ($keyword !== '') {
             $builder->groupStart()
@@ -351,6 +379,7 @@ class TracerController extends BaseController
             'id_kompetensi' => (int) ($this->request->getGet('id_kompetensi') ?? 0),
             'id_aktivitas'  => (int) ($this->request->getGet('id_aktivitas') ?? 0),
             'status'        => trim((string) $this->request->getGet('status')),
+            'status_akun'   => trim((string) $this->request->getGet('status_akun')),
         ];
     }
 
@@ -514,6 +543,10 @@ class TracerController extends BaseController
 
         if (($filters['status'] ?? '') !== '') {
             $items[] = 'Status: ' . $filters['status'];
+        }
+
+        if (($filters['status_akun'] ?? '') !== '') {
+            $items[] = 'Status Akun: ' . str_replace('_', ' ', $filters['status_akun']);
         }
 
         return $items !== [] ? implode(', ', $items) : 'Semua data';

@@ -53,6 +53,7 @@ $routes->group('admin-sekolah', ['filter' => 'auth:admin_sekolah'], static funct
     $routes->get('tracer', 'AdminSekolah\TracerController::index');
     $routes->get('tracer/export', 'AdminSekolah\TracerController::export');
     $routes->get('tracer/export-pdf', 'AdminSekolah\TracerController::exportPdf');
+    $routes->post('tracer/aktivasi-alumni/(:num)', 'AdminSekolah\TracerController::aktivasiAlumni/$1');
     $routes->post('tracer/update/(:num)', 'AdminSekolah\TracerController::update/$1');
     $routes->post('tracer/hapus-tracer/(:num)', 'AdminSekolah\TracerController::hapusTracer/$1');
     $routes->post('tracer/hapus-alumni/(:num)', 'AdminSekolah\TracerController::hapusAlumni/$1');
@@ -76,6 +77,7 @@ $routes->group('superadmin', ['filter' => 'auth:superadmin'], static function (R
     $routes->get('tracer', 'Superadmin\TracerController::index');
     $routes->get('tracer/export', 'Superadmin\TracerController::export');
     $routes->get('tracer/export-pdf', 'Superadmin\TracerController::exportPdf');
+    $routes->post('tracer/aktivasi-alumni/(:num)', 'Superadmin\TracerController::aktivasiAlumni/$1');
     $routes->post('tracer/update/(:num)', 'Superadmin\TracerController::update/$1');
     $routes->post('tracer/hapus-tracer/(:num)', 'Superadmin\TracerController::hapusTracer/$1');
     $routes->post('tracer/hapus-alumni/(:num)', 'Superadmin\TracerController::hapusAlumni/$1');

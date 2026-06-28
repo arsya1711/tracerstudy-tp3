@@ -74,6 +74,7 @@ $exportQuery = http_build_query([
     'id_kompetensi' => (int) ($filters['id_kompetensi'] ?? 0),
     'id_aktivitas' => (int) ($filters['id_aktivitas'] ?? 0),
     'status' => (string) ($filters['status'] ?? ''),
+    'status_akun' => (string) ($filters['status_akun'] ?? ''),
 ]);
 $exportUrl = $tracerBaseUrl . '/export' . ($exportQuery !== '' ? '?' . $exportQuery : '');
 $exportPdfUrl = $tracerBaseUrl . '/export-pdf' . ($exportQuery !== '' ? '?' . $exportQuery : '');
@@ -298,6 +299,15 @@ $penghasilanOptions = [
                                             </select>
                                         </div>
 
+                                        <div class="mb-8">
+                                            <label class="form-label fs-6 fw-semibold">Status Akun Alumni:</label>
+                                            <select name="status_akun" class="form-select form-select-solid">
+                                                <option value="">Semua Status Akun</option>
+                                                <option value="menunggu_aktivasi" <?= (string) ($filters['status_akun'] ?? '') === 'menunggu_aktivasi' ? 'selected' : '' ?>>Menunggu Aktivasi</option>
+                                                <option value="aktif" <?= (string) ($filters['status_akun'] ?? '') === 'aktif' ? 'selected' : '' ?>>Aktif</option>
+                                            </select>
+                                        </div>
+
                                         <div class="d-flex justify-content-end">
                                             <a href="<?= esc($tracerBaseUrl) ?>" class="btn btn-light btn-active-light-primary fw-semibold me-2 px-6">Reset</a>
                                             <button type="submit" class="btn btn-primary fw-semibold px-6" data-kt-menu-dismiss="true">Apply</button>
@@ -305,26 +315,33 @@ $penghasilanOptions = [
                                     </div>
                                 </div>
 
-                                <a href="<?= esc($exportUrl) ?>" class="btn btn-light-success me-3">
-                                    <i class="ki-duotone ki-file-down fs-2">
-                                        <span class="path1"></span>
-                                        <span class="path2"></span>
-                                    </i>Export Excel
-                                </a>
+                                <div class="dropdown">
+                                    <button type="button" class="btn btn-success dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <i class="ki-duotone ki-file-down fs-2">
+                                            <span class="path1"></span>
+                                            <span class="path2"></span>
+                                        </i>Export
+                                    </button>
 
-                                <a href="<?= esc($exportPdfUrl) ?>" class="btn btn-light-danger me-3">
-                                    <i class="ki-duotone ki-file-down fs-2">
-                                        <span class="path1"></span>
-                                        <span class="path2"></span>
-                                    </i>Export PDF
-                                </a>
-
-                                <button type="button" class="btn btn-primary" id="kt_tracer_print_button">
-                                    <i class="ki-duotone ki-printer fs-2">
-                                        <span class="path1"></span>
-                                        <span class="path2"></span>
-                                    </i>Cetak
-                                </button>
+                                    <ul class="dropdown-menu dropdown-menu-end shadow-sm py-3">
+                                        <li>
+                                            <a href="<?= esc($exportUrl) ?>" class="dropdown-item d-flex align-items-center fw-semibold px-5 py-3">
+                                                <i class="ki-duotone ki-file-down fs-3 text-success me-3">
+                                                    <span class="path1"></span>
+                                                    <span class="path2"></span>
+                                                </i>Export Excel
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="<?= esc($exportPdfUrl) ?>" class="dropdown-item d-flex align-items-center fw-semibold px-5 py-3">
+                                                <i class="ki-duotone ki-file-down fs-3 text-danger me-3">
+                                                    <span class="path1"></span>
+                                                    <span class="path2"></span>
+                                                </i>Export PDF
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
                             </div>
                         </div>
                     </form>
@@ -381,6 +398,9 @@ $penghasilanOptions = [
                                                 <div class="fw-bold text-gray-900"><?= esc((string) ($item['nama_lengkap'] ?? '-')) ?></div>
                                                 <div class="text-muted fs-7"><?= esc((string) ($item['email'] ?? '-')) ?></div>
                                                 <div class="text-muted fs-8"><?= esc((string) ($item['account_id'] ?? '-')) ?></div>
+                                                <?php if (($item['status_pendaftaran'] ?? '') === 'menunggu_aktivasi'): ?>
+                                                    <span class="badge badge-light-warning mt-2">Menunggu Aktivasi</span>
+                                                <?php endif; ?>
                                             </td>
                                             <td><?= esc((string) (($item['tahun_lulus'] ?? '') !== '' ? $item['tahun_lulus'] : '-')) ?></td>
                                             <td><?= esc($ringkasKompetensi($item)) ?></td>
@@ -396,6 +416,17 @@ $penghasilanOptions = [
                                                         <span class="path3"></span>
                                                     </i>
                                                 </button>
+                                                <?php if (($item['status_pendaftaran'] ?? '') === 'menunggu_aktivasi'): ?>
+                                                    <form method="post" action="<?= esc($tracerBaseUrl . '/aktivasi-alumni/' . $idAlumni) ?>" class="d-inline" onsubmit="return confirm('Aktifkan akun alumni ini?');">
+                                                        <?= csrf_field() ?>
+                                                        <button type="submit" class="btn btn-icon btn-active-light-success w-30px h-30px" title="Aktifkan Alumni">
+                                                            <i class="ki-duotone ki-check-circle fs-3 text-success">
+                                                                <span class="path1"></span>
+                                                                <span class="path2"></span>
+                                                            </i>
+                                                        </button>
+                                                    </form>
+                                                <?php endif; ?>
                                             </td>
                                         </tr>
                                     <?php endforeach; ?>
@@ -606,6 +637,17 @@ $penghasilanOptions = [
                             <span class="path2"></span>
                         </i>Edit
                     </button>
+                    <?php if (($item['status_pendaftaran'] ?? '') === 'menunggu_aktivasi'): ?>
+                        <form method="post" action="<?= esc($tracerBaseUrl . '/aktivasi-alumni/' . $idAlumni) ?>" onsubmit="return confirm('Aktifkan akun alumni ini?');">
+                            <?= csrf_field() ?>
+                            <button type="submit" class="btn btn-success">
+                                <i class="ki-duotone ki-check-circle fs-2">
+                                    <span class="path1"></span>
+                                    <span class="path2"></span>
+                                </i>Aktifkan Akun
+                            </button>
+                        </form>
+                    <?php endif; ?>
                     <?php if ($idTracer > 0): ?>
                         <form method="post" action="<?= esc($tracerBaseUrl . '/hapus-tracer/' . $idAlumni) ?>" onsubmit="return confirm('Hapus data tracer alumni ini? Profil dan akun alumni tetap tersimpan.');">
                             <?= csrf_field() ?>
@@ -853,7 +895,6 @@ $penghasilanOptions = [
     };
 
     document.addEventListener('DOMContentLoaded', function () {
-        var printButton = document.getElementById('kt_tracer_print_button');
         var config = window.ktTracerReportCharts || {};
         var adminActivitySelects = Array.prototype.slice.call(document.querySelectorAll('[data-tracer-activity-admin]'));
 
@@ -882,12 +923,6 @@ $penghasilanOptions = [
             });
             syncAdminTracerSections(activitySelect);
         });
-
-        if (printButton) {
-            printButton.addEventListener('click', function () {
-                window.print();
-            });
-        }
 
         if (typeof ApexCharts === 'undefined') {
             return;
