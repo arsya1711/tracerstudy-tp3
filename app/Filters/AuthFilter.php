@@ -133,10 +133,6 @@ class AuthFilter implements FilterInterface
             return null;
         }
 
-        if ($this->isAlumniDashboardRequest()) {
-            return null;
-        }
-
         if ($statusPendaftaran === 'aktif') {
             return null;
         }
@@ -146,22 +142,13 @@ class AuthFilter implements FilterInterface
                 ->setStatusCode(403)
                 ->setJSON([
                     'status' => 'error',
-                        'message' => 'Akun kamu masih menunggu persetujuan admin sekolah.',
+                    'message' => 'Akun kamu masih menunggu persetujuan admin sekolah.',
                     'csrfHash' => csrf_hash(),
                 ]);
         }
 
-        return redirect()->to(site_url('alumni/dashboard'))
-            ->with('error', 'Akun kamu masih menunggu persetujuan admin sekolah. Saat ini hanya dashboard yang dapat diakses.');
-    }
-
-    protected function isAlumniDashboardRequest(): bool
-    {
-        $path = trim(uri_string(), '/');
-
-        return in_array($path, [
-            'alumni/dashboard',
-        ], true);
+        return redirect()->to(site_url('login'))
+            ->with('error', 'Akun kamu masih menunggu persetujuan admin sekolah.');
     }
 
     protected function dashboardUrl(string $slugPeran): string

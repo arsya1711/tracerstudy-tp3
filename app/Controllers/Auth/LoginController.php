@@ -124,6 +124,21 @@ class LoginController extends BaseController
             return redirect()->back()->withInput()->with('error', 'Email atau password salah');
         }
 
+        if (($user['slug_peran'] ?? '') === 'alumni' && ($user['status_pendaftaran'] ?? '') !== 'aktif') {
+            $message = 'Akun alumni belum diaktifkan oleh admin sekolah.';
+
+            if ($this->request->isAJAX()) {
+                return $this->response
+                    ->setStatusCode(403)
+                    ->setJSON([
+                        'status'  => 'activation_required',
+                        'message' => $message,
+                    ]);
+            }
+
+            return redirect()->back()->withInput()->with('error', $message);
+        }
+
         session()->set([
             'pengguna_login' => true,
             'id_pengguna'    => $user['id_pengguna'],
