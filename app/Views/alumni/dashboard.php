@@ -74,9 +74,8 @@
 | - Jika tombol utama tidak sesuai, cek array onboarding.next_step.
 */
 $statusPendaftaran = (string) ($alumni['status_pendaftaran'] ?? '');
-$menungguPersetujuan = $statusPendaftaran !== '' && $statusPendaftaran !== 'aktif';
 $labelStatusPendaftaran = $statusPendaftaran !== '' ? ucwords(str_replace('_', ' ', $statusPendaftaran)) : 'Belum Diketahui';
-$kelasStatusPendaftaran = $menungguPersetujuan ? 'badge badge-light-warning' : 'badge badge-light-success';
+$kelasStatusPendaftaran = 'badge badge-light-success';
 $isAlumni = (bool) ($isAlumni ?? false);
 $onboarding = $onboarding ?? ['steps' => [], 'next_step' => null, 'ready' => false, 'progress' => ['total' => 0, 'selesai' => 0, 'persen' => 0]];
 $nextStep = $onboarding['next_step'] ?? null;
@@ -125,7 +124,7 @@ $punyaProfilKuliah = $tracerTerakhir !== [] && (
     || str_contains(strtolower((string) ($tracerTerakhir['nama_aktivitas'] ?? '')), 'studi')
 );
 
-$statusStep = static function (array $step, bool $menungguPersetujuan): array {
+$statusStep = static function (array $step): array {
     if (! empty($step['done'])) {
         return [
             'badge' => 'badge badge-light-success',
@@ -133,16 +132,6 @@ $statusStep = static function (array $step, bool $menungguPersetujuan): array {
             'iconBg' => 'bg-light-success',
             'iconText' => 'text-success',
             'icon' => 'ki-check-circle',
-        ];
-    }
-
-    if (($step['key'] ?? '') === 'akun' && $menungguPersetujuan) {
-        return [
-            'badge' => 'badge badge-light-warning',
-            'label' => 'Menunggu Review',
-            'iconBg' => 'bg-light-warning',
-            'iconText' => 'text-warning',
-            'icon' => 'ki-time',
         ];
     }
 
@@ -181,9 +170,7 @@ $statusStep = static function (array $step, bool $menungguPersetujuan): array {
                         <span class="badge badge-light-success mb-4">Alumni</span>
                         <h1 class="text-white fw-bold mb-3">Selamat datang, <?= esc((string) ($alumni['nama_lengkap'] ?? 'Alumni')) ?></h1>
                         <p class="text-white opacity-75 fs-5 mb-0">
-                            <?php if ($menungguPersetujuan): ?>
-                                Akun kamu sudah dibuat dan sedang menunggu persetujuan admin sekolah. Setelah aktif, sistem akan memandu kamu melengkapi profil dan tracer study.
-                            <?php elseif ($siapMelamar): ?>
+                            <?php if ($siapMelamar): ?>
                                 Semua langkah utama sudah selesai. Data tracer alumni kamu sudah lengkap.
                             <?php else: ?>
                                 Ikuti checklist di bawah ini agar profil dan tracer study kamu rapi dari awal.
@@ -193,14 +180,12 @@ $statusStep = static function (array $step, bool $menungguPersetujuan): array {
                     <?php if (! $siapMelamar): ?>
                     <div class="col-lg-4">
                         <div class="bg-white bg-opacity-10 rounded-4 p-6">
-                            <?php if (! $menungguPersetujuan && ! empty($nextStep['url'])): ?>
+                            <?php if (! empty($nextStep['url'])): ?>
                                 <div class="text-white fw-semibold mb-2">Langkah Berikutnya</div>
                                 <div class="text-white opacity-75 fs-7 mb-5"><?= esc((string) ($nextStep['title'] ?? 'Lengkapi data')) ?></div>
                                 <a href="<?= esc((string) $nextStep['url']) ?>" class="btn btn-success w-100">
                                     <?= esc((string) ($nextStep['button'] ?? 'Lanjutkan')) ?>
                                 </a>
-                            <?php else: ?>
-                                <button type="button" class="btn btn-light-warning w-100" disabled>Menunggu Aktivasi</button>
                             <?php endif; ?>
                         </div>
                     </div>
@@ -235,27 +220,13 @@ $statusStep = static function (array $step, bool $menungguPersetujuan): array {
             </div>
         <?php endif; ?>
 
-        <?php if ($menungguPersetujuan): ?>
-            <div class="alert alert-warning d-flex align-items-start gap-3 mb-8">
-                <i class="ki-duotone ki-information-5 fs-2hx text-warning">
-                    <span class="path1"></span>
-                    <span class="path2"></span>
-                    <span class="path3"></span>
-                </i>
-                <div>
-                    <div class="fw-bold mb-1">Akun menunggu review admin sekolah</div>
-                    <div class="text-gray-700 fs-6">Untuk sementara, dashboard hanya menampilkan status dan panduan awal. Menu profil dan tracer akan terbuka setelah akun disetujui.</div>
-                </div>
-            </div>
-        <?php endif; ?>
-
         <div class="row g-5 g-xl-8 mb-8">
             <div class="col-md-3">
                 <div class="card h-100">
                     <div class="card-body">
                         <div class="text-muted fs-7 text-uppercase fw-bold mb-2">Status Akun</div>
                         <div class="mb-2"><span class="<?= $kelasStatusPendaftaran ?> fs-7"><?= esc($labelStatusPendaftaran) ?></span></div>
-                        <div class="text-gray-600 fs-7">Persetujuan admin sekolah menentukan akses penuh alumni.</div>
+                        <div class="text-gray-600 fs-7">Akun alumni aktif dan bisa mengakses fitur utama.</div>
                     </div>
                 </div>
             </div>
@@ -336,8 +307,8 @@ $statusStep = static function (array $step, bool $menungguPersetujuan): array {
                 <div class="timeline timeline-border-dashed">
                     <?php foreach ($langkahBelumSelesai as $step): ?>
                         <?php
-                        $stepStatus = $statusStep($step, $menungguPersetujuan);
-                        $bolehKlik = ! $menungguPersetujuan && empty($step['done']) && ! empty($step['url']);
+                        $stepStatus = $statusStep($step);
+                        $bolehKlik = empty($step['done']) && ! empty($step['url']);
                         ?>
                         <div class="timeline-item">
                             <div class="timeline-line"></div>

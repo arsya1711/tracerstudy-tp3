@@ -27,8 +27,6 @@ class DashboardController extends BaseController
             'title' => 'Dashboard Super Admin - Sistem Tracer Study',
             'total_pengguna' => $this->hitungTabel('tb_pengguna'),
             'total_alumni' => $this->hitungTabel('tb_alumni'),
-            'alumni_menunggu' => $this->hitungAlumniByStatus('menunggu_aktivasi'),
-            'alumni_aktif' => $this->hitungAlumniByStatus('aktif'),
             'pengajuan_legalisir' => $this->hitungTabel('tb_pengajuan_legalisir'),
             'legalisir_menunggu' => (new PengajuanLegalisirModel())->hitungByStatusList(['diajukan']),
             'legalisir_diproses' => (new PengajuanLegalisirModel())->hitungByStatusList(['diproses']),
@@ -46,17 +44,6 @@ class DashboardController extends BaseController
         }
 
         return (int) $this->db->table($table)->countAllResults();
-    }
-
-    protected function hitungAlumniByStatus(string $status): int
-    {
-        if (! $this->db->tableExists('tb_alumni')) {
-            return 0;
-        }
-
-        return (int) $this->db->table('tb_alumni')
-            ->where('status_pendaftaran', $status)
-            ->countAllResults();
     }
 
     protected function hitungTracerTerkirim(): int

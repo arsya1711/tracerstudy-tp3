@@ -3,8 +3,8 @@
 |-------------------------------------------------------------------
 | VIEW REGISTER ALUMNI
 |-------------------------------------------------------------------
-| Form pendaftaran mandiri untuk alumni. Akun baru
-| dibuat dengan status menunggu aktivasi agar bisa direview admin sekolah.
+| Form pendaftaran mandiri untuk alumni. Akun baru langsung aktif
+| agar alumni bisa melengkapi profil dan tracer study.
 */
 ?>
 <?= $this->extend('layouts/auth') ?>
@@ -46,7 +46,7 @@ $daftar_kompetensi = is_array($daftar_kompetensi ?? null) ? $daftar_kompetensi :
             <span class="path3"></span>
         </i>
         <div class="text-gray-700 fs-7">
-            Setelah daftar, kamu bisa login. Menu profil dan tracer akan terbuka setelah admin sekolah menyetujui akun kamu.
+            Setelah daftar, kamu bisa langsung login untuk melengkapi profil dan mengisi tracer study.
         </div>
     </div>
 
@@ -65,7 +65,7 @@ $daftar_kompetensi = is_array($daftar_kompetensi ?? null) ? $daftar_kompetensi :
     </div>
 
     <div class="fv-row mb-8">
-        <input type="text" name="nomor_telepon" placeholder="Nomor HP / WhatsApp" autocomplete="tel" class="form-control bg-transparent" value="<?= esc(old('nomor_telepon')) ?>" />
+        <input type="text" name="nomor_telepon" placeholder="Nomor HP / WhatsApp" autocomplete="tel" class="form-control bg-transparent" value="<?= esc(old('nomor_telepon')) ?>" required />
         <?php if (isset($errors['nomor_telepon'])): ?>
             <div class="text-danger fs-8 mt-2"><?= esc($errors['nomor_telepon']) ?></div>
         <?php endif; ?>
@@ -102,6 +102,13 @@ $daftar_kompetensi = is_array($daftar_kompetensi ?? null) ? $daftar_kompetensi :
             <input type="text" name="nis" placeholder="NIS" autocomplete="off" class="form-control bg-transparent" value="<?= esc(old('nis')) ?>" />
             <?php if (isset($errors['nis'])): ?>
                 <div class="text-danger fs-8 mt-2"><?= esc($errors['nis']) ?></div>
+            <?php endif; ?>
+        </div>
+
+        <div class="fv-row mb-8">
+            <input type="text" name="nisn" placeholder="NISN" autocomplete="off" class="form-control bg-transparent" value="<?= esc(old('nisn')) ?>" required />
+            <?php if (isset($errors['nisn'])): ?>
+                <div class="text-danger fs-8 mt-2"><?= esc($errors['nisn']) ?></div>
             <?php endif; ?>
         </div>
 

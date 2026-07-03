@@ -74,7 +74,8 @@ $exportQuery = http_build_query([
     'id_kompetensi' => (int) ($filters['id_kompetensi'] ?? 0),
     'id_aktivitas' => (int) ($filters['id_aktivitas'] ?? 0),
     'status' => (string) ($filters['status'] ?? ''),
-    'status_akun' => (string) ($filters['status_akun'] ?? ''),
+    'tanggal_mulai' => (string) ($filters['tanggal_mulai'] ?? ''),
+    'tanggal_selesai' => (string) ($filters['tanggal_selesai'] ?? ''),
 ]);
 $exportUrl = $tracerBaseUrl . '/export' . ($exportQuery !== '' ? '?' . $exportQuery : '');
 $exportPdfUrl = $tracerBaseUrl . '/export-pdf' . ($exportQuery !== '' ? '?' . $exportQuery : '');
@@ -300,12 +301,13 @@ $penghasilanOptions = [
                                         </div>
 
                                         <div class="mb-8">
-                                            <label class="form-label fs-6 fw-semibold">Status Akun Alumni:</label>
-                                            <select name="status_akun" class="form-select form-select-solid">
-                                                <option value="">Semua Status Akun</option>
-                                                <option value="menunggu_aktivasi" <?= (string) ($filters['status_akun'] ?? '') === 'menunggu_aktivasi' ? 'selected' : '' ?>>Menunggu Aktivasi</option>
-                                                <option value="aktif" <?= (string) ($filters['status_akun'] ?? '') === 'aktif' ? 'selected' : '' ?>>Aktif</option>
-                                            </select>
+                                            <label class="form-label fs-6 fw-semibold">Tanggal Pengisian Mulai:</label>
+                                            <input type="date" name="tanggal_mulai" class="form-control form-control-solid" value="<?= esc((string) ($filters['tanggal_mulai'] ?? ''), 'attr') ?>">
+                                        </div>
+
+                                        <div class="mb-8">
+                                            <label class="form-label fs-6 fw-semibold">Tanggal Pengisian Selesai:</label>
+                                            <input type="date" name="tanggal_selesai" class="form-control form-control-solid" value="<?= esc((string) ($filters['tanggal_selesai'] ?? ''), 'attr') ?>">
                                         </div>
 
                                         <div class="d-flex justify-content-end">
@@ -359,8 +361,8 @@ $penghasilanOptions = [
                             <div class="text-muted fw-semibold fs-7">Total Alumni</div>
                         </div>
                         <div class="border border-gray-300 border-dashed rounded py-3 px-5">
-                            <div class="fs-2 fw-bold text-success"><?= (int) (($grafikAktivitas['map']['Bekerja'] ?? 0) + ($grafikAktivitas['map']['Wirausaha'] ?? 0)) ?></div>
-                            <div class="text-muted fw-semibold fs-7">Terserap Kerja/Usaha</div>
+                            <div class="fs-2 fw-bold text-success"><?= (int) (($grafikAktivitas['map']['Bekerja'] ?? 0) + ($grafikAktivitas['map']['Kuliah'] ?? 0) + ($grafikAktivitas['map']['Wirausaha'] ?? 0)) ?></div>
+                            <div class="text-muted fw-semibold fs-7">Keterserapan Lulusan</div>
                         </div>
                         <div class="border border-gray-300 border-dashed rounded py-3 px-5">
                             <div class="fs-2 fw-bold text-primary"><?= count($grafikAktivitas['labels'] ?? []) ?></div>
@@ -398,9 +400,6 @@ $penghasilanOptions = [
                                                 <div class="fw-bold text-gray-900"><?= esc((string) ($item['nama_lengkap'] ?? '-')) ?></div>
                                                 <div class="text-muted fs-7"><?= esc((string) ($item['email'] ?? '-')) ?></div>
                                                 <div class="text-muted fs-8"><?= esc((string) ($item['account_id'] ?? '-')) ?></div>
-                                                <?php if (($item['status_pendaftaran'] ?? '') === 'menunggu_aktivasi'): ?>
-                                                    <span class="badge badge-light-warning mt-2">Menunggu Aktivasi</span>
-                                                <?php endif; ?>
                                             </td>
                                             <td><?= esc((string) (($item['tahun_lulus'] ?? '') !== '' ? $item['tahun_lulus'] : '-')) ?></td>
                                             <td><?= esc($ringkasKompetensi($item)) ?></td>
@@ -416,17 +415,6 @@ $penghasilanOptions = [
                                                         <span class="path3"></span>
                                                     </i>
                                                 </button>
-                                                <?php if (($item['status_pendaftaran'] ?? '') === 'menunggu_aktivasi'): ?>
-                                                    <form method="post" action="<?= esc($tracerBaseUrl . '/aktivasi-alumni/' . $idAlumni) ?>" class="d-inline" onsubmit="return confirm('Aktifkan akun alumni ini?');">
-                                                        <?= csrf_field() ?>
-                                                        <button type="submit" class="btn btn-icon btn-active-light-success w-30px h-30px" title="Aktifkan Alumni">
-                                                            <i class="ki-duotone ki-check-circle fs-3 text-success">
-                                                                <span class="path1"></span>
-                                                                <span class="path2"></span>
-                                                            </i>
-                                                        </button>
-                                                    </form>
-                                                <?php endif; ?>
                                             </td>
                                         </tr>
                                     <?php endforeach; ?>
@@ -530,10 +518,6 @@ $penghasilanOptions = [
 
                     <div class="row g-5 mb-7">
                         <div class="col-md-6">
-                            <div class="text-muted fs-7 text-uppercase fw-bold mb-1">No. Ijazah</div>
-                            <div class="fw-semibold text-gray-800"><?= esc((string) (($item['no_ijazah'] ?? '') !== '' ? $item['no_ijazah'] : '-')) ?></div>
-                        </div>
-                        <div class="col-md-6">
                             <div class="text-muted fs-7 text-uppercase fw-bold mb-1">Jenis Kelamin</div>
                             <div class="fw-semibold text-gray-800"><?= esc((string) (($item['jenis_kelamin'] ?? '') !== '' ? $item['jenis_kelamin'] : '-')) ?></div>
                         </div>
@@ -560,10 +544,6 @@ $penghasilanOptions = [
                         <div class="col-md-6">
                             <div class="text-muted fs-7 text-uppercase fw-bold mb-1">Status Tracer</div>
                             <span class="<?= esc($badgeClass) ?>"><?= esc($badgeLabel) ?></span>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="text-muted fs-7 text-uppercase fw-bold mb-1">Status Akun Alumni</div>
-                            <div class="fw-semibold text-gray-800"><?= esc((string) (($item['status_pendaftaran'] ?? '') !== '' ? ucwords(str_replace('_', ' ', $item['status_pendaftaran'])) : '-')) ?></div>
                         </div>
                         <div class="col-12">
                             <div class="text-muted fs-7 text-uppercase fw-bold mb-1">Alamat</div>
@@ -637,17 +617,6 @@ $penghasilanOptions = [
                             <span class="path2"></span>
                         </i>Edit
                     </button>
-                    <?php if (($item['status_pendaftaran'] ?? '') === 'menunggu_aktivasi'): ?>
-                        <form method="post" action="<?= esc($tracerBaseUrl . '/aktivasi-alumni/' . $idAlumni) ?>" onsubmit="return confirm('Aktifkan akun alumni ini?');">
-                            <?= csrf_field() ?>
-                            <button type="submit" class="btn btn-success">
-                                <i class="ki-duotone ki-check-circle fs-2">
-                                    <span class="path1"></span>
-                                    <span class="path2"></span>
-                                </i>Aktifkan Akun
-                            </button>
-                        </form>
-                    <?php endif; ?>
                     <?php if ($idTracer > 0): ?>
                         <form method="post" action="<?= esc($tracerBaseUrl . '/hapus-tracer/' . $idAlumni) ?>" onsubmit="return confirm('Hapus data tracer alumni ini? Profil dan akun alumni tetap tersimpan.');">
                             <?= csrf_field() ?>
@@ -707,10 +676,6 @@ $penghasilanOptions = [
                                     <input type="text" name="nomor_telepon" class="form-control form-control-solid" value="<?= esc($nilai($item, 'nomor_telepon'), 'attr') ?>">
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label">No. Ijazah</label>
-                                    <input type="text" name="no_ijazah" class="form-control form-control-solid" value="<?= esc($nilai($item, 'no_ijazah'), 'attr') ?>">
-                                </div>
-                                <div class="col-md-6">
                                     <label class="form-label">NIS</label>
                                     <input type="text" name="nis" class="form-control form-control-solid" value="<?= esc($nilai($item, 'nis'), 'attr') ?>">
                                 </div>
@@ -754,13 +719,6 @@ $penghasilanOptions = [
                                                 <?= esc((string) ($kompetensi['nama_kompetensi'] ?? '-')) ?>
                                             </option>
                                         <?php endforeach; ?>
-                                    </select>
-                                </div>
-                                <div class="col-12">
-                                    <label class="form-label required">Status Akun Alumni</label>
-                                    <select name="status_pendaftaran" class="form-select form-select-solid" required>
-                                        <option value="menunggu_aktivasi" <?= $selected($item['status_pendaftaran'] ?? '', 'menunggu_aktivasi') ?>>Menunggu Aktivasi</option>
-                                        <option value="aktif" <?= $selected($item['status_pendaftaran'] ?? '', 'aktif') ?>>Aktif</option>
                                     </select>
                                 </div>
                                 <div class="col-12">

@@ -63,7 +63,7 @@ class AuthFilter implements FilterInterface
 
         $allowedRoles = is_array($arguments) ? array_filter(array_map('strval', $arguments)) : [];
         if ($allowedRoles === []) {
-            return $this->pastikanAksesAlumniDisetujui($request, (string) ($user['slug_peran'] ?? ''), (string) ($user['status_pendaftaran'] ?? ''));
+            return null;
         }
 
         $slugPeran = (string) ($user['slug_peran'] ?? '');
@@ -81,7 +81,7 @@ class AuthFilter implements FilterInterface
             return redirect()->to($this->dashboardUrl($slugPeran))->with('error', 'Akses ditolak.');
         }
 
-        return $this->pastikanAksesAlumniDisetujui($request, $slugPeran, (string) ($user['status_pendaftaran'] ?? ''));
+        return null;
     }
 
     protected function ambilPenggunaAktif(): ?array
@@ -125,30 +125,6 @@ class AuthFilter implements FilterInterface
             'slug_peran'          => $user['slug_peran'] ?? session()->get('slug_peran'),
             'status_pendaftaran'  => $user['status_pendaftaran'] ?? null,
         ]);
-    }
-
-    protected function pastikanAksesAlumniDisetujui(RequestInterface $request, string $slugPeran, string $statusPendaftaran)
-    {
-        if ($slugPeran !== 'alumni') {
-            return null;
-        }
-
-        if ($statusPendaftaran === 'aktif') {
-            return null;
-        }
-
-        if (method_exists($request, 'isAJAX') && $request->isAJAX()) {
-            return service('response')
-                ->setStatusCode(403)
-                ->setJSON([
-                    'status' => 'error',
-                    'message' => 'Akun kamu masih menunggu persetujuan admin sekolah.',
-                    'csrfHash' => csrf_hash(),
-                ]);
-        }
-
-        return redirect()->to(site_url('login'))
-            ->with('error', 'Akun kamu masih menunggu persetujuan admin sekolah.');
     }
 
     protected function dashboardUrl(string $slugPeran): string

@@ -20,14 +20,6 @@ $cards = [
         'hint' => $legalisirMenunggu > 0 ? $legalisirMenunggu . ' pengajuan baru perlu ditindaklanjuti' : $legalisirDiproses . ' pengajuan sedang diproses',
         'valueClass' => $legalisirMenunggu > 0 ? 'text-warning' : 'text-gray-900',
     ],
-    [
-        'label' => 'Alumni Menunggu Aktivasi',
-        'value' => (int) ($alumni_menunggu ?? 0),
-        'url' => site_url('superadmin/tracer?status_akun=menunggu_aktivasi'),
-        'class' => (int) ($alumni_menunggu ?? 0) > 0 ? 'bg-light-danger border border-danger border-2' : 'bg-light',
-        'hint' => (int) ($alumni_menunggu ?? 0) > 0 ? 'Akun alumni baru perlu disetujui' : 'Tidak ada akun yang menunggu',
-        'valueClass' => (int) ($alumni_menunggu ?? 0) > 0 ? 'text-danger' : 'text-gray-900',
-    ],
     ['label' => 'Total Alumni', 'value' => (int) ($total_alumni ?? 0), 'url' => site_url('superadmin/tracer'), 'class' => ''],
 ];
 ?>

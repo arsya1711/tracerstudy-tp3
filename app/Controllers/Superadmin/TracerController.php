@@ -130,12 +130,10 @@ class TracerController extends BaseController
             'nomor_telepon' => 'permit_empty|max_length[30]',
             'nis'           => 'permit_empty|max_length[30]',
             'nisn'          => 'permit_empty|max_length[30]',
-            'no_ijazah'     => 'permit_empty|max_length[60]',
             'id_angkatan'   => 'permit_empty|integer',
             'id_kompetensi' => 'permit_empty|integer',
             'id_aktivitas'  => 'permit_empty|integer',
             'tanggal_lahir' => 'permit_empty|valid_date[Y-m-d]',
-            'status_pendaftaran' => 'required|in_list[menunggu_aktivasi,aktif]',
         ];
 
         if (! $this->validate($rules)) {
@@ -164,27 +162,18 @@ class TracerController extends BaseController
                 'nomor_telepon' => $this->ambilStringKosongJadiNull('nomor_telepon'),
             ]);
 
-        $statusPendaftaran = (string) $this->request->getPost('status_pendaftaran');
-        $statusVerifikasi = $statusPendaftaran === 'aktif' ? 'aktif' : 'menunggu_aktivasi';
-
         $payloadAlumni = [
             'nis'                 => $this->ambilStringKosongJadiNull('nis'),
             'nisn'                => $this->ambilStringKosongJadiNull('nisn'),
-            'no_ijazah'           => $this->ambilStringKosongJadiNull('no_ijazah'),
             'jenis_kelamin'       => $this->ambilStringKosongJadiNull('jenis_kelamin'),
             'tempat_lahir'        => $this->ambilStringKosongJadiNull('tempat_lahir'),
             'tanggal_lahir'       => $this->ambilStringKosongJadiNull('tanggal_lahir'),
             'id_angkatan'         => $this->ambilIntegerKosongJadiNull('id_angkatan'),
             'id_kompetensi'       => $this->ambilIntegerKosongJadiNull('id_kompetensi'),
             'alamat'              => $this->ambilStringKosongJadiNull('alamat'),
-            'status_pendaftaran'  => $statusPendaftaran,
-            'status_verifikasi'   => $statusVerifikasi,
+            'status_pendaftaran'  => 'aktif',
+            'status_verifikasi'   => 'aktif',
         ];
-
-        if ($statusPendaftaran === 'aktif') {
-            $payloadAlumni['diverifikasi_oleh'] = (int) session()->get('id_pengguna') ?: null;
-            $payloadAlumni['diverifikasi_pada'] = date('Y-m-d H:i:s');
-        }
 
         $this->db->table('tb_alumni')
             ->where('id_alumni', $idAlumni)
@@ -214,30 +203,6 @@ class TracerController extends BaseController
         }
 
         return redirect()->to($this->getTracerBaseUrl())->with('success', 'Data alumni dan tracer berhasil diperbarui.');
-    }
-
-    public function aktivasiAlumni(int $idAlumni): RedirectResponse
-    {
-        if (! $this->isSuperadmin()) {
-            return redirect()->to('/login')->with('error', 'Akses ditolak.');
-        }
-
-        $alumni = $this->ambilAlumniDasar($idAlumni);
-        if ($alumni === null) {
-            return redirect()->to($this->getTracerBaseUrl())->with('error', 'Data alumni tidak ditemukan.');
-        }
-
-        $this->db->table('tb_alumni')
-            ->where('id_alumni', $idAlumni)
-            ->update([
-                'status_pendaftaran' => 'aktif',
-                'status_verifikasi'  => 'aktif',
-                'diverifikasi_oleh'  => (int) session()->get('id_pengguna') ?: null,
-                'diverifikasi_pada'  => date('Y-m-d H:i:s'),
-            ]);
-
-        return redirect()->to($this->getTracerBaseUrl() . '?status_akun=menunggu_aktivasi')
-            ->with('success', 'Akun alumni berhasil diaktifkan.');
     }
 
     public function hapusTracer(int $idAlumni): RedirectResponse
@@ -302,13 +267,14 @@ class TracerController extends BaseController
         $builder = $this->db->table('tb_alumni al')
             ->select([
                 't.*',
+                't.dibuat_pada AS tracer_dibuat_pada',
+                't.diperbarui_pada AS tracer_diperbarui_pada',
                 'al.id_alumni',
                 'al.id_pengguna',
                 'al.id_angkatan',
                 'al.id_kompetensi',
                 'al.nis',
                 'al.nisn',
-                'al.no_ijazah',
                 'al.jenis_kelamin',
                 'al.tempat_lahir',
                 'al.tanggal_lahir',
@@ -348,8 +314,12 @@ class TracerController extends BaseController
             $builder->where('t.id_tracer IS NULL', null, false);
         }
 
-        if (($filters['status_akun'] ?? '') !== '') {
-            $builder->where('al.status_pendaftaran', $filters['status_akun']);
+        if (($filters['tanggal_mulai'] ?? '') !== '') {
+            $builder->where('DATE(COALESCE(t.diperbarui_pada, t.dibuat_pada)) >=', $filters['tanggal_mulai']);
+        }
+
+        if (($filters['tanggal_selesai'] ?? '') !== '') {
+            $builder->where('DATE(COALESCE(t.diperbarui_pada, t.dibuat_pada)) <=', $filters['tanggal_selesai']);
         }
 
         $keyword = trim((string) ($filters['search'] ?? ''));
@@ -367,139 +337,279 @@ class TracerController extends BaseController
         return $builder
             ->orderBy('t.diperbarui_pada', 'DESC')
             ->orderBy('t.id_tracer', 'DESC')
+            ->orderBy('u.nama_lengkap', 'ASC')
             ->get()
             ->getResultArray();
     }
 
     protected function ambilFilterDariRequest(): array
     {
+        $tanggalMulai = $this->validDateFilter((string) $this->request->getGet('tanggal_mulai'));
+        $tanggalSelesai = $this->validDateFilter((string) $this->request->getGet('tanggal_selesai'));
+
+        if ($tanggalMulai !== '' && $tanggalSelesai !== '' && $tanggalMulai > $tanggalSelesai) {
+            [$tanggalMulai, $tanggalSelesai] = [$tanggalSelesai, $tanggalMulai];
+        }
+
         return [
-            'search'        => trim((string) $this->request->getGet('q')),
-            'id_angkatan'   => (int) ($this->request->getGet('id_angkatan') ?? 0),
-            'id_kompetensi' => (int) ($this->request->getGet('id_kompetensi') ?? 0),
-            'id_aktivitas'  => (int) ($this->request->getGet('id_aktivitas') ?? 0),
-            'status'        => trim((string) $this->request->getGet('status')),
-            'status_akun'   => trim((string) $this->request->getGet('status_akun')),
+            'search'           => trim((string) $this->request->getGet('q')),
+            'id_angkatan'      => max(0, (int) ($this->request->getGet('id_angkatan') ?? 0)),
+            'id_kompetensi'    => max(0, (int) ($this->request->getGet('id_kompetensi') ?? 0)),
+            'id_aktivitas'     => max(0, (int) ($this->request->getGet('id_aktivitas') ?? 0)),
+            'status'           => in_array((string) $this->request->getGet('status'), ['sudah', 'belum'], true) ? (string) $this->request->getGet('status') : '',
+            'tanggal_mulai'    => $tanggalMulai,
+            'tanggal_selesai'  => $tanggalSelesai,
         ];
+    }
+
+    protected function validDateFilter(string $value): string
+    {
+        $value = trim($value);
+        if ($value === '') {
+            return '';
+        }
+
+        $date = \DateTime::createFromFormat('Y-m-d', $value);
+
+        return $date !== false && $date->format('Y-m-d') === $value ? $value : '';
     }
 
     protected function bangunExcelTracer(array $rows, array $filters): string
     {
-        $total = count($rows);
-        $sudahTracer = 0;
-        $belumTracer = 0;
-
-        foreach ($rows as $index => $row) {
-            if ((int) ($row['id_tracer'] ?? 0) > 0) {
-                $sudahTracer++;
-            } else {
-                $belumTracer++;
-            }
-        }
-
+        $rekap = $this->bangunRekapAkreditasi($rows);
         $filterText = $this->formatFilterExcel($filters);
         $dibuatPada = date('d/m/Y H:i');
 
-        $html = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">';
-        $html .= '<head><meta charset="UTF-8">';
-        $html .= '<!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>Laporan Tracer</x:Name><x:WorksheetOptions><x:FreezePanes/><x:FrozenNoSplit/><x:SplitHorizontal>7</x:SplitHorizontal><x:TopRowBottomPane>7</x:TopRowBottomPane><x:ActivePane>2</x:ActivePane></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]-->';
-        $html .= '<style>';
-        $html .= 'body{font-family:Calibri,Arial,sans-serif;font-size:11pt;color:#1f2937;}';
-        $html .= 'table{border-collapse:collapse;}';
-        $html .= '.title{font-size:18pt;font-weight:700;color:#0b1f4d;}';
-        $html .= '.subtitle{font-size:10pt;color:#64748b;}';
-        $html .= '.summary-label{background:#eef4ff;font-weight:700;color:#0b1f4d;border:1px solid #c7d7fe;padding:8px;}';
-        $html .= '.summary-value{background:#f8fbff;border:1px solid #c7d7fe;padding:8px;text-align:center;font-weight:700;}';
-        $html .= '.header{background:#0b1f4d;color:#ffffff;font-weight:700;border:1px solid #243b6b;padding:8px;text-align:center;}';
-        $html .= '.cell{border:1px solid #d9e2ec;padding:7px;vertical-align:top;}';
-        $html .= '.alt{background:#f8fafc;}';
-        $html .= '.status-ok{background:#dcfce7;color:#166534;font-weight:700;text-align:center;}';
-        $html .= '.status-warn{background:#fef3c7;color:#92400e;font-weight:700;text-align:center;}';
-        $html .= '.text{mso-number-format:"\\@";}';
-        $html .= '.center{text-align:center;}';
-        $html .= 'td{white-space:normal;}';
-        $html .= '</style></head><body>';
-        $html .= '<table>';
-        $html .= '<col width="45"><col width="115"><col width="190"><col width="220"><col width="100"><col width="115"><col width="90"><col width="220"><col width="150"><col width="170"><col width="130"><col width="160"><col width="220"><col width="220"><col width="150"><col width="130"><col width="170"><col width="240">';
-        $html .= '<tr><td colspan="18" class="title">Laporan Tracer Alumni</td></tr>';
-        $html .= '<tr><td colspan="18" class="subtitle">Sistem Informasi Tracer Study</td></tr>';
-        $html .= '<tr><td colspan="18" class="subtitle">Dibuat pada: ' . $this->excelCell($dibuatPada) . '</td></tr>';
-        $html .= '<tr><td colspan="18" class="subtitle">Filter: ' . $this->excelCell($filterText) . '</td></tr>';
-        $html .= '<tr><td colspan="18">&nbsp;</td></tr>';
-        $html .= '<tr>';
-        $html .= '<td class="summary-label" colspan="3">Total Alumni</td><td class="summary-value">' . $total . '</td>';
-        $html .= '<td class="summary-label" colspan="3">Sudah Mengisi Tracer</td><td class="summary-value">' . $sudahTracer . '</td>';
-        $html .= '<td class="summary-label" colspan="3">Belum Mengisi Tracer</td><td class="summary-value">' . $belumTracer . '</td>';
-        $html .= '</tr>';
-        $html .= '<tr><td colspan="18">&nbsp;</td></tr>';
-        $html .= '<tr>';
+        $xml = '<?xml version="1.0" encoding="UTF-8"?>';
+        $xml .= '<?mso-application progid="Excel.Sheet"?>';
+        $xml .= '<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet" '
+            . 'xmlns:o="urn:schemas-microsoft-com:office:office" '
+            . 'xmlns:x="urn:schemas-microsoft-com:office:excel" '
+            . 'xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet">';
+        $xml .= '<Styles>';
+        $xml .= '<Style ss:ID="Title"><Font ss:Bold="1" ss:Size="16" ss:Color="#0B1F4D"/></Style>';
+        $xml .= '<Style ss:ID="Meta"><Font ss:Color="#64748B"/></Style>';
+        $xml .= '<Style ss:ID="Header"><Font ss:Bold="1" ss:Color="#FFFFFF"/><Interior ss:Color="#0B1F4D" ss:Pattern="Solid"/><Alignment ss:Horizontal="Center" ss:Vertical="Center" ss:WrapText="1"/><Borders><Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/></Borders></Style>';
+        $xml .= '<Style ss:ID="Cell"><Alignment ss:Vertical="Top" ss:WrapText="1"/><Borders><Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#D9E2EC"/></Borders></Style>';
+        $xml .= '<Style ss:ID="Number"><Alignment ss:Horizontal="Center" ss:Vertical="Top"/><Borders><Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#D9E2EC"/></Borders></Style>';
+        $xml .= '<Style ss:ID="Percent"><NumberFormat ss:Format="0.00%"/><Alignment ss:Horizontal="Center" ss:Vertical="Top"/><Borders><Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#D9E2EC"/></Borders></Style>';
+        $xml .= '</Styles>';
 
-        $headers = [
-            'No',
-            'Account ID',
-            'Nama Alumni',
-            'Email',
-            'NIS',
-            'NISN',
+        $xml .= '<Worksheet ss:Name="Rekap Akreditasi"><Table>';
+        $xml .= '<Column ss:Width="90"/><Column ss:Width="190"/><Column ss:Width="90"/><Column ss:Width="125"/><Column ss:Width="125"/><Column ss:Width="75"/><Column ss:Width="145"/><Column ss:Width="80"/><Column ss:Width="95"/><Column ss:Width="135"/><Column ss:Width="155"/>';
+        $xml .= $this->excelXmlRow([['Laporan Tracer Alumni - Rekap Akreditasi', 'String', 'Title']], 11);
+        $xml .= $this->excelXmlRow([['Sistem Informasi Tracer Study SMK Teratai Putih Global 3 Bekasi', 'String', 'Meta']], 11);
+        $xml .= $this->excelXmlRow([['Dibuat pada: ' . $dibuatPada, 'String', 'Meta']], 11);
+        $xml .= $this->excelXmlRow([['Filter: ' . $filterText, 'String', 'Meta']], 11);
+        $xml .= '<Row/>';
+        $xml .= $this->excelXmlHeader([
             'Angkatan',
-            'Kompetensi',
-            'Aktivitas',
-            'Status Tracer',
-            'Tanggal Pengisian',
-            'Posisi Kerja',
-            'Nama Instansi',
-            'Universitas',
-            'Program Studi',
-            'Status Kuliah',
-            'Nama Usaha',
-            'Rencana Kedepan',
-        ];
+            'Kompetensi Keahlian',
+            'Total Alumni',
+            'Sudah Mengisi Tracer Study',
+            'Belum Mengisi Tracer Study',
+            'Bekerja',
+            'Kuliah / Melanjutkan Studi',
+            'Wirausaha',
+            'Mencari Kerja',
+            'Persentase Keterserapan',
+            'Persentase Pengisian Tracer Study',
+        ]);
 
-        foreach ($headers as $header) {
-            $html .= '<td class="header">' . $this->excelCell($header) . '</td>';
+        if ($rekap === []) {
+            $xml .= $this->excelXmlRow([['Data tidak tersedia', 'String', 'Cell']], 11);
+        } else {
+            foreach ($rekap as $item) {
+                $xml .= $this->excelXmlRow([
+                    [$item['angkatan'], 'String', 'Cell'],
+                    [$item['kompetensi'], 'String', 'Cell'],
+                    [$item['total_alumni'], 'Number', 'Number'],
+                    [$item['sudah_tracer'], 'Number', 'Number'],
+                    [$item['belum_tracer'], 'Number', 'Number'],
+                    [$item['bekerja'], 'Number', 'Number'],
+                    [$item['kuliah'], 'Number', 'Number'],
+                    [$item['wirausaha'], 'Number', 'Number'],
+                    [$item['mencari_kerja'], 'Number', 'Number'],
+                    [$item['persentase_keterserapan'] / 100, 'Number', 'Percent'],
+                    [$item['persentase_pengisian'] / 100, 'Number', 'Percent'],
+                ]);
+            }
         }
 
-        $html .= '</tr>';
+        $xml .= '</Table><WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel"><FreezePanes/><FrozenNoSplit/><SplitHorizontal>6</SplitHorizontal><TopRowBottomPane>6</TopRowBottomPane><ActivePane>2</ActivePane></WorksheetOptions></Worksheet>';
 
-        foreach ($rows as $index => $row) {
-            $sudahMengisi = (int) ($row['id_tracer'] ?? 0) > 0;
-            $rowClass = $index % 2 === 1 ? ' alt' : '';
-            $statusClass = $sudahMengisi ? 'status-ok' : 'status-warn';
+        $xml .= '<Worksheet ss:Name="Detail Data Alumni"><Table>';
+        $xml .= '<Column ss:Width="40"/><Column ss:Width="190"/><Column ss:Width="120"/><Column ss:Width="190"/><Column ss:Width="120"/><Column ss:Width="105"/><Column ss:Width="200"/><Column ss:Width="130"/><Column ss:Width="210"/><Column ss:Width="220"/><Column ss:Width="150"/><Column ss:Width="240"/><Column ss:Width="155"/><Column ss:Width="125"/><Column ss:Width="160"/>';
+        $xml .= $this->excelXmlRow([['Laporan Tracer Alumni - Detail Data Alumni', 'String', 'Title']], 15);
+        $xml .= $this->excelXmlRow([['Dibuat pada: ' . $dibuatPada, 'String', 'Meta']], 15);
+        $xml .= $this->excelXmlRow([['Filter: ' . $filterText, 'String', 'Meta']], 15);
+        $xml .= '<Row/>';
+        $xml .= $this->excelXmlHeader([
+            'No',
+            'Nama Alumni',
+            'NIS/NISN',
+            'Email',
+            'No. Telepon',
+            'Angkatan / Tahun Lulus',
+            'Kompetensi Keahlian',
+            'Status Aktivitas',
+            'Nama Instansi / Kampus / Usaha',
+            'Bidang Pekerjaan / Program Studi / Bidang Usaha',
+            'Jabatan / Posisi',
+            'Alamat Instansi / Kampus / Usaha',
+            'Kesesuaian Bidang dengan Kompetensi',
+            'Tanggal Pengisian',
+            'Status Pendaftaran Alumni',
+        ]);
 
-            $values = [
-                $index + 1,
-                $this->excelValue($row['account_id'] ?? ''),
-                $this->excelValue($row['nama_lengkap'] ?? ''),
-                $this->excelValue($row['email'] ?? ''),
-                $this->excelValue($row['nis'] ?? ''),
-                $this->excelValue($row['nisn'] ?? ''),
-                $this->excelValue($row['tahun_lulus'] ?? ''),
-                $this->formatKompetensiExcel($row),
-                $this->excelValue($row['nama_aktivitas'] ?? 'Belum Mengisi Tracer'),
-                $sudahMengisi ? 'Sudah Mengisi Tracer' : 'Belum Mengisi Tracer',
-                $this->excelValue($row['tanggal_pengisian'] ?? ''),
-                $this->excelValue($row['posisi_kerja'] ?? ''),
-                $this->excelValue($row['nama_instansi'] ?? ''),
-                $this->excelValue($row['universitas'] ?? ''),
-                $this->excelValue($row['program_studi'] ?? ''),
-                $this->excelValue($row['status_kuliah'] ?? ''),
-                $this->excelValue($row['nama_usaha'] ?? ''),
-                $this->excelValue($row['rencana_kedepan'] ?? ''),
-            ];
+        if ($rows === []) {
+            $xml .= $this->excelXmlRow([['Data tidak tersedia', 'String', 'Cell']], 15);
+        } else {
+            foreach ($rows as $index => $row) {
+                $xml .= $this->excelXmlRow([
+                    [$index + 1, 'Number', 'Number'],
+                    [$this->excelValue($row['nama_lengkap'] ?? ''), 'String', 'Cell'],
+                    [$this->formatNisNisn($row), 'String', 'Cell'],
+                    [$this->excelValue($row['email'] ?? ''), 'String', 'Cell'],
+                    [$this->excelValue($row['nomor_telepon'] ?? ''), 'String', 'Cell'],
+                    [$this->excelValue($row['tahun_lulus'] ?? ''), 'String', 'Cell'],
+                    [$this->formatKompetensiExcel($row), 'String', 'Cell'],
+                    [$this->formatStatusAktivitas($row), 'String', 'Cell'],
+                    [$this->formatNamaTempatTracer($row), 'String', 'Cell'],
+                    [$this->formatBidangTracer($row), 'String', 'Cell'],
+                    [$this->formatJabatanTracer($row), 'String', 'Cell'],
+                    [$this->formatAlamatTracer($row), 'String', 'Cell'],
+                    [$this->formatRelevansiTracer($row), 'String', 'Cell'],
+                    [$this->formatTanggalPengisian($row), 'String', 'Cell'],
+                    [$this->formatStatusPendaftaran($row), 'String', 'Cell'],
+                ]);
+            }
+        }
 
-            $html .= '<tr>';
+        $xml .= '</Table><WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel"><FreezePanes/><FrozenNoSplit/><SplitHorizontal>5</SplitHorizontal><TopRowBottomPane>5</TopRowBottomPane><ActivePane>2</ActivePane></WorksheetOptions></Worksheet>';
+        $xml .= '</Workbook>';
 
-            foreach ($values as $columnIndex => $value) {
-                $class = $columnIndex === 9 ? 'cell ' . $statusClass : 'cell text' . $rowClass;
-                $html .= '<td class="' . $class . '">' . $this->excelCell((string) $value) . '</td>';
+        return "\xEF\xBB\xBF" . $xml;
+    }
+
+    protected function bangunRekapAkreditasi(array $rows): array
+    {
+        $rekap = [];
+
+        foreach ($rows as $row) {
+            $angkatan = $this->excelValue($row['tahun_lulus'] ?? '');
+            $kompetensi = $this->formatKompetensiExcel($row);
+            $key = $angkatan . '|' . $kompetensi;
+
+            if (! isset($rekap[$key])) {
+                $rekap[$key] = [
+                    'angkatan' => $angkatan,
+                    'kompetensi' => $kompetensi,
+                    'total_alumni' => 0,
+                    'sudah_tracer' => 0,
+                    'belum_tracer' => 0,
+                    'bekerja' => 0,
+                    'kuliah' => 0,
+                    'wirausaha' => 0,
+                    'mencari_kerja' => 0,
+                    'persentase_keterserapan' => 0.0,
+                    'persentase_pengisian' => 0.0,
+                ];
             }
 
-            $html .= '</tr>';
+            $rekap[$key]['total_alumni']++;
+
+            $sudahMengisi = (int) ($row['id_tracer'] ?? 0) > 0;
+            if ($sudahMengisi) {
+                $rekap[$key]['sudah_tracer']++;
+            } else {
+                $rekap[$key]['belum_tracer']++;
+            }
+
+            $kategori = $this->kategoriAktivitas($row);
+            if (isset($rekap[$key][$kategori])) {
+                $rekap[$key][$kategori]++;
+            }
         }
 
-        $html .= '</table></body></html>';
+        foreach ($rekap as &$item) {
+            $total = (int) $item['total_alumni'];
+            $terserap = (int) $item['bekerja'] + (int) $item['kuliah'] + (int) $item['wirausaha'];
+            $item['persentase_keterserapan'] = $total > 0 ? round(($terserap / $total) * 100, 2) : 0.0;
+            $item['persentase_pengisian'] = $total > 0 ? round(((int) $item['sudah_tracer'] / $total) * 100, 2) : 0.0;
+        }
+        unset($item);
 
-        return "\xEF\xBB\xBF" . $html;
+        uasort($rekap, static function (array $a, array $b): int {
+            return [$a['angkatan'], $a['kompetensi']] <=> [$b['angkatan'], $b['kompetensi']];
+        });
+
+        return array_values($rekap);
+    }
+
+    protected function bangunRingkasanAkreditasi(array $rows): array
+    {
+        $ringkasan = [
+            'total_alumni' => count($rows),
+            'sudah_tracer' => 0,
+            'belum_tracer' => 0,
+            'bekerja' => 0,
+            'kuliah' => 0,
+            'wirausaha' => 0,
+            'mencari_kerja' => 0,
+            'persentase_keterserapan' => 0.0,
+            'persentase_pengisian' => 0.0,
+        ];
+
+        foreach ($rows as $row) {
+            if ((int) ($row['id_tracer'] ?? 0) > 0) {
+                $ringkasan['sudah_tracer']++;
+            } else {
+                $ringkasan['belum_tracer']++;
+            }
+
+            $kategori = $this->kategoriAktivitas($row);
+            if (isset($ringkasan[$kategori])) {
+                $ringkasan[$kategori]++;
+            }
+        }
+
+        $total = (int) $ringkasan['total_alumni'];
+        if ($total > 0) {
+            $terserap = (int) $ringkasan['bekerja'] + (int) $ringkasan['kuliah'] + (int) $ringkasan['wirausaha'];
+            $ringkasan['persentase_keterserapan'] = round(($terserap / $total) * 100, 2);
+            $ringkasan['persentase_pengisian'] = round(((int) $ringkasan['sudah_tracer'] / $total) * 100, 2);
+        }
+
+        return $ringkasan;
+    }
+
+    protected function excelXmlHeader(array $headers): string
+    {
+        $cells = [];
+        foreach ($headers as $header) {
+            $cells[] = [$header, 'String', 'Header'];
+        }
+
+        return $this->excelXmlRow($cells);
+    }
+
+    protected function excelXmlRow(array $cells, ?int $mergeAcross = null): string
+    {
+        $xml = '<Row>';
+        foreach ($cells as $index => $cell) {
+            [$value, $type, $style] = $cell + ['', 'String', 'Cell'];
+            $merge = $index === 0 && $mergeAcross !== null ? ' ss:MergeAcross="' . max(0, $mergeAcross - 1) . '"' : '';
+            $xml .= '<Cell ss:StyleID="' . $this->excelXmlEscape((string) $style) . '"' . $merge . '><Data ss:Type="' . $this->excelXmlEscape((string) $type) . '">' . $this->excelXmlEscape((string) $value) . '</Data></Cell>';
+        }
+        $xml .= '</Row>';
+
+        return $xml;
+    }
+
+    protected function excelXmlEscape(string $value): string
+    {
+        return htmlspecialchars($value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
     }
 
     protected function excelValue(mixed $value): string
@@ -507,6 +617,126 @@ class TracerController extends BaseController
         $value = trim((string) ($value ?? ''));
 
         return $value !== '' ? $value : '-';
+    }
+
+    protected function kategoriAktivitas(array $row): string
+    {
+        if ((int) ($row['id_tracer'] ?? 0) <= 0) {
+            return 'belum_tracer';
+        }
+
+        $nama = strtolower(trim((string) ($row['nama_aktivitas'] ?? '')));
+
+        if (str_contains($nama, 'kuliah') || str_contains($nama, 'studi')) {
+            return 'kuliah';
+        }
+
+        if (str_contains($nama, 'wirausaha') || str_contains($nama, 'usaha')) {
+            return 'wirausaha';
+        }
+
+        if (str_contains($nama, 'mencari') || str_contains($nama, 'belum')) {
+            return 'mencari_kerja';
+        }
+
+        if (str_contains($nama, 'bekerja') || str_contains($nama, 'kerja')) {
+            return 'bekerja';
+        }
+
+        return 'mencari_kerja';
+    }
+
+    protected function formatNisNisn(array $row): string
+    {
+        $nis = trim((string) ($row['nis'] ?? ''));
+        $nisn = trim((string) ($row['nisn'] ?? ''));
+
+        if ($nis !== '' && $nisn !== '') {
+            return $nis . ' / ' . $nisn;
+        }
+
+        return $nis !== '' ? $nis : ($nisn !== '' ? $nisn : '-');
+    }
+
+    protected function formatStatusAktivitas(array $row): string
+    {
+        if ((int) ($row['id_tracer'] ?? 0) <= 0) {
+            return 'Belum Mengisi Tracer Study';
+        }
+
+        return $this->excelValue($row['nama_aktivitas'] ?? '');
+    }
+
+    protected function formatNamaTempatTracer(array $row): string
+    {
+        return match ($this->kategoriAktivitas($row)) {
+            'kuliah' => $this->excelValue($row['universitas'] ?? ''),
+            'wirausaha' => $this->excelValue($row['nama_usaha'] ?? ''),
+            'bekerja' => $this->excelValue($row['nama_instansi'] ?? ''),
+            default => '-',
+        };
+    }
+
+    protected function formatBidangTracer(array $row): string
+    {
+        return match ($this->kategoriAktivitas($row)) {
+            'kuliah' => $this->excelValue($row['program_studi'] ?? ''),
+            'wirausaha' => $this->excelValue($row['bidang_usaha'] ?? ''),
+            'bekerja' => $this->excelValue($row['bidang_instansi'] ?? ''),
+            default => $this->excelValue($row['rencana_kedepan'] ?? ''),
+        };
+    }
+
+    protected function formatJabatanTracer(array $row): string
+    {
+        return $this->kategoriAktivitas($row) === 'bekerja'
+            ? $this->excelValue($row['posisi_kerja'] ?? '')
+            : '-';
+    }
+
+    protected function formatAlamatTracer(array $row): string
+    {
+        return $this->kategoriAktivitas($row) === 'bekerja'
+            ? $this->excelValue($row['alamat_instansi'] ?? '')
+            : '-';
+    }
+
+    protected function formatRelevansiTracer(array $row): string
+    {
+        if ((int) ($row['id_tracer'] ?? 0) <= 0 || ($row['relevan_jurusan'] ?? null) === null || $row['relevan_jurusan'] === '') {
+            return '-';
+        }
+
+        return (int) $row['relevan_jurusan'] === 1 ? 'Sesuai' : 'Tidak Sesuai';
+    }
+
+    protected function formatTanggalPengisian(array $row): string
+    {
+        if ((int) ($row['id_tracer'] ?? 0) <= 0) {
+            return '-';
+        }
+
+        $tanggal = trim((string) ($row['tracer_diperbarui_pada'] ?? ''));
+        if ($tanggal === '') {
+            $tanggal = trim((string) ($row['tracer_dibuat_pada'] ?? ''));
+        }
+
+        if ($tanggal === '') {
+            return '-';
+        }
+
+        try {
+            return (new \DateTime($tanggal))->format('d/m/Y H:i');
+        } catch (\Throwable) {
+            return $tanggal;
+        }
+    }
+
+    protected function formatStatusPendaftaran(array $row): string
+    {
+        $status = trim((string) ($row['status_pendaftaran'] ?? ''));
+
+        return $status !== '' ? ucwords(str_replace('_', ' ', $status)) : '-';
     }
 
     protected function formatKompetensiExcel(array $row): string
@@ -545,8 +775,12 @@ class TracerController extends BaseController
             $items[] = 'Status: ' . $filters['status'];
         }
 
-        if (($filters['status_akun'] ?? '') !== '') {
-            $items[] = 'Status Akun: ' . str_replace('_', ' ', $filters['status_akun']);
+        if (($filters['tanggal_mulai'] ?? '') !== '') {
+            $items[] = 'Tanggal Mulai: ' . $filters['tanggal_mulai'];
+        }
+
+        if (($filters['tanggal_selesai'] ?? '') !== '') {
+            $items[] = 'Tanggal Selesai: ' . $filters['tanggal_selesai'];
         }
 
         return $items !== [] ? implode(', ', $items) : 'Semua data';
@@ -581,21 +815,14 @@ class TracerController extends BaseController
             ['label' => 'Instansi / Usaha', 'width' => 120],
         ];
 
-        $total = count($rows);
-        $sudahTracer = 0;
-        foreach ($rows as $row) {
-            if ((int) ($row['id_tracer'] ?? 0) > 0) {
-                $sudahTracer++;
-            }
-        }
+        $ringkasan = $this->bangunRingkasanAkreditasi($rows);
 
         $pages = [];
         $current = [];
         $y = $pageHeight - $margin;
         $pageNumber = 1;
 
-        $addPageHeader = function () use (&$current, &$y, $pageHeight, $margin, $contentWidth, $filters, $total, $sudahTracer): void {
-            $belumTracer = $total - $sudahTracer;
+        $addPageHeader = function () use (&$current, &$y, $pageHeight, $margin, $contentWidth, $filters, $ringkasan): void {
             $current[] = '0.043 0.122 0.302 rg';
             $current[] = $this->pdfText($margin, $y - 4, 'Laporan Tracer Alumni', 18, 'F2');
             $y -= 26;
@@ -605,12 +832,17 @@ class TracerController extends BaseController
             $current[] = $this->pdfText($margin, $y, 'Dibuat pada: ' . date('d/m/Y H:i') . '   |   Filter: ' . $this->formatFilterExcel($filters), 8, 'F1');
             $y -= 20;
 
-            $boxWidth = 155;
+            $boxWidth = 87;
             $gap = 10;
             $summary = [
-                ['Total Alumni', (string) $total],
-                ['Sudah Tracer', (string) $sudahTracer],
-                ['Belum Tracer', (string) $belumTracer],
+                ['Total', (string) $ringkasan['total_alumni']],
+                ['Sudah Tracer', (string) $ringkasan['sudah_tracer']],
+                ['Belum Tracer', (string) $ringkasan['belum_tracer']],
+                ['Bekerja', (string) $ringkasan['bekerja']],
+                ['Kuliah', (string) $ringkasan['kuliah']],
+                ['Wirausaha', (string) $ringkasan['wirausaha']],
+                ['Mencari Kerja', (string) $ringkasan['mencari_kerja']],
+                ['Keterserapan', number_format((float) $ringkasan['persentase_keterserapan'], 2) . '%'],
             ];
 
             foreach ($summary as $index => $item) {
@@ -882,13 +1114,7 @@ class TracerController extends BaseController
             $builder->where('status_aktif', 1);
         }
 
-        $aktivitas = $builder->orderBy('nama_aktivitas', 'ASC')->get()->getResultArray();
-
-        return array_values(array_filter($aktivitas, static function (array $item): bool {
-            $nama = strtolower((string) ($item['nama_aktivitas'] ?? ''));
-
-            return ! str_contains($nama, 'kuliah') && ! str_contains($nama, 'studi');
-        }));
+        return $builder->orderBy('nama_aktivitas', 'ASC')->get()->getResultArray();
     }
 
     protected function ambilDaftarStatusTracer(): array

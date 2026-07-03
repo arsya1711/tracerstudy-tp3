@@ -16,8 +16,7 @@ use RuntimeException;
 | REGISTER CONTROLLER
 |-------------------------------------------------------------------
 | Controller ini menangani pendaftaran mandiri alumni. Akun yang dibuat
-| langsung bisa login, tetapi akses profil lengkap tetap menunggu
-| persetujuan admin sekolah.
+| langsung aktif agar alumni bisa melengkapi profil dan tracer study.
 */
 class RegisterController extends BaseController
 {
@@ -57,6 +56,7 @@ class RegisterController extends BaseController
             'nomor_telepon'         => trim((string) $this->request->getPost('nomor_telepon')),
             'jenis_alumni'          => 'alumni',
             'nis'                   => trim((string) $this->request->getPost('nis')),
+            'nisn'                  => trim((string) $this->request->getPost('nisn')),
             'id_angkatan'           => (int) ($this->request->getPost('id_angkatan') ?? 0),
             'id_kompetensi'         => (int) ($this->request->getPost('id_kompetensi') ?? 0),
             'jenis_kelamin'          => trim((string) $this->request->getPost('jenis_kelamin')),
@@ -84,9 +84,10 @@ class RegisterController extends BaseController
         $rules = [
             'nama_lengkap'          => 'required|min_length[3]|max_length[150]',
             'email'                 => 'required|valid_email|max_length[190]|is_unique[tb_pengguna.email]',
-            'nomor_telepon'         => 'permit_empty|min_length[8]|max_length[30]|regex_match[/^[0-9+().\\s-]+$/]',
+            'nomor_telepon'         => 'required|min_length[8]|max_length[30]|regex_match[/^[0-9+().\\s-]+$/]',
             'jenis_alumni'          => 'required|in_list[alumni]',
             'nis'                   => 'required|max_length[20]',
+            'nisn'                  => 'required|max_length[30]',
             'id_angkatan'           => 'required|integer|greater_than[0]',
             'id_kompetensi'         => 'required|integer|greater_than[0]',
             'jenis_kelamin'          => 'required|in_list[Laki-laki,Perempuan]',
@@ -102,6 +103,7 @@ class RegisterController extends BaseController
                 'is_unique' => 'Email sudah terdaftar. Silakan gunakan email lain atau masuk dengan akun tersebut.',
             ],
             'nomor_telepon' => [
+                'required'    => 'Nomor HP / WhatsApp wajib diisi.',
                 'regex_match' => 'Nomor telepon hanya boleh berisi angka, spasi, tanda plus, kurung, titik, atau strip.',
             ],
             'password_confirmation' => [
@@ -109,6 +111,9 @@ class RegisterController extends BaseController
             ],
             'nis' => [
                 'required' => 'NIS wajib diisi untuk alumni.',
+            ],
+            'nisn' => [
+                'required' => 'NISN wajib diisi untuk alumni.',
             ],
             'id_angkatan' => [
                 'required'     => 'Tahun lulus wajib dipilih untuk alumni.',
@@ -167,14 +172,15 @@ class RegisterController extends BaseController
             $idAlumni = (int) $this->alumniModel->insert([
                 'id_pengguna'         => $idPengguna,
                 'nis'                 => $payload['nis'],
+                'nisn'                => $payload['nisn'],
                 'id_angkatan'         => $payload['id_angkatan'],
                 'id_kompetensi'       => $payload['id_kompetensi'],
                 'jenis_kelamin'        => $payload['jenis_kelamin'],
                 'tempat_lahir'         => $payload['tempat_lahir'],
                 'tanggal_lahir'        => $payload['tanggal_lahir'],
                 'alamat'               => $payload['alamat'],
-                'status_verifikasi'   => 'menunggu_aktivasi',
-                'status_pendaftaran'  => 'menunggu_aktivasi',
+                'status_verifikasi'   => 'aktif',
+                'status_pendaftaran'  => 'aktif',
                 'terdaftar_pada'      => date('Y-m-d H:i:s'),
             ], true);
 
@@ -194,7 +200,7 @@ class RegisterController extends BaseController
         $this->kirimNotifikasiPendaftaranAlumni($payload, $idAlumni);
 
         return redirect()->to(site_url('login'))
-            ->with('sukses', 'Pendaftaran berhasil. Silakan login, lalu tunggu persetujuan admin sekolah untuk membuka menu alumni.');
+            ->with('sukses', 'Pendaftaran berhasil. Silakan login untuk melengkapi profil dan tracer study.');
     }
 
     /*
