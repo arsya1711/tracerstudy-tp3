@@ -162,7 +162,7 @@ class LoginController extends BaseController
     |
     | Tips Debugging:
     | - Jika setelah logout user masih dianggap login, periksa session browser benar-benar terhapus.
-    | - Jika tombol logout 404, periksa route GET /logout di app/Config/Routes.php.
+    | - Jika tombol logout 404, periksa route POST /logout di app/Config/Routes.php.
     */
     public function logout(): RedirectResponse
     {

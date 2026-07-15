@@ -143,8 +143,8 @@ $formatTanggal = static function (?string $tanggal): string {
 <?= $this->section('extra_js') ?>
 <script>
 window.ktAdminSekolahDashboard = {
-    aktivitas: <?= json_encode(['labels' => $grafikAktivitas['labels'] ?? [], 'series' => $grafikAktivitas['series'] ?? []], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) ?>,
-    angkatan: <?= json_encode(['labels' => $grafikAngkatan['labels'] ?? [], 'series' => $grafikAngkatan['series'] ?? []], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) ?>
+    aktivitas: <?= json_encode(['labels' => $grafikAktivitas['labels'] ?? [], 'series' => $grafikAktivitas['series'] ?? []], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>,
+    angkatan: <?= json_encode(['labels' => $grafikAngkatan['labels'] ?? [], 'series' => $grafikAngkatan['series'] ?? []], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>
 };
 document.addEventListener('DOMContentLoaded', function () {
     if (typeof ApexCharts === 'undefined') return;

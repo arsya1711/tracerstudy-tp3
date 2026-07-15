@@ -16,14 +16,6 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Current Database: `tracerstudy`
---
-
-CREATE DATABASE /*!32312 IF NOT EXISTS*/ `tracerstudy` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
-
-USE `tracerstudy`;
-
---
 -- Table structure for table `migrations`
 --
 
@@ -49,6 +41,7 @@ CREATE TABLE `migrations` (
 LOCK TABLES `migrations` WRITE;
 /*!40000 ALTER TABLE `migrations` DISABLE KEYS */;
 INSERT INTO `migrations` VALUES (1,'2026-05-08-170900','App\\Database\\Migrations\\CreateAuthTables','default','App',1778234997,1),(2,'2026-05-08-193300','App\\Database\\Migrations\\CreateMasterDataTables','default','App',1778243640,2),(4,'2026-05-08-194800','App\\Database\\Migrations\\CreateAlumniTracerTables','default','App',1778244581,3),(5,'2026-04-18-000001','App\\Database\\Migrations\\CreateTablePeran','default','App',1780480688,4),(6,'2026-04-18-000002','App\\Database\\Migrations\\CreateTablePengguna','default','App',1780480688,4),(7,'2026-04-18-000003','App\\Database\\Migrations\\CreateTbKompetensi','default','App',1780480689,4),(8,'2026-04-18-000004','App\\Database\\Migrations\\CreateTbAngkatan','default','App',1780480689,4),(9,'2026-04-18-000005','App\\Database\\Migrations\\CreateTbAktivitas','default','App',1780480689,4),(10,'2026-04-18-000006','App\\Database\\Migrations\\AlterTbAktivitasForTracerStudy','default','App',1780480689,4),(11,'2026-04-18-000010','App\\Database\\Migrations\\CreateTbAlumni','default','App',1780480689,4),(12,'2026-04-19-000012','App\\Database\\Migrations\\CreateTbTracerAlumni','default','App',1780480689,4),(13,'2026-05-23-000028','App\\Database\\Migrations\\CreateTbNotifikasi','default','App',1780480689,4),(14,'2026-05-24-000029','App\\Database\\Migrations\\RemoveDraftFromTracerStatus','default','App',1780480689,4),(15,'2026-06-03-000030','App\\Database\\Migrations\\PurgeBkkModule','default','App',1780480718,5),(16,'2026-06-03-000031','App\\Database\\Migrations\\DropRemainingRecruitmentTables','default','App',1780480718,5),(17,'2026-06-09-000032','App\\Database\\Migrations\\DropTbJurusan','default','App',1780938599,6),(18,'2026-06-09-000033','App\\Database\\Migrations\\CreateTbPengajuanLegalisir','default','App',1780939159,7),(19,'2026-06-09-000034','App\\Database\\Migrations\\AddDiperbaruiPadaToTbNotifikasi','default','App',1780940088,8),(20,'2026-06-17-000035','App\\Database\\Migrations\\RemovePimpinanSekolahRole','default','App',1781671743,9),(21,'2026-06-25-000036','App\\Database\\Migrations\\NormalizeTracerStudyTermsAndAlumniStatus','default','App',1782391574,10),(22,'2026-06-29-000037','App\\Database\\Migrations\\CleanupLegacyJurusanFromAlumni','default','App',1783005702,11),(23,'2026-07-02-000038','App\\Database\\Migrations\\RemoveAlumniActivationFlow','default','App',1783005702,11);
+INSERT INTO `migrations` VALUES (24,'2026-07-16-000039','App\\Database\\Migrations\\DropLegacySlugAktivitas','default','App',1784141769,12);
 /*!40000 ALTER TABLE `migrations` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -62,14 +55,12 @@ DROP TABLE IF EXISTS `tb_aktivitas`;
 CREATE TABLE `tb_aktivitas` (
   `id_aktivitas` int unsigned NOT NULL AUTO_INCREMENT,
   `nama_aktivitas` varchar(100) NOT NULL,
-  `slug_aktivitas` varchar(100) NOT NULL,
   `keterangan` text,
   `status_aktif` tinyint(1) NOT NULL DEFAULT '1',
   `dibuat_pada` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `diperbarui_pada` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id_aktivitas`),
   UNIQUE KEY `uk_tb_aktivitas_nama_aktivitas` (`nama_aktivitas`),
-  UNIQUE KEY `uk_tb_aktivitas_slug_aktivitas` (`slug_aktivitas`),
   KEY `idx_tb_aktivitas_status_aktif` (`status_aktif`)
 ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -80,7 +71,7 @@ CREATE TABLE `tb_aktivitas` (
 
 LOCK TABLES `tb_aktivitas` WRITE;
 /*!40000 ALTER TABLE `tb_aktivitas` DISABLE KEYS */;
-INSERT INTO `tb_aktivitas` VALUES (1,'Bekerja','bekerja','Alumni bekerja di perusahaan, instansi, atau lembaga tertentu.',1,'2026-05-08 19:34:05','2026-05-08 19:34:05'),(2,'Kuliah','kuliah','Alumni melanjutkan pendidikan ke perguruan tinggi.',1,'2026-05-08 19:34:05','2026-05-08 19:34:05'),(3,'Wirausaha','wirausaha','Alumni menjalankan usaha secara mandiri.',1,'2026-05-08 19:34:05','2026-05-08 19:34:05'),(4,'Mencari Kerja','mencari_kerja','Alumni belum bekerja dan/atau sedang mencari pekerjaan.',1,'2026-05-08 19:34:05','2026-05-08 19:34:05');
+INSERT INTO `tb_aktivitas` VALUES (1,'Bekerja','Alumni bekerja di perusahaan, instansi, atau lembaga tertentu.',1,'2026-05-08 19:34:05','2026-05-08 19:34:05'),(2,'Kuliah','Alumni melanjutkan pendidikan ke perguruan tinggi.',1,'2026-05-08 19:34:05','2026-05-08 19:34:05'),(3,'Wirausaha','Alumni menjalankan usaha secara mandiri.',1,'2026-05-08 19:34:05','2026-05-08 19:34:05'),(4,'Mencari Kerja','Alumni belum bekerja dan/atau sedang mencari pekerjaan.',1,'2026-05-08 19:34:05','2026-05-08 19:34:05');
 /*!40000 ALTER TABLE `tb_aktivitas` ENABLE KEYS */;
 UNLOCK TABLES;
 

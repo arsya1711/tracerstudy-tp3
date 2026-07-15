@@ -28,26 +28,13 @@
 							class="app-container container-fluid d-flex flex-column flex-md-row flex-center flex-md-stack py-3">
 							<!--begin::Copyright-->
 							<div class="text-dark order-2 order-md-1">
-								<span class="text-muted fw-semibold me-1">2023&copy;</span>
-								<a href="https://keenthemes.com" target="_blank"
-									class="text-gray-800 text-hover-primary">Keenthemes</a>
+								<span class="text-muted fw-semibold me-1"><?= date('Y') ?>&copy;</span>
+								<span class="text-gray-800 fw-semibold">Arsya</span>
 							</div>
 							<!--end::Copyright-->
-							<!--begin::Menu-->
-							<ul class="menu menu-gray-600 menu-hover-primary fw-semibold order-1">
-								<li class="menu-item">
-									<a href="https://keenthemes.com" target="_blank" class="menu-link px-2">About</a>
-								</li>
-								<li class="menu-item">
-									<a href="https://devs.keenthemes.com" target="_blank"
-										class="menu-link px-2">Support</a>
-								</li>
-								<li class="menu-item">
-									<a href="https://1.envato.market/EA4JP" target="_blank"
-										class="menu-link px-2">Purchase</a>
-								</li>
-							</ul>
-							<!--end::Menu-->
+							<div class="kt-footer-school order-1 order-md-2">
+								SMK Teratai Putih 3 <span aria-hidden="true">&middot;</span> Tracer Study Alumni
+							</div>
 						</div>
 						<!--end::Footer container-->
 					</div>
@@ -77,6 +64,7 @@
 	<script src="<?= base_url('assets/plugins/custom/datatables/datatables.bundle.js') ?>"></script>
 	<script src="<?= base_url('assets/js/widgets.bundle.js') ?>"></script>
 	<script src="<?= base_url('assets/js/custom/widgets.js') ?>"></script>
+	<script src="<?= base_url('assets/js/custom/dashboard-mobile.js') ?>"></script>
 	<script src="<?= base_url('assets/js/custom/apps/chat/chat.js') ?>"></script>
 	<?php
 	/*
@@ -175,16 +163,6 @@
 					});
 				}
 
-				if (window.innerWidth >= 992) {
-					document.querySelectorAll('.drawer-overlay').forEach(function (overlay) {
-						overlay.remove();
-					});
-					document.body.removeAttribute('data-kt-drawer');
-					document.body.removeAttribute('data-kt-drawer-app-sidebar');
-					document.body.removeAttribute('data-kt-drawer-name');
-					document.body.removeAttribute('data-kt-drawer-overlay');
-				}
-
 				if (! modalAktif && ! sweetAlertAktif) {
 					document.body.style.overflow = '';
 					document.body.style.paddingRight = '';
@@ -194,34 +172,6 @@
 			bersihkanOverlayTersangkut();
 			setTimeout(bersihkanOverlayTersangkut, 250);
 			window.addEventListener('load', bersihkanOverlayTersangkut);
-
-			var sidebarCloseButton = document.querySelector('[data-sidebar-close]');
-			var sidebarElement = document.getElementById('kt_app_sidebar');
-			var sidebarMobileToggle = document.getElementById('kt_app_sidebar_mobile_toggle');
-			localStorage.removeItem('kt-sidebar-manual-closed');
-
-			if (sidebarMobileToggle) {
-				sidebarMobileToggle.addEventListener('click', function () {
-					document.body.classList.remove('kt-sidebar-manual-closed');
-
-					if (sidebarElement) {
-						sidebarElement.style.display = '';
-					}
-				});
-			}
-
-			if (sidebarCloseButton) {
-				sidebarCloseButton.addEventListener('click', function () {
-					var drawer = sidebarElement && typeof KTDrawer !== 'undefined' ? KTDrawer.getInstance(sidebarElement) : null;
-
-					if (drawer && window.innerWidth < 992) {
-						drawer.hide();
-						return;
-					}
-
-					document.body.classList.add('kt-sidebar-manual-closed');
-				});
-			}
 
 			document.querySelectorAll('[data-password-toggle]').forEach(function (button) {
 				button.addEventListener('click', function () {
@@ -244,10 +194,14 @@
 				logoutLink.addEventListener('click', function (event) {
 					event.preventDefault();
 
-					var logoutUrl = this.getAttribute('data-logout-url') || this.getAttribute('href');
+					var logoutForm = this.closest('.js-logout-form');
+
+					if (!logoutForm) {
+						return;
+					}
 
 					if (typeof Swal === 'undefined') {
-						window.location.href = logoutUrl;
+						logoutForm.submit();
 						return;
 					}
 
@@ -261,7 +215,7 @@
 						reverseButtons: true
 					}).then(function (result) {
 						if (result.isConfirmed) {
-							window.location.href = logoutUrl;
+							logoutForm.submit();
 						}
 					});
 				});

@@ -17,7 +17,7 @@
 */
 ?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <!--begin::Head-->
 <head>
     <base href="../../../"/>
@@ -26,13 +26,13 @@
     <meta name="description" content="Halaman login Sistem Tracer Study." />
     <meta name="keywords" content="metronic, bootstrap, login, tracer study, alumni" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta property="og:locale" content="en_US" />
+    <meta property="og:locale" content="id_ID" />
     <meta property="og:type" content="article" />
     <meta property="og:title" content="Login - Sistem Tracer Study" />
     <meta property="og:url" content="<?= current_url() ?>" />
     <meta property="og:site_name" content="Sistem Tracer Study" />
     <link rel="canonical" href="<?= current_url() ?>" />
-    <link rel="shortcut icon" href="<?= base_url('assets/media/logos/favicon.ico') ?>" />
+    <link rel="icon" type="image/svg+xml" href="<?= base_url('assets/media/logos/logo-smk-teratai-putih-3.svg') ?>" />
     <!--begin::Fonts(mandatory for all pages)-->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,400,500,600,700" />
     <!--end::Fonts-->
@@ -74,7 +74,14 @@
         <!--begin::Page bg image-->
         <style>
             body { background-image: url('<?= base_url('assets/media/auth/bg10.jpeg') ?>'); }
+            html, body { width: 100%; max-width: 100%; overflow-x: hidden; }
             [data-bs-theme="dark"] body { background-image: url('<?= base_url('assets/media/auth/bg10-dark.jpeg') ?>'); }
+            .auth-page-body,
+            .auth-card,
+            .auth-content {
+                min-width: 0;
+                max-width: 100%;
+            }
             .auth-card {
                 box-shadow: 0 24px 70px rgba(15, 23, 42, 0.08);
                 border: 1px solid rgba(226, 232, 240, 0.72);
@@ -113,6 +120,41 @@
                 box-shadow: 0 0 0 0.2rem rgba(59, 130, 246, 0.1);
             }
             @media (max-width: 575.98px) {
+                .auth-page-body {
+                    width: 100%;
+                    max-width: 100vw;
+                    padding: 12px !important;
+                    align-items: flex-start !important;
+                    overflow: hidden;
+                }
+                .auth-card {
+                    width: calc(100vw - 24px) !important;
+                    max-width: calc(100vw - 24px) !important;
+                    flex: 0 1 auto;
+                    padding: 20px !important;
+                }
+                .auth-content {
+                    width: 100% !important;
+                    max-width: 100% !important;
+                }
+                .auth-card form,
+                .auth-card .fv-row,
+                .auth-card .alert > div {
+                    width: 100%;
+                    min-width: 0;
+                    max-width: 100%;
+                    overflow-wrap: anywhere;
+                }
+                .auth-card .alert,
+                .auth-card .form-control,
+                .auth-card .form-select,
+                .auth-card .input-group {
+                    min-width: 0;
+                    max-width: 100%;
+                }
+                .auth-card .alert > i {
+                    flex: 0 0 auto;
+                }
                 .auth-school-logo {
                     width: 96px;
                     height: 96px;
@@ -128,11 +170,11 @@
         <!--begin::Authentication - Sign-in -->
         <div class="d-flex flex-column flex-lg-row flex-column-fluid">
             <!--begin::Body-->
-            <div class="d-flex flex-column-fluid justify-content-center align-items-center p-12">
+            <div class="auth-page-body d-flex flex-column-fluid justify-content-center align-items-center p-12">
                 <!--begin::Wrapper-->
                 <div class="bg-body auth-card d-flex flex-column flex-center rounded-4 w-md-600px p-10">
                     <!--begin::Content-->
-                    <div class="d-flex flex-center flex-column align-items-stretch h-lg-100 w-md-400px">
+                    <div class="auth-content d-flex flex-center flex-column align-items-stretch h-lg-100 w-md-400px">
                         <!--begin::Wrapper-->
                         <div class="d-flex flex-center flex-column flex-column-fluid pb-15 pb-lg-20">
                             <?= $this->renderSection('content') ?>

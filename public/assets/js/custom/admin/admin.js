@@ -730,7 +730,7 @@ var KTAdminList = (function () {
                 return;
             }
 
-            requestJson(config.aktivasiUrl.replace(/\/$/, "") + "/" + row.id_pengguna, "GET")
+            requestJson(config.aktivasiUrl.replace(/\/$/, "") + "/" + row.id_pengguna, "POST", new FormData())
                 .then(function (response) {
                     showSuccess(response.message).then(function () {
                         reloadTable();
@@ -759,7 +759,7 @@ var KTAdminList = (function () {
                 return;
             }
 
-            requestJson(config.hapusUrl.replace(/\/$/, "") + "/" + row.id_pengguna, "GET")
+            requestJson(config.hapusUrl.replace(/\/$/, "") + "/" + row.id_pengguna, "POST", new FormData())
                 .then(function (response) {
                     showSuccess(response.message).then(function () {
                         reloadTable();

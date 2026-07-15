@@ -37,7 +37,7 @@
           <mxGeometry x="760" y="505" width="220" height="145" as="geometry" />
         </mxCell>
 
-        <mxCell id="tb_aktivitas" value="&lt;b&gt;tb_aktivitas&lt;/b&gt;&lt;hr&gt;id_aktivitas *&lt;br&gt;nama_aktivitas&lt;br&gt;slug_aktivitas&lt;br&gt;status_aktif" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d9d9d9;strokeColor=#000000;align=left;verticalAlign=top;spacing=8;fontSize=13" vertex="1" parent="1">
+        <mxCell id="tb_aktivitas" value="&lt;b&gt;tb_aktivitas&lt;/b&gt;&lt;hr&gt;id_aktivitas *&lt;br&gt;nama_aktivitas&lt;br&gt;status_aktif" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d9d9d9;strokeColor=#000000;align=left;verticalAlign=top;spacing=8;fontSize=13" vertex="1" parent="1">
           <mxGeometry x="1140" y="520" width="210" height="130" as="geometry" />
         </mxCell>
 

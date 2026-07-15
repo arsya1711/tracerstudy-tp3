@@ -84,14 +84,16 @@ LRS ini dibuat berdasarkan file `ERD_Revisi_Final_TracerStudy.drawio`. Atribut y
 
 ### 8. tb_aktivitas
 
-`tb_aktivitas`(`id_aktivitas`, `nama_aktivitas`, `slug_aktivitas`, `status_aktif`)
+`tb_aktivitas`(`id_aktivitas`, `nama_aktivitas`, `keterangan`, `status_aktif`, `dibuat_pada`, `diperbarui_pada`)
 
 | Atribut | Keterangan |
 | --- | --- |
 | `id_aktivitas` | Primary Key |
 | `nama_aktivitas` | Nama aktivitas alumni setelah lulus |
-| `slug_aktivitas` | Kode/slug aktivitas |
+| `keterangan` | Penjelasan opsional aktivitas |
 | `status_aktif` | Status aktif aktivitas |
+| `dibuat_pada` | Waktu data dibuat |
+| `diperbarui_pada` | Waktu data terakhir diperbarui |
 
 ### 9. tb_pengajuan_legalisir
 

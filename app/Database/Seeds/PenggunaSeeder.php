@@ -14,6 +14,8 @@ use CodeIgniter\Database\Seeder;
 | password_hash() dengan PASSWORD_BCRYPT.
 | Alur kerja: CI4 menjalankan class ini saat php spark db:seed
 | memanggil PenggunaSeeder, lalu method run() menyimpan akun awal.
+| Akun yang sudah ada tidak pernah diubah password, email, status, nama,
+| atau perannya. Seeder hanya membuat akun bootstrap yang belum ada.
 |
 | Tips Debugging:
 | - Jika migrasi gagal karena tabel pengguna belum ada, cek migrate modul autentikasi.
@@ -42,14 +44,18 @@ class PenggunaSeeder extends Seeder
             [
                 'slug_peran'     => 'superadmin',
                 'nama_lengkap'   => 'Super Administrator',
-                'email'          => 'superadmin@tracer.com',
-                'password'       => 'Admin123',
+                'email'          => 'superadmin@tracerstudy.local',
+                'password_env'   => 'seed.superadminPassword',
+                'password_dev'   => 'Admin123',
+                'legacy_emails'  => ['superadmin@tracer.com'],
             ],
             [
                 'slug_peran'     => 'admin_sekolah',
                 'nama_lengkap'   => 'Admin Sekolah',
                 'email'          => 'adminsekolah@tracerstudy.local',
-                'password'       => 'AdminSekolah123',
+                'password_env'   => 'seed.adminSekolahPassword',
+                'password_dev'   => 'AdminSekolah123',
+                'legacy_emails'  => ['adminsekolah@tracer.com'],
             ],
         ];
 
@@ -65,18 +71,17 @@ class PenggunaSeeder extends Seeder
                 continue;
             }
 
-            $data = [
-                'id_peran'      => $peran['id_peran'],
-                'nama_lengkap'  => $akun['nama_lengkap'],
-                'email'         => $akun['email'],
-                'kata_sandi'    => password_hash($akun['password'], PASSWORD_BCRYPT),
-                'status_aktif'  => 1,
-            ];
-
             $existing = $table
-                ->where('email', $data['email'])
+                ->where('email', $akun['email'])
                 ->get()
                 ->getRowArray();
+
+            if (! $existing && $akun['legacy_emails'] !== []) {
+                $existing = $table
+                    ->whereIn('email', $akun['legacy_emails'])
+                    ->get()
+                    ->getRowArray();
+            }
 
             if (! $existing) {
                 $existing = $table
@@ -87,14 +92,47 @@ class PenggunaSeeder extends Seeder
             }
 
             if ($existing) {
-                $table
-                    ->where('id_pengguna', $existing['id_pengguna'])
-                    ->update($data);
-
                 continue;
             }
 
+            $password = $this->resolveBootstrapPassword($akun);
+            $data = [
+                'id_peran'      => $peran['id_peran'],
+                'nama_lengkap'  => $akun['nama_lengkap'],
+                'email'         => $akun['email'],
+                'kata_sandi'    => password_hash($password, PASSWORD_BCRYPT),
+                'status_aktif'  => 1,
+            ];
+
             $table->insert($data);
         }
+    }
+
+    /**
+     * Production bootstrap credentials must come from environment secrets.
+     * The documented fallback remains available only for a fresh local/dev DB.
+     */
+    protected function resolveBootstrapPassword(array $akun): string
+    {
+        $environmentKey = (string) $akun['password_env'];
+        $password = trim((string) env($environmentKey, ''));
+
+        if ($password === '') {
+            if (ENVIRONMENT === 'production') {
+                throw new \RuntimeException(
+                    "Environment {$environmentKey} wajib diisi sebelum membuat akun admin awal."
+                );
+            }
+
+            $password = (string) $akun['password_dev'];
+        }
+
+        if (strlen($password) < 8) {
+            throw new \RuntimeException(
+                "Password bootstrap {$environmentKey} minimal 8 karakter."
+            );
+        }
+
+        return $password;
     }
 }

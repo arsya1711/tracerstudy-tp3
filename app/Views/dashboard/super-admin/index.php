@@ -98,8 +98,8 @@ $cards = [
 <?= $this->section('extra_js') ?>
 <script>
 window.ktDashboardTracer = {
-    aktivitas: <?= json_encode(['labels' => $tracerAktivitas['labels'] ?? [], 'series' => $tracerAktivitas['series'] ?? []], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) ?>,
-    angkatan: <?= json_encode(['labels' => $tracerAngkatan['labels'] ?? [], 'series' => $tracerAngkatan['series'] ?? []], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) ?>
+    aktivitas: <?= json_encode(['labels' => $tracerAktivitas['labels'] ?? [], 'series' => $tracerAktivitas['series'] ?? []], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>,
+    angkatan: <?= json_encode(['labels' => $tracerAngkatan['labels'] ?? [], 'series' => $tracerAngkatan['series'] ?? []], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>
 };
 document.addEventListener('DOMContentLoaded', function () {
     if (typeof ApexCharts === 'undefined') return;

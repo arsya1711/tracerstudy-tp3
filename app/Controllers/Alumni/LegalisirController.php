@@ -26,7 +26,9 @@ class LegalisirController extends BaseController
     {
         $alumni = $this->ambilAlumniLogin();
         if ($alumni === null) {
-            return redirect()->to(site_url('logout'))->with('error', 'Profil alumni belum ditemukan.');
+            session()->destroy();
+
+            return redirect()->to(site_url('login'))->with('error', 'Profil alumni belum ditemukan.');
         }
 
         $kesiapan = $this->cekKesiapanLegalisir($alumni);
@@ -45,7 +47,9 @@ class LegalisirController extends BaseController
     {
         $alumni = $this->ambilAlumniLogin();
         if ($alumni === null) {
-            return redirect()->to(site_url('logout'))->with('error', 'Profil alumni belum ditemukan.');
+            session()->destroy();
+
+            return redirect()->to(site_url('login'))->with('error', 'Profil alumni belum ditemukan.');
         }
 
         $kesiapan = $this->cekKesiapanLegalisir($alumni);

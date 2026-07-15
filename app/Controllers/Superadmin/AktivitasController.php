@@ -179,7 +179,7 @@ class AktivitasController extends BaseController
     |-------------------------------------------------------------------
     | Penjelasan fungsi kode ini: method ini melakukan hapus lunak
     | pada data aktivitas dengan cara mengubah status_aktif menjadi 0.
-    | Alur kerja: frontend mengirim GET ke endpoint hapus, controller
+    | Alur kerja: frontend mengirim POST ber-CSRF ke endpoint hapus, controller
     | memeriksa akses dan id, lalu menonaktifkan data dan mengirim
     | response JSON hasil operasi.
     |

@@ -186,7 +186,7 @@ class KompetensiController extends BaseController
     |-------------------------------------------------------------------
     | Penjelasan fungsi kode ini: method ini melakukan hapus lunak
     | dengan cara mengubah status_aktif menjadi 0 pada data kompetensi.
-    | Alur kerja: frontend mengirim request GET ke endpoint hapus,
+    | Alur kerja: frontend mengirim request POST ber-CSRF ke endpoint hapus,
     | controller memeriksa akses dan id, lalu menonaktifkan data serta
     | mengirim response JSON hasil aksi.
     |

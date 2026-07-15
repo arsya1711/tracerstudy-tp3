@@ -40,7 +40,9 @@ class DashboardController extends BaseController
     {
         $alumni = $this->ambilAlumniLogin();
         if ($alumni === null) {
-            return redirect()->to(site_url('logout'))->with('error', 'Profil alumni belum ditemukan.');
+            session()->destroy();
+
+            return redirect()->to(site_url('login'))->with('error', 'Profil alumni belum ditemukan.');
         }
 
         $tracerTerakhir = $this->tracerModel->ambilTerakhirByAlumni((int) $alumni['id_alumni']);
@@ -60,7 +62,9 @@ class DashboardController extends BaseController
     {
         $alumni = $this->ambilAlumniLogin();
         if ($alumni === null) {
-            return redirect()->to(site_url('logout'))->with('error', 'Profil alumni belum ditemukan.');
+            session()->destroy();
+
+            return redirect()->to(site_url('login'))->with('error', 'Profil alumni belum ditemukan.');
         }
 
         return view('alumni/profil/index', [
@@ -80,7 +84,9 @@ class DashboardController extends BaseController
     {
         $alumni = $this->ambilAlumniLogin();
         if ($alumni === null) {
-            return redirect()->to(site_url('logout'))->with('error', 'Profil alumni belum ditemukan.');
+            session()->destroy();
+
+            return redirect()->to(site_url('login'))->with('error', 'Profil alumni belum ditemukan.');
         }
 
         return view('alumni/tracer/index', [

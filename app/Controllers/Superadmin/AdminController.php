@@ -72,7 +72,7 @@ class AdminController extends BaseController
             'email'        => 'required|valid_email|is_unique[tb_pengguna.email]',
             'kata_sandi'   => 'required|min_length[8]',
             'jenis_admin'  => 'required|in_list[' . $allowedJenis . ']',
-        ])) {
+        ], $this->pesanValidasiAdmin())) {
             return $this->jsonResponse('error', 'Data admin belum valid.', [
                 'errors' => $this->validator->getErrors(),
             ], 422);
@@ -143,7 +143,7 @@ class AdminController extends BaseController
             'email'        => 'required|valid_email|is_unique[tb_pengguna.email,id_pengguna,' . $idPengguna . ']',
             'jenis_admin'  => 'required|in_list[' . $allowedJenis . ']',
             'kata_sandi'   => 'permit_empty|min_length[8]',
-        ])) {
+        ], $this->pesanValidasiAdmin())) {
             return $this->jsonResponse('error', 'Data admin belum valid.', [
                 'errors' => $this->validator->getErrors(),
             ], 422);
@@ -210,6 +210,33 @@ class AdminController extends BaseController
 
             return $this->jsonResponse('error', $th->getMessage(), [], 500);
         }
+    }
+
+    /**
+     * Pesan validator yang ramah pengguna untuk form tambah dan edit admin.
+     *
+     * @return array<string, array<string, string>>
+     */
+    protected function pesanValidasiAdmin(): array
+    {
+        return [
+            'nama_lengkap' => [
+                'required' => 'Nama lengkap wajib diisi.',
+            ],
+            'email' => [
+                'required'    => 'Email wajib diisi.',
+                'valid_email' => 'Format email tidak valid.',
+                'is_unique'   => 'Email sudah digunakan oleh akun lain.',
+            ],
+            'kata_sandi' => [
+                'required'   => 'Kata sandi wajib diisi.',
+                'min_length' => 'Kata sandi minimal 8 karakter.',
+            ],
+            'jenis_admin' => [
+                'required' => 'Jenis admin wajib dipilih.',
+                'in_list'  => 'Jenis admin yang dipilih tidak valid.',
+            ],
+        ];
     }
 
     public function aktivasi(int $idPengguna): ResponseInterface

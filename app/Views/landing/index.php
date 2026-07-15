@@ -14,6 +14,10 @@ if ($slugPeran === 'superadmin') {
 }
 
 $angka = static fn (string $key): string => number_format((int) ($statistik[$key] ?? 0), 0, ',', '.');
+$maksAktivitas = 0;
+foreach ($aktivitas as $itemAktivitas) {
+    $maksAktivitas = max($maksAktivitas, (int) ($itemAktivitas['total'] ?? 0));
+}
 ?>
 <!DOCTYPE html>
 <html lang="id">
@@ -24,11 +28,23 @@ $angka = static fn (string $key): string => number_format((int) ($statistik[$key
     <meta name="description" content="Sistem Informasi Tracer Study Alumni SMK Teratai Putih 3.">
     <meta name="keywords" content="tracer study, alumni, legalisir, SMK Teratai Putih 3">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="shortcut icon" href="<?= base_url('assets/media/logos/favicon.ico') ?>">
+    <link rel="icon" type="image/svg+xml" href="<?= base_url('assets/media/logos/logo-smk-teratai-putih-3.svg') ?>">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,400,500,600,700">
     <link href="<?= base_url('assets/plugins/global/plugins.bundle.css') ?>" rel="stylesheet" type="text/css">
     <link href="<?= base_url('assets/css/style.bundle.css') ?>" rel="stylesheet" type="text/css">
     <style>
+        html,
+        body.tracer-public {
+            width: 100%;
+            max-width: 100%;
+            overflow-x: hidden;
+        }
+
+        body.tracer-public,
+        body.tracer-public * {
+            box-sizing: border-box;
+        }
+
         body.tracer-public {
             margin: 0;
             font-family: Inter, sans-serif;
@@ -38,7 +54,16 @@ $angka = static fn (string $key): string => number_format((int) ($statistik[$key
 
         .landing-wrap {
             width: min(1160px, calc(100% - 32px));
+            max-width: calc(100vw - 32px);
             margin: 0 auto;
+        }
+
+        .landing-wrap,
+        .landing-hero-grid > *,
+        .landing-panel,
+        .landing-logo-card > div {
+            min-width: 0;
+            max-width: 100%;
         }
 
         .landing-nav {
@@ -62,8 +87,16 @@ $angka = static fn (string $key): string => number_format((int) ($statistik[$key
             display: flex;
             align-items: center;
             gap: 12px;
+            min-width: 0;
             color: #172033;
             font-weight: 800;
+        }
+
+        .landing-brand span,
+        .landing-title,
+        .landing-copy,
+        .landing-logo-card {
+            overflow-wrap: anywhere;
         }
 
         .landing-brand img {
@@ -185,18 +218,60 @@ $angka = static fn (string $key): string => number_format((int) ($statistik[$key
             margin-bottom: 18px;
         }
 
-        .activity-list {
+        .activity-chart {
             display: grid;
-            gap: 12px;
+            gap: 20px;
+            padding-top: 6px;
         }
 
-        .activity-row {
-            display: flex;
-            justify-content: space-between;
+        .activity-chart-row {
+            display: grid;
+            grid-template-columns: minmax(130px, 190px) minmax(0, 1fr) 90px;
             align-items: center;
-            gap: 16px;
-            padding: 15px 0;
-            border-bottom: 1px solid #edf2f7;
+            gap: 18px;
+        }
+
+        .activity-chart-label {
+            min-width: 0;
+            overflow-wrap: anywhere;
+            color: #334155;
+            font-weight: 700;
+        }
+
+        .activity-chart-track {
+            height: 22px;
+            overflow: hidden;
+            border-radius: 999px;
+            background: #eaf0f8;
+            box-shadow: inset 0 1px 2px rgba(15, 23, 42, .06);
+        }
+
+        .activity-chart-bar {
+            width: var(--chart-value);
+            min-width: 8px;
+            height: 100%;
+            border-radius: inherit;
+            background: linear-gradient(90deg, #2563eb, #60a5fa);
+            transition: width .4s ease;
+        }
+
+        .activity-chart-row:nth-child(2) .activity-chart-bar {
+            background: linear-gradient(90deg, #059669, #34d399);
+        }
+
+        .activity-chart-row:nth-child(3) .activity-chart-bar {
+            background: linear-gradient(90deg, #7c3aed, #a78bfa);
+        }
+
+        .activity-chart-row:nth-child(4) .activity-chart-bar {
+            background: linear-gradient(90deg, #ea580c, #fb923c);
+        }
+
+        .activity-chart-value {
+            color: #0f172a;
+            font-weight: 800;
+            text-align: right;
+            white-space: nowrap;
         }
 
         .landing-footer {
@@ -213,14 +288,76 @@ $angka = static fn (string $key): string => number_format((int) ($statistik[$key
         }
 
         @media (max-width: 575.98px) {
+            .landing-wrap {
+                width: calc(100% - 24px);
+                max-width: calc(100vw - 24px);
+            }
+
             .landing-nav-inner {
-                align-items: flex-start;
+                align-items: stretch;
                 flex-direction: column;
                 padding: 14px 0;
             }
 
+            .landing-brand img {
+                width: 38px;
+                height: 38px;
+                flex: 0 0 auto;
+            }
+
+            .landing-hero {
+                padding: 44px 0 40px;
+            }
+
+            .landing-hero-grid {
+                gap: 28px;
+            }
+
+            .landing-title {
+                font-size: clamp(32px, 10vw, 42px);
+                line-height: 1.1;
+            }
+
+            .landing-panel,
+            .feature-card {
+                width: 100%;
+                max-width: 100%;
+                padding: 20px;
+            }
+
+            .landing-logo-card {
+                align-items: flex-start;
+                padding: 14px;
+            }
+
+            .landing-logo-card img {
+                width: 58px;
+                height: 58px;
+                flex: 0 0 auto;
+            }
+
             .landing-stats {
                 grid-template-columns: 1fr;
+            }
+
+            .activity-chart {
+                gap: 18px;
+            }
+
+            .activity-chart-row {
+                grid-template-columns: minmax(0, 1fr) auto;
+                gap: 8px 12px;
+            }
+
+            .activity-chart-track {
+                grid-column: 1 / -1;
+                grid-row: 2;
+                height: 18px;
+            }
+
+            .activity-chart-value {
+                grid-column: 2;
+                grid-row: 1;
             }
         }
     </style>
@@ -323,21 +460,26 @@ $angka = static fn (string $key): string => number_format((int) ($statistik[$key
         <section class="landing-section pt-0">
             <div class="landing-wrap">
                 <div class="landing-panel">
-                    <div class="d-flex flex-column flex-md-row justify-content-between gap-4 mb-6">
-                        <div>
-                            <div class="text-primary fw-bold text-uppercase fs-8 mb-2">Ringkasan Aktivitas</div>
-                            <h2 class="fw-bolder text-gray-900 mb-0">Status Alumni Setelah Lulus</h2>
-                        </div>
-                        <a href="<?= site_url('login') ?>" class="btn btn-light-primary fw-bold align-self-start">Kelola Data</a>
+                    <div class="mb-8">
+                        <div class="text-primary fw-bold text-uppercase fs-8 mb-2">Grafik Aktivitas Alumni</div>
+                        <h2 class="fw-bolder text-gray-900 mb-2">Status Alumni Setelah Lulus</h2>
+                        <div class="text-muted fw-semibold">Perbandingan jumlah alumni berdasarkan aktivitas utama yang tercatat.</div>
                     </div>
-                    <div class="activity-list">
+                    <div class="activity-chart" role="img" aria-label="Grafik jumlah alumni berdasarkan aktivitas setelah lulus">
                         <?php if ($aktivitas === []): ?>
                             <div class="text-muted fw-semibold py-8 text-center">Belum ada data aktivitas alumni.</div>
                         <?php else: ?>
                             <?php foreach ($aktivitas as $row): ?>
-                                <div class="activity-row">
-                                    <span class="fw-bold text-gray-800"><?= esc((string) ($row['nama_aktivitas'] ?? 'Lainnya')) ?></span>
-                                    <span class="badge badge-light-success fs-7"><?= (int) ($row['total'] ?? 0) ?> alumni</span>
+                                <?php
+                                $totalAktivitas = (int) ($row['total'] ?? 0);
+                                $persentaseAktivitas = $maksAktivitas > 0 ? ($totalAktivitas / $maksAktivitas) * 100 : 0;
+                                ?>
+                                <div class="activity-chart-row">
+                                    <span class="activity-chart-label"><?= esc((string) ($row['nama_aktivitas'] ?? 'Lainnya')) ?></span>
+                                    <div class="activity-chart-track" aria-hidden="true">
+                                        <div class="activity-chart-bar" style="--chart-value: <?= esc(number_format($persentaseAktivitas, 2, '.', ''), 'attr') ?>%"></div>
+                                    </div>
+                                    <span class="activity-chart-value"><?= number_format($totalAktivitas, 0, ',', '.') ?> alumni</span>
                                 </div>
                             <?php endforeach; ?>
                         <?php endif; ?>

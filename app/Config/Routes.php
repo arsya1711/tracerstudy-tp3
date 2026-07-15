@@ -22,9 +22,9 @@ $routes->get('login', 'Auth\LoginController::index');
 $routes->post('login', 'Auth\LoginController::authenticate');
 $routes->get('daftar', 'Auth\RegisterController::index');
 $routes->post('daftar', 'Auth\RegisterController::store');
-$routes->get('logout', 'Auth\LoginController::logout');
+$routes->post('logout', 'Auth\LoginController::logout', ['filter' => 'auth']);
 
-$routes->get('notifikasi/buka/(:num)', 'NotifikasiController::buka/$1', ['filter' => 'auth']);
+$routes->post('notifikasi/buka/(:num)', 'NotifikasiController::buka/$1', ['filter' => 'auth']);
 $routes->get('alumni', 'Alumni\DashboardController::index', ['filter' => 'auth:alumni']);
 
 $routes->group('dashboard', ['filter' => 'auth'], static function (RouteCollection $routes) {
@@ -41,15 +41,15 @@ $routes->group('admin-sekolah', ['filter' => 'auth:admin_sekolah'], static funct
     $routes->get('kompetensi', 'AdminSekolah\KompetensiController::index');
     $routes->post('kompetensi/simpan', 'AdminSekolah\KompetensiController::simpan');
     $routes->post('kompetensi/update/(:num)', 'AdminSekolah\KompetensiController::update/$1');
-    $routes->get('kompetensi/hapus/(:num)', 'AdminSekolah\KompetensiController::hapus/$1');
+    $routes->post('kompetensi/hapus/(:num)', 'AdminSekolah\KompetensiController::hapus/$1');
     $routes->get('angkatan', 'AdminSekolah\AngkatanController::index');
     $routes->post('angkatan/simpan', 'AdminSekolah\AngkatanController::simpan');
     $routes->post('angkatan/update/(:num)', 'AdminSekolah\AngkatanController::update/$1');
-    $routes->get('angkatan/hapus/(:num)', 'AdminSekolah\AngkatanController::hapus/$1');
+    $routes->post('angkatan/hapus/(:num)', 'AdminSekolah\AngkatanController::hapus/$1');
     $routes->get('aktivitas', 'AdminSekolah\AktivitasController::index');
     $routes->post('aktivitas/simpan', 'AdminSekolah\AktivitasController::simpan');
     $routes->post('aktivitas/update/(:num)', 'AdminSekolah\AktivitasController::update/$1');
-    $routes->get('aktivitas/hapus/(:num)', 'AdminSekolah\AktivitasController::hapus/$1');
+    $routes->post('aktivitas/hapus/(:num)', 'AdminSekolah\AktivitasController::hapus/$1');
     $routes->get('tracer', 'AdminSekolah\TracerController::index');
     $routes->get('tracer/export', 'AdminSekolah\TracerController::export');
     $routes->get('tracer/export-pdf', 'AdminSekolah\TracerController::exportPdf');
@@ -64,15 +64,15 @@ $routes->group('superadmin', ['filter' => 'auth:superadmin'], static function (R
     $routes->get('kompetensi', 'Superadmin\KompetensiController::index');
     $routes->post('kompetensi/simpan', 'Superadmin\KompetensiController::simpan');
     $routes->post('kompetensi/update/(:num)', 'Superadmin\KompetensiController::update/$1');
-    $routes->get('kompetensi/hapus/(:num)', 'Superadmin\KompetensiController::hapus/$1');
+    $routes->post('kompetensi/hapus/(:num)', 'Superadmin\KompetensiController::hapus/$1');
     $routes->get('angkatan', 'Superadmin\AngkatanController::index');
     $routes->post('angkatan/simpan', 'Superadmin\AngkatanController::simpan');
     $routes->post('angkatan/update/(:num)', 'Superadmin\AngkatanController::update/$1');
-    $routes->get('angkatan/hapus/(:num)', 'Superadmin\AngkatanController::hapus/$1');
+    $routes->post('angkatan/hapus/(:num)', 'Superadmin\AngkatanController::hapus/$1');
     $routes->get('aktivitas', 'Superadmin\AktivitasController::index');
     $routes->post('aktivitas/simpan', 'Superadmin\AktivitasController::simpan');
     $routes->post('aktivitas/update/(:num)', 'Superadmin\AktivitasController::update/$1');
-    $routes->get('aktivitas/hapus/(:num)', 'Superadmin\AktivitasController::hapus/$1');
+    $routes->post('aktivitas/hapus/(:num)', 'Superadmin\AktivitasController::hapus/$1');
     $routes->get('tracer', 'Superadmin\TracerController::index');
     $routes->get('tracer/export', 'Superadmin\TracerController::export');
     $routes->get('tracer/export-pdf', 'Superadmin\TracerController::exportPdf');
@@ -82,9 +82,9 @@ $routes->group('superadmin', ['filter' => 'auth:superadmin'], static function (R
     $routes->match(['GET', 'POST'], 'admin', 'Superadmin\AdminController::index');
     $routes->post('admin/simpan', 'Superadmin\AdminController::simpan');
     $routes->post('admin/update/(:num)', 'Superadmin\AdminController::update/$1');
-    $routes->get('admin/hapus/(:num)', 'Superadmin\AdminController::hapus/$1');
+    $routes->post('admin/hapus/(:num)', 'Superadmin\AdminController::hapus/$1');
     $routes->post('admin/hapus-massal', 'Superadmin\AdminController::hapusMassal');
-    $routes->get('admin/aktivasi/(:num)', 'Superadmin\AdminController::aktivasi/$1');
+    $routes->post('admin/aktivasi/(:num)', 'Superadmin\AdminController::aktivasi/$1');
 });
 
 $routes->group('alumni', ['filter' => 'auth:alumni'], static function (RouteCollection $routes) {

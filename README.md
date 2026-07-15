@@ -88,12 +88,23 @@ Project ini dibangun dengan CodeIgniter 4 dan PHP 8.2.
 
 ## Akun Awal
 
-Seeder `PenggunaSeeder` membuat akun superadmin awal:
+Pada database development yang masih kosong, seeder `PenggunaSeeder` membuat dua akun admin awal:
 
 - Email: `superadmin@tracerstudy.local`
 - Password: `Admin123`
+- Email: `adminsekolah@tracerstudy.local`
+- Password: `AdminSekolah123`
 
-Ganti password ini setelah login pertama, terutama jika aplikasi akan dipakai di server online.
+Password di atas hanya fallback untuk development lokal. Seeder bersifat idempoten: akun yang sudah ada tidak akan diubah password, email, status aktif, nama, maupun perannya.
+
+Pada environment production, akun baru hanya dapat dibuat jika password bootstrap disediakan melalui environment:
+
+```ini
+seed.superadminPassword = 'gunakan-password-kuat'
+seed.adminSekolahPassword = 'gunakan-password-kuat-lain'
+```
+
+Ganti password bootstrap setelah login pertama dan jangan commit nilainya ke repository.
 
 ## Catatan Repository
 

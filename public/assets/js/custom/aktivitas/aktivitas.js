@@ -87,7 +87,7 @@
     */
     function buildFormData(form) {
         var csrf = getCsrfConfig();
-        var formData = new FormData(form);
+        var formData = new FormData(form || undefined);
 
         if (csrf.fieldName && csrf.token) {
             formData.append(csrf.fieldName, csrf.token);
@@ -676,10 +676,11 @@
             }
 
             fetch(config.hapusUrl + "/" + idAktivitas, {
-                method: "GET",
+                method: "POST",
                 headers: {
                     "X-Requested-With": "XMLHttpRequest"
-                }
+                },
+                body: buildFormData()
             })
                 .then(parseJsonResponse)
                 .then(function (response) {

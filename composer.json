@@ -38,6 +38,7 @@
         "sort-packages": true
     },
     "scripts": {
-        "test": "phpunit"
+        "test": "phpunit",
+        "test:coverage": "phpunit --configuration phpunit.coverage.xml.dist"
     }
 }
