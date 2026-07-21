@@ -67,3 +67,18 @@
 #--------------------------------------------------------------------
 
 # logger.threshold = 4
+
+#--------------------------------------------------------------------
+# EMAIL NOTIFICATION (SMTP)
+#--------------------------------------------------------------------
+
+# email.fromEmail = 'noreply@sekolah.sch.id'
+# email.fromName = 'Tracer Study SMK Teratai Putih 3'
+# email.adminRecipients = 'admin@sekolah.sch.id'
+# email.protocol = 'smtp'
+# email.SMTPHost = 'smtp.gmail.com'
+# email.SMTPUser = 'akun@gmail.com'
+# Gunakan App Password, bukan password login Gmail biasa.
+# email.SMTPPass = 'app-password'
+# email.SMTPPort = 587
+# email.SMTPCrypto = 'tls'

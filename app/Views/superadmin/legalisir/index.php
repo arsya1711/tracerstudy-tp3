@@ -69,7 +69,7 @@ $formatTanggal = static function (?string $tanggal): string {
                                 <th>Dokumen</th>
                                 <th>Status</th>
                                 <th>Diajukan</th>
-                                <th class="min-w-275px">Update</th>
+                                <th class="min-w-300px">Tindakan</th>
                             </tr>
                         </thead>
                         <tbody class="fw-semibold text-gray-700">
@@ -102,6 +102,12 @@ $formatTanggal = static function (?string $tanggal): string {
                                                 <input type="text" name="catatan_admin" value="<?= esc((string) ($item['catatan_admin'] ?? ''), 'attr') ?>" class="form-control form-control-sm form-control-solid" placeholder="Catatan admin">
                                                 <button type="submit" class="btn btn-sm btn-primary">Simpan</button>
                                             </form>
+                                            <?php if ($status === 'diajukan'): ?>
+                                                <form method="post" action="<?= esc((string) $deleteUrl) ?>/<?= (int) $item['id_pengajuan_legalisir'] ?>" class="d-flex justify-content-end mt-2 js-hapus-legalisir-form">
+                                                    <?= csrf_field() ?>
+                                                    <button type="submit" class="btn btn-sm btn-light-danger">Hapus Pengajuan</button>
+                                                </form>
+                                            <?php endif; ?>
                                         </td>
                                     </tr>
                                 <?php endforeach; ?>
@@ -113,4 +119,38 @@ $formatTanggal = static function (?string $tanggal): string {
         </div>
     </div>
 </div>
+<?= $this->endSection() ?>
+
+<?= $this->section('extra_js') ?>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('.js-hapus-legalisir-form').forEach(function (form) {
+        form.addEventListener('submit', function (event) {
+            event.preventDefault();
+
+            if (typeof Swal === 'undefined') {
+                if (window.confirm('Hapus pengajuan legalisir ini?')) {
+                    form.submit();
+                }
+                return;
+            }
+
+            Swal.fire({
+                icon: 'warning',
+                title: 'Hapus pengajuan?',
+                text: 'Pengajuan legalisir yang dihapus tidak dapat dikembalikan.',
+                showCancelButton: true,
+                confirmButtonText: 'Ya, hapus',
+                cancelButtonText: 'Batal',
+                confirmButtonColor: '#d33',
+                reverseButtons: true
+            }).then(function (result) {
+                if (result.isConfirmed) {
+                    form.submit();
+                }
+            });
+        });
+    });
+});
+</script>
 <?= $this->endSection() ?>

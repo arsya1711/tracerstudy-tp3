@@ -141,11 +141,12 @@ $formatTanggal = static function (?string $tanggal): string {
                                         <th>Status</th>
                                         <th>Diajukan</th>
                                         <th>Catatan</th>
+                                        <th class="text-end">Aksi</th>
                                     </tr>
                                 </thead>
                                 <tbody class="fw-semibold text-gray-700">
                                     <?php if ($pengajuan === []): ?>
-                                        <tr><td colspan="5" class="text-center text-muted py-8">Belum ada pengajuan legalisir.</td></tr>
+                                        <tr><td colspan="6" class="text-center text-muted py-8">Belum ada pengajuan legalisir.</td></tr>
                                     <?php else: ?>
                                         <?php foreach ($pengajuan as $item): ?>
                                             <?php $status = (string) ($item['status'] ?? 'diajukan'); ?>
@@ -158,6 +159,16 @@ $formatTanggal = static function (?string $tanggal): string {
                                                 <td><span class="badge <?= $badgeClass($status) ?>"><?= esc($statusOptions[$status] ?? ucfirst($status)) ?></span></td>
                                                 <td><?= esc($formatTanggal($item['dibuat_pada'] ?? null)) ?></td>
                                                 <td><?= esc((string) (($item['catatan_admin'] ?? '') !== '' ? $item['catatan_admin'] : '-')) ?></td>
+                                                <td class="text-end">
+                                                    <?php if ($status === 'diajukan'): ?>
+                                                        <form method="post" action="<?= site_url('alumni/legalisir/hapus/' . (int) $item['id_pengajuan_legalisir']) ?>" class="d-inline js-hapus-legalisir-form">
+                                                            <?= csrf_field() ?>
+                                                            <button type="submit" class="btn btn-sm btn-light-danger">Hapus</button>
+                                                        </form>
+                                                    <?php else: ?>
+                                                        <span class="text-muted fs-7">Tidak tersedia</span>
+                                                    <?php endif; ?>
+                                                </td>
                                             </tr>
                                         <?php endforeach; ?>
                                     <?php endif; ?>
@@ -170,4 +181,38 @@ $formatTanggal = static function (?string $tanggal): string {
         </div>
     </div>
 </div>
+<?= $this->endSection() ?>
+
+<?= $this->section('extra_js') ?>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('.js-hapus-legalisir-form').forEach(function (form) {
+        form.addEventListener('submit', function (event) {
+            event.preventDefault();
+
+            if (typeof Swal === 'undefined') {
+                if (window.confirm('Hapus pengajuan legalisir ini?')) {
+                    form.submit();
+                }
+                return;
+            }
+
+            Swal.fire({
+                icon: 'warning',
+                title: 'Hapus pengajuan?',
+                text: 'Pengajuan legalisir yang dihapus tidak dapat dikembalikan.',
+                showCancelButton: true,
+                confirmButtonText: 'Ya, hapus',
+                cancelButtonText: 'Batal',
+                confirmButtonColor: '#d33',
+                reverseButtons: true
+            }).then(function (result) {
+                if (result.isConfirmed) {
+                    form.submit();
+                }
+            });
+        });
+    });
+});
+</script>
 <?= $this->endSection() ?>

@@ -39,22 +39,22 @@ class KompetensiSeeder extends Seeder
 
         $data = [
             [
-                'nama_kompetensi' => 'Multimedia',
-                'akronim'         => 'MM',
+                'nama_kompetensi' => 'Teknik Jaringan Komputer dan Telekomunikasi (TJK) Axioo Class Program (ACP)',
+                'akronim'         => 'TJK',
                 'status_aktif'    => 1,
                 'dibuat_pada'     => $waktuSekarang,
                 'diperbarui_pada' => $waktuSekarang,
             ],
             [
-                'nama_kompetensi' => 'Teknik Komputer Jaringan',
-                'akronim'         => 'TKJ',
+                'nama_kompetensi' => 'Akuntansi dan Keuangan Lembaga (AKL)',
+                'akronim'         => 'AKL',
                 'status_aktif'    => 1,
                 'dibuat_pada'     => $waktuSekarang,
                 'diperbarui_pada' => $waktuSekarang,
             ],
             [
-                'nama_kompetensi' => 'Rekayasa Perangkat Lunak',
-                'akronim'         => 'RPL',
+                'nama_kompetensi' => 'Manajemen Perkantoran dan Layanan Bisnis (MPLB)',
+                'akronim'         => 'MPLB',
                 'status_aktif'    => 1,
                 'dibuat_pada'     => $waktuSekarang,
                 'diperbarui_pada' => $waktuSekarang,

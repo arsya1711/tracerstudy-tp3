@@ -31,6 +31,10 @@ $formatTanggal = static function (?string $tanggal, bool $pakaiJam = false): str
 };
 
 $statusBadge = static function (array $row): array {
+    if (($row['status_pendaftaran'] ?? '') === 'menunggu_aktivasi') {
+        return ['badge badge-light-warning', 'Menunggu Aktivasi'];
+    }
+
     if ((int) ($row['id_tracer'] ?? 0) > 0) {
         return ['badge badge-light-success', 'Sudah Mengisi Tracer'];
     }
@@ -74,6 +78,7 @@ $exportQuery = http_build_query([
     'id_kompetensi' => (int) ($filters['id_kompetensi'] ?? 0),
     'id_aktivitas' => (int) ($filters['id_aktivitas'] ?? 0),
     'status' => (string) ($filters['status'] ?? ''),
+    'status_akun' => (string) ($filters['status_akun'] ?? ''),
     'tanggal_mulai' => (string) ($filters['tanggal_mulai'] ?? ''),
     'tanggal_selesai' => (string) ($filters['tanggal_selesai'] ?? ''),
 ]);
@@ -223,6 +228,8 @@ $penghasilanOptions = [
 
 <div id="kt_app_content" class="app-content flex-column-fluid">
     <div id="kt_app_content_container" class="app-container container-xxl">
+        <?= $this->include('partials/tracer-guide-admin') ?>
+
         <div id="kt_tracer_print_area">
             <div class="card mb-8">
                 <div class="card-header border-0 pt-6">
@@ -297,6 +304,15 @@ $penghasilanOptions = [
                                                         <?= esc($label) ?>
                                                     </option>
                                                 <?php endforeach; ?>
+                                            </select>
+                                        </div>
+
+                                        <div class="mb-8">
+                                            <label class="form-label fs-6 fw-semibold">Status Akun:</label>
+                                            <select name="status_akun" class="form-select form-select-solid">
+                                                <option value="">Semua Status Akun</option>
+                                                <option value="menunggu_aktivasi" <?= ($filters['status_akun'] ?? '') === 'menunggu_aktivasi' ? 'selected' : '' ?>>Menunggu Aktivasi</option>
+                                                <option value="aktif" <?= ($filters['status_akun'] ?? '') === 'aktif' ? 'selected' : '' ?>>Aktif</option>
                                             </select>
                                         </div>
 
@@ -415,6 +431,17 @@ $penghasilanOptions = [
                                                         <span class="path3"></span>
                                                     </i>
                                                 </button>
+                                                <?php if (($item['status_pendaftaran'] ?? '') === 'menunggu_aktivasi'): ?>
+                                                    <form method="post" action="<?= esc($tracerBaseUrl . '/aktivasi-alumni/' . $idAlumni) ?>" class="d-inline" onsubmit="return confirm('Verifikasi data dan aktifkan akun alumni ini?');">
+                                                        <?= csrf_field() ?>
+                                                        <button type="submit" class="btn btn-icon btn-active-light-success w-30px h-30px" title="Aktifkan Akun Alumni">
+                                                            <i class="ki-duotone ki-check-circle fs-3 text-success">
+                                                                <span class="path1"></span>
+                                                                <span class="path2"></span>
+                                                            </i>
+                                                        </button>
+                                                    </form>
+                                                <?php endif; ?>
                                             </td>
                                         </tr>
                                     <?php endforeach; ?>
@@ -545,6 +572,14 @@ $penghasilanOptions = [
                             <div class="text-muted fs-7 text-uppercase fw-bold mb-1">Status Tracer</div>
                             <span class="<?= esc($badgeClass) ?>"><?= esc($badgeLabel) ?></span>
                         </div>
+                        <div class="col-md-6">
+                            <div class="text-muted fs-7 text-uppercase fw-bold mb-1">Status Akun</div>
+                            <?php if (($item['status_pendaftaran'] ?? '') === 'menunggu_aktivasi'): ?>
+                                <span class="badge badge-light-warning">Menunggu Aktivasi</span>
+                            <?php else: ?>
+                                <span class="badge badge-light-success">Aktif</span>
+                            <?php endif; ?>
+                        </div>
                         <div class="col-12">
                             <div class="text-muted fs-7 text-uppercase fw-bold mb-1">Alamat</div>
                             <div class="fw-semibold text-gray-800"><?= nl2br(esc((string) (($item['alamat'] ?? '') !== '' ? $item['alamat'] : '-'))) ?></div>
@@ -617,6 +652,17 @@ $penghasilanOptions = [
                             <span class="path2"></span>
                         </i>Edit
                     </button>
+                    <?php if (($item['status_pendaftaran'] ?? '') === 'menunggu_aktivasi'): ?>
+                        <form method="post" action="<?= esc($tracerBaseUrl . '/aktivasi-alumni/' . $idAlumni) ?>" onsubmit="return confirm('Verifikasi data dan aktifkan akun alumni ini?');">
+                            <?= csrf_field() ?>
+                            <button type="submit" class="btn btn-success">
+                                <i class="ki-duotone ki-check-circle fs-2">
+                                    <span class="path1"></span>
+                                    <span class="path2"></span>
+                                </i>Aktifkan Akun
+                            </button>
+                        </form>
+                    <?php endif; ?>
                     <?php if ($idTracer > 0): ?>
                         <form method="post" action="<?= esc($tracerBaseUrl . '/hapus-tracer/' . $idAlumni) ?>" onsubmit="return confirm('Hapus data tracer alumni ini? Profil dan akun alumni tetap tersimpan.');">
                             <?= csrf_field() ?>

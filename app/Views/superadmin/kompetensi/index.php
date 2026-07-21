@@ -163,13 +163,13 @@ $hapusUrl = $hapusUrl ?? site_url('superadmin/kompetensi/hapus');
                                 <label class="fs-6 fw-semibold form-label mb-2">
                                     <span class="required">Nama Kompetensi Keahlian</span>
                                 </label>
-                                <input class="form-control form-control-solid" placeholder="Contoh: Rekayasa Perangkat Lunak" name="nama_kompetensi" />
+                                <input class="form-control form-control-solid" placeholder="Contoh: Akuntansi dan Keuangan Lembaga (AKL)" name="nama_kompetensi" />
                             </div>
                             <div class="fv-row mb-7">
                                 <label class="fs-6 fw-semibold form-label mb-2">
                                     <span class="required">Akronim</span>
                                 </label>
-                                <input class="form-control form-control-solid" placeholder="Contoh: RPL" name="akronim" />
+                                <input class="form-control form-control-solid" placeholder="Contoh: AKL" name="akronim" />
                             </div>
                             <div class="text-center pt-15">
                                 <button type="reset" class="btn btn-light me-3" data-kt-kompetensi-modal-action="cancel">Discard</button>
@@ -218,13 +218,13 @@ $hapusUrl = $hapusUrl ?? site_url('superadmin/kompetensi/hapus');
                                 <label class="fs-6 fw-semibold form-label mb-2">
                                     <span class="required">Nama Kompetensi Keahlian</span>
                                 </label>
-                                <input class="form-control form-control-solid" placeholder="Contoh: Teknik Komputer Jaringan" name="nama_kompetensi" />
+                                <input class="form-control form-control-solid" placeholder="Contoh: Manajemen Perkantoran dan Layanan Bisnis (MPLB)" name="nama_kompetensi" />
                             </div>
                             <div class="fv-row mb-7">
                                 <label class="fs-6 fw-semibold form-label mb-2">
                                     <span class="required">Akronim</span>
                                 </label>
-                                <input class="form-control form-control-solid" placeholder="Contoh: TKJ" name="akronim" />
+                                <input class="form-control form-control-solid" placeholder="Contoh: MPLB" name="akronim" />
                             </div>
                             <div class="text-center pt-15">
                                 <button type="reset" class="btn btn-light me-3" data-kt-kompetensi-edit-modal-action="cancel">Discard</button>

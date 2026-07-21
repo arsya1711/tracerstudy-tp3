@@ -111,7 +111,9 @@ class LoginController extends BaseController
         $password = (string) $this->request->getPost('password');
         $user     = $this->penggunaModel->cariByEmail($email);
 
-        if ($user === null || (int) $user['status_aktif'] !== 1 || ! password_verify($password, $user['kata_sandi'])) {
+        // Status akun baru diperiksa setelah password benar agar endpoint
+        // login tidak dapat dipakai untuk menebak email yang terdaftar.
+        if ($user === null || ! password_verify($password, (string) $user['kata_sandi'])) {
             if ($this->request->isAJAX()) {
                 return $this->response
                     ->setStatusCode(401)
@@ -122,6 +124,26 @@ class LoginController extends BaseController
             }
 
             return redirect()->back()->withInput()->with('error', 'Email atau password salah');
+        }
+
+        $menungguAktivasi = (string) ($user['slug_peran'] ?? '') === 'alumni'
+            && (string) ($user['status_pendaftaran'] ?? '') === 'menunggu_aktivasi';
+
+        if ((int) ($user['status_aktif'] ?? 0) !== 1 || $menungguAktivasi) {
+            $message = $menungguAktivasi
+                ? 'Akun alumni sedang menunggu aktivasi Admin Sekolah.'
+                : 'Akun kamu sedang nonaktif. Silakan hubungi Admin Sekolah.';
+
+            if ($this->request->isAJAX()) {
+                return $this->response
+                    ->setStatusCode(403)
+                    ->setJSON([
+                        'status'  => 'account_inactive',
+                        'message' => $message,
+                    ]);
+            }
+
+            return redirect()->back()->withInput()->with('error', $message);
         }
 
         session()->set([

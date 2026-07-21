@@ -10,4 +10,9 @@ class LegalisirController extends SuperadminLegalisirController
     {
         return site_url('admin-sekolah/legalisir/update-status');
     }
+
+    protected function deleteUrl(): string
+    {
+        return site_url('admin-sekolah/legalisir/hapus');
+    }
 }

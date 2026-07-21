@@ -21,7 +21,7 @@ final class SecurityRegressionTest extends CIUnitTestCase
         $routes = file_get_contents(APPPATH . 'Config/Routes.php');
         $this->assertIsString($routes);
 
-        foreach (['logout', 'notifikasi/buka/(:num)', 'kompetensi/hapus/(:num)', 'angkatan/hapus/(:num)', 'aktivitas/hapus/(:num)', 'admin/hapus/(:num)', 'admin/aktivasi/(:num)'] as $uri) {
+        foreach (['logout', 'notifikasi/buka/(:num)', 'kompetensi/hapus/(:num)', 'angkatan/hapus/(:num)', 'aktivitas/hapus/(:num)', 'admin/hapus/(:num)', 'admin/aktivasi/(:num)', 'tracer/aktivasi-alumni/(:num)'] as $uri) {
             $this->assertStringNotContainsString("->get('{$uri}'", $routes);
             $this->assertStringContainsString("->post('{$uri}'", $routes);
         }

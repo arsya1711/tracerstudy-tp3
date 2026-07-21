@@ -8,6 +8,7 @@ $schoolName = 'SMK Teratai Putih 3';
 $schoolLogoUrl = base_url('assets/media/logos/logo-smk-teratai-putih-3.svg');
 $userName = trim((string) (session()->get('nama_lengkap') ?? 'Pengguna')) ?: 'Pengguna';
 $userInitial = strtoupper(substr($userName, 0, 1));
+$profileUrl = $isAlumni ? base_url('alumni/profil') : base_url('profil-akun');
 $roleLabel = match ($slugPeran) {
     'alumni' => 'Alumni',
     'admin_sekolah' => 'Admin Sekolah',
@@ -109,13 +110,13 @@ if ($isAlumni) {
                     </a>
 
                     <div class="kt-header-actions">
-                        <div class="kt-header-user d-none d-xl-flex">
+                        <a href="<?= esc($profileUrl) ?>" class="kt-header-user d-none d-xl-flex" title="Buka profil akun" aria-label="Buka profil akun <?= esc($userName) ?>">
                             <span class="kt-header-user-avatar"><?= esc($userInitial) ?></span>
                             <span>
                                 <span class="kt-header-user-name"><?= esc($userName) ?></span>
                                 <span class="kt-header-user-role"><?= esc($roleLabel) ?></span>
                             </span>
-                        </div>
+                        </a>
                         <form method="post" action="<?= base_url('logout') ?>" class="d-inline js-logout-form">
                             <?= csrf_field() ?>
                             <button type="submit" class="btn kt-header-logout js-logout-trigger" aria-label="Keluar dari sistem" title="Keluar">
@@ -148,13 +149,13 @@ if ($isAlumni) {
                             <span class="kt-sidebar-close-icon" aria-hidden="true"><span></span><span></span></span>
                         </button>
                     </div>
-                    <div class="kt-sidebar-profile">
+                    <a href="<?= esc($profileUrl) ?>" class="kt-sidebar-profile" title="Buka profil akun" aria-label="Buka profil akun <?= esc($userName) ?>">
                         <span class="kt-sidebar-profile-avatar"><?= esc($userInitial) ?></span>
                         <span class="kt-sidebar-profile-copy">
                             <span class="kt-sidebar-profile-name"><?= esc($userName) ?></span>
                             <span class="kt-sidebar-profile-role"><?= esc($roleLabel) ?></span>
                         </span>
-                    </div>
+                    </a>
                     <div class="app-sidebar-menu overflow-hidden flex-column-fluid">
                         <div id="kt_app_sidebar_menu_wrapper" class="app-sidebar-wrapper">
                             <div id="kt_app_sidebar_menu_scroll" class="scroll-y">

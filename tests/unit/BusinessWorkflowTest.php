@@ -113,6 +113,26 @@ final class BusinessWorkflowTest extends CIUnitTestCase
         $this->assertStringContainsString('getFocusableElements', $mobileJs);
         $this->assertStringContainsString("event.key === 'Escape'", $mobileJs);
     }
+
+    public function testTracerGuidesCoverBothRolesAndConditionalActivities(): void
+    {
+        $alumniGuide = view('partials/tracer-guide-alumni');
+        $adminGuide = view('partials/tracer-guide-admin');
+        $documentation = file_get_contents(ROOTPATH . 'docs/petunjuk-pengisian-tracer.md');
+
+        $this->assertIsString($documentation);
+        $this->assertStringContainsString('Petunjuk Pengisian Tracer Alumni', $alumniGuide);
+        $this->assertStringContainsString('Tambah Tracer atau Edit Tracer', $alumniGuide);
+        $this->assertStringContainsString('Petunjuk Pengelolaan Tracer Admin Sekolah', $adminGuide);
+        $this->assertStringContainsString('Hapus Tracer', $adminGuide);
+
+        foreach (['Bekerja', 'Kuliah', 'Wirausaha', 'Mencari Kerja'] as $activity) {
+            $this->assertStringContainsString($activity, $documentation);
+        }
+
+        $this->assertStringContainsString('images/petunjuk-tracer-alumni-infografik.png', $documentation);
+        $this->assertStringContainsString('images/petunjuk-tracer-admin-sekolah-infografik.png', $documentation);
+    }
 }
 
 class TestableLoginController extends LoginController

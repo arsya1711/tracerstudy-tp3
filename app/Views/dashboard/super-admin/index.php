@@ -3,6 +3,7 @@ $tracerAktivitas = is_array($tracer_aktivitas ?? null) ? $tracer_aktivitas : ['l
 $tracerAngkatan = is_array($tracer_angkatan ?? null) ? $tracer_angkatan : ['labels' => [], 'series' => []];
 $legalisirMenunggu = (int) ($legalisir_menunggu ?? 0);
 $legalisirDiproses = (int) ($legalisir_diproses ?? 0);
+$alumniMenungguAktivasi = (int) ($alumni_menunggu_aktivasi ?? 0);
 
 /*
 | Card dashboard disusun dari data controller. Card legalisir dibuat
@@ -10,6 +11,14 @@ $legalisirDiproses = (int) ($legalisir_diproses ?? 0);
 | pekerjaan yang perlu ditindaklanjuti.
 */
 $cards = [
+    [
+        'label' => 'Menunggu Aktivasi',
+        'value' => $alumniMenungguAktivasi,
+        'url' => site_url('superadmin/tracer?status_akun=menunggu_aktivasi'),
+        'class' => $alumniMenungguAktivasi > 0 ? 'bg-light-warning border border-warning border-2' : '',
+        'hint' => $alumniMenungguAktivasi > 0 ? 'Akun alumni perlu diverifikasi' : 'Tidak ada akun yang menunggu',
+        'valueClass' => $alumniMenungguAktivasi > 0 ? 'text-warning' : 'text-gray-900',
+    ],
     ['label' => 'Tracer Terisi', 'value' => (int) ($tracer_terkirim ?? 0), 'url' => site_url('superadmin/tracer'), 'class' => ''],
     ['label' => 'Belum Tracer', 'value' => (int) ($tracer_belum_lengkap ?? 0), 'url' => site_url('superadmin/tracer'), 'class' => ''],
     [

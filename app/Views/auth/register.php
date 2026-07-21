@@ -3,8 +3,8 @@
 |-------------------------------------------------------------------
 | VIEW REGISTER ALUMNI
 |-------------------------------------------------------------------
-| Form pendaftaran mandiri untuk alumni. Akun baru langsung aktif
-| agar alumni bisa melengkapi profil dan tracer study.
+| Form pendaftaran mandiri untuk alumni. Akun baru harus diaktifkan
+| Admin Sekolah sebelum dapat digunakan untuk login.
 */
 ?>
 <?= $this->extend('layouts/auth') ?>
@@ -46,7 +46,7 @@ $daftar_kompetensi = is_array($daftar_kompetensi ?? null) ? $daftar_kompetensi :
             <span class="path3"></span>
         </i>
         <div class="text-gray-700 fs-7">
-            Setelah daftar, kamu bisa langsung login untuk melengkapi profil dan mengisi tracer study.
+            Setelah mendaftar, akun akan diperiksa dan diaktifkan oleh Admin Sekolah sebelum dapat digunakan untuk login.
         </div>
     </div>
 

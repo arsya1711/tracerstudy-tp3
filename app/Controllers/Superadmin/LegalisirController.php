@@ -24,6 +24,7 @@ class LegalisirController extends BaseController
             'rekapStatus' => $this->legalisirModel->hitungByStatus(),
             'statusOptions' => $this->statusOptions(),
             'updateUrl' => $this->updateUrl(),
+            'deleteUrl' => $this->deleteUrl(),
         ]);
     }
 
@@ -51,6 +52,24 @@ class LegalisirController extends BaseController
         $this->kirimNotifikasiAlumni((int) $pengajuan['id_alumni'], $status, (string) ($payload['catatan_admin'] ?? ''));
 
         return redirect()->back()->with('sukses', 'Status pengajuan legalisir berhasil diperbarui.');
+    }
+
+    public function hapus(int $id): RedirectResponse
+    {
+        $pengajuan = $this->legalisirModel->find($id);
+        if ($pengajuan === null) {
+            return redirect()->back()->with('error', 'Pengajuan legalisir tidak ditemukan.');
+        }
+
+        if ((string) ($pengajuan['status'] ?? '') !== 'diajukan') {
+            return redirect()->back()->with('error', 'Pengajuan yang sudah diproses tidak dapat dihapus.');
+        }
+
+        if (! $this->legalisirModel->delete($id)) {
+            return redirect()->back()->with('error', 'Pengajuan legalisir gagal dihapus.');
+        }
+
+        return redirect()->back()->with('sukses', 'Pengajuan legalisir berhasil dihapus.');
     }
 
     /*
@@ -92,6 +111,11 @@ class LegalisirController extends BaseController
     protected function updateUrl(): string
     {
         return site_url('superadmin/legalisir/update-status');
+    }
+
+    protected function deleteUrl(): string
+    {
+        return site_url('superadmin/legalisir/hapus');
     }
 
     protected function statusOptions(): array

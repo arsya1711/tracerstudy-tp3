@@ -25,6 +25,7 @@ class DashboardController extends BaseController
         return view('admin_sekolah/dashboard', [
             'title' => 'Dashboard Admin Sekolah - Sistem Tracer Study',
             'total_alumni' => $this->hitungTabel('tb_alumni'),
+            'alumni_menunggu_aktivasi' => $this->hitungAlumniMenungguAktivasi(),
             'total_tracer' => $this->hitungTabel('tb_tracer_alumni'),
             'pengajuan_legalisir' => $this->hitungTabel('tb_pengajuan_legalisir'),
             'legalisir_menunggu' => (new PengajuanLegalisirModel())->hitungByStatusList(['diajukan']),
@@ -54,6 +55,17 @@ class DashboardController extends BaseController
 
         return (int) $this->db->table('tb_tracer_alumni')
             ->whereIn('status', ['terkirim', 'terverifikasi', 'disetujui'])
+            ->countAllResults();
+    }
+
+    protected function hitungAlumniMenungguAktivasi(): int
+    {
+        if (! $this->db->tableExists('tb_alumni')) {
+            return 0;
+        }
+
+        return (int) $this->db->table('tb_alumni')
+            ->where('status_pendaftaran', 'menunggu_aktivasi')
             ->countAllResults();
     }
 

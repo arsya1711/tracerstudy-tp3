@@ -71,6 +71,9 @@ migration_output.txt
 /writable/debugbar/*
 !/writable/debugbar/index.html
 
+# Local database recovery dumps must never be pushed.
+/writable/backups/*
+
 /public/uploads/*
 !/public/uploads/.gitkeep
 

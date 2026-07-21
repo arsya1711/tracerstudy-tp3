@@ -69,6 +69,8 @@ $tipeAktivitas = static function (string $nama): string {
             <div class="alert alert-success"><?= esc((string) session()->getFlashdata('sukses')) ?></div>
         <?php endif; ?>
 
+        <?= $this->include('partials/tracer-guide-alumni') ?>
+
         <div class="card card-flush mb-8">
             <div class="card-header pt-7">
                 <div class="card-title flex-column">

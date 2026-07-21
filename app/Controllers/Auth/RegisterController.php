@@ -9,14 +9,15 @@ use App\Models\PenggunaModel;
 use App\Models\PeranModel;
 use CodeIgniter\HTTP\RedirectResponse;
 use Config\Database;
+use Config\Email as EmailConfig;
 use RuntimeException;
 
 /*
 |-------------------------------------------------------------------
 | REGISTER CONTROLLER
 |-------------------------------------------------------------------
-| Controller ini menangani pendaftaran mandiri alumni. Akun yang dibuat
-| langsung aktif agar alumni bisa melengkapi profil dan tracer study.
+| Controller ini menangani pendaftaran mandiri alumni. Akun baru disimpan
+| nonaktif sampai diverifikasi dan diaktifkan oleh admin sekolah.
 */
 class RegisterController extends BaseController
 {
@@ -86,8 +87,8 @@ class RegisterController extends BaseController
             'email'                 => 'required|valid_email|max_length[190]|is_unique[tb_pengguna.email]',
             'nomor_telepon'         => 'required|min_length[8]|max_length[30]|regex_match[/^[0-9+().\\s-]+$/]',
             'jenis_alumni'          => 'required|in_list[alumni]',
-            'nis'                   => 'required|max_length[20]',
-            'nisn'                  => 'required|max_length[30]',
+            'nis'                   => 'required|max_length[20]|is_unique[tb_alumni.nis]',
+            'nisn'                  => 'required|max_length[30]|is_unique[tb_alumni.nisn]',
             'id_angkatan'           => 'required|integer|greater_than[0]',
             'id_kompetensi'         => 'required|integer|greater_than[0]',
             'jenis_kelamin'          => 'required|in_list[Laki-laki,Perempuan]',
@@ -110,10 +111,12 @@ class RegisterController extends BaseController
                 'matches' => 'Konfirmasi password belum sama.',
             ],
             'nis' => [
-                'required' => 'NIS wajib diisi untuk alumni.',
+                'required'  => 'NIS wajib diisi untuk alumni.',
+                'is_unique' => 'NIS sudah digunakan oleh alumni lain.',
             ],
             'nisn' => [
-                'required' => 'NISN wajib diisi untuk alumni.',
+                'required'  => 'NISN wajib diisi untuk alumni.',
+                'is_unique' => 'NISN sudah digunakan oleh alumni lain.',
             ],
             'id_angkatan' => [
                 'required'     => 'Tahun lulus wajib dipilih untuk alumni.',
@@ -162,7 +165,7 @@ class RegisterController extends BaseController
                 'email'         => $payload['email'],
                 'kata_sandi'    => password_hash($payload['password'], PASSWORD_DEFAULT),
                 'nomor_telepon' => $payload['nomor_telepon'] !== '' ? $payload['nomor_telepon'] : null,
-                'status_aktif'  => 1,
+                'status_aktif'  => 0,
             ], true);
 
             if ($idPengguna <= 0) {
@@ -179,8 +182,8 @@ class RegisterController extends BaseController
                 'tempat_lahir'         => $payload['tempat_lahir'],
                 'tanggal_lahir'        => $payload['tanggal_lahir'],
                 'alamat'               => $payload['alamat'],
-                'status_verifikasi'   => 'aktif',
-                'status_pendaftaran'  => 'aktif',
+                'status_verifikasi'   => 'menunggu_aktivasi',
+                'status_pendaftaran'  => 'menunggu_aktivasi',
                 'terdaftar_pada'      => date('Y-m-d H:i:s'),
             ], true);
 
@@ -200,7 +203,7 @@ class RegisterController extends BaseController
         $this->kirimNotifikasiPendaftaranAlumni($payload, $idAlumni);
 
         return redirect()->to(site_url('login'))
-            ->with('sukses', 'Pendaftaran berhasil. Silakan login untuk melengkapi profil dan tracer study.');
+            ->with('sukses', 'Pendaftaran berhasil. Akun kamu sedang menunggu aktivasi Admin Sekolah.');
     }
 
     /*
@@ -229,44 +232,144 @@ class RegisterController extends BaseController
             . ' mendaftar sebagai alumni tracer study.';
 
         try {
+            $superadmins = $this->ambilAdminAktifByRole(['superadmin']);
+            $adminSekolah = $this->ambilAdminAktifByRole(['admin_sekolah']);
+
             $this->notifikasiModel->buatUntukPengguna(
-                $this->ambilIdPenggunaByRole(['superadmin']),
+                array_column($superadmins, 'id_pengguna'),
                 'alumni_baru',
                 $judul,
                 $pesan,
-                'superadmin/tracer'
+                'superadmin/tracer?status_akun=menunggu_aktivasi'
             );
 
             $this->notifikasiModel->buatUntukPengguna(
-                $this->ambilIdPenggunaByRole(['admin_sekolah']),
+                array_column($adminSekolah, 'id_pengguna'),
                 'alumni_baru',
                 $judul,
                 $pesan,
-                'admin-sekolah/tracer'
+                'admin-sekolah/tracer?status_akun=menunggu_aktivasi'
+            );
+
+            $this->kirimEmailPendaftaranAlumni(
+                $payload,
+                array_merge($superadmins, $adminSekolah)
             );
         } catch (\Throwable $th) {
             log_message('error', 'Notifikasi alumni baru gagal dibuat: ' . $th->getMessage());
         }
     }
 
-    protected function ambilIdPenggunaByRole(array $slugPeran): array
+    protected function ambilAdminAktifByRole(array $slugPeran): array
     {
         if (! $this->db->tableExists('tb_pengguna') || ! $this->db->tableExists('tb_peran')) {
             return [];
         }
 
-        return array_map(
-            static function (array $row): int {
-                return (int) ($row['id_pengguna'] ?? 0);
-            },
-            $this->db->table('tb_pengguna u')
-                ->select('u.id_pengguna')
-                ->join('tb_peran r', 'r.id_peran = u.id_peran', 'inner')
-                ->whereIn('r.slug_peran', $slugPeran)
-                ->where('u.status_aktif', 1)
-                ->get()
-                ->getResultArray()
-        );
+        return $this->db->table('tb_pengguna u')
+            ->select('u.id_pengguna, u.nama_lengkap, u.email, r.slug_peran')
+            ->join('tb_peran r', 'r.id_peran = u.id_peran', 'inner')
+            ->whereIn('r.slug_peran', $slugPeran)
+            ->where('u.status_aktif', 1)
+            ->get()
+            ->getResultArray();
+    }
+
+    /**
+     * Email bersifat best-effort: kegagalan SMTP dicatat tetapi tidak
+     * membatalkan akun alumni yang sudah berhasil disimpan.
+     */
+    protected function kirimEmailPendaftaranAlumni(array $payload, array $admins): void
+    {
+        $config = config(EmailConfig::class);
+        $fromEmail = trim((string) $config->fromEmail);
+
+        if (! filter_var($fromEmail, FILTER_VALIDATE_EMAIL)) {
+            log_message('warning', 'Email admin tidak dikirim: email.fromEmail belum dikonfigurasi.');
+
+            return;
+        }
+
+        $penerima = $this->ambilPenerimaEmailAdmin($admins, (string) $config->adminRecipients);
+        if ($penerima === []) {
+            log_message('warning', 'Email admin tidak dikirim: tidak ada alamat penerima admin yang valid.');
+
+            return;
+        }
+
+        $namaAlumni = trim((string) ($payload['nama_lengkap'] ?? 'Alumni')) ?: 'Alumni';
+        $namaAlumni = preg_replace('/[\r\n]+/', ' ', $namaAlumni) ?: 'Alumni';
+        $fromName = trim((string) $config->fromName) ?: 'Tracer Study SMK Teratai Putih 3';
+        $emailService = service('email');
+
+        foreach ($penerima as $admin) {
+            $slugPeran = (string) ($admin['slug_peran'] ?? '');
+            $urlAktivasi = match ($slugPeran) {
+                'admin_sekolah' => site_url('admin-sekolah/tracer?status_akun=menunggu_aktivasi'),
+                'superadmin' => site_url('superadmin/tracer?status_akun=menunggu_aktivasi'),
+                default => site_url('login'),
+            };
+            $message = "Yth. " . ((string) ($admin['nama_lengkap'] ?? 'Admin')) . ",\n\n"
+                . "Ada pendaftaran alumni baru yang perlu diverifikasi.\n\n"
+                . "Nama: {$namaAlumni}\n"
+                . 'Email: ' . (string) ($payload['email'] ?? '-') . "\n"
+                . 'NIS: ' . (string) ($payload['nis'] ?? '-') . "\n\n"
+                . "Buka halaman berikut untuk memeriksa dan mengaktifkan akun:\n{$urlAktivasi}\n\n"
+                . "Jangan membalas email otomatis ini.";
+
+            try {
+                $emailService->clear(true);
+                $emailService->setFrom($fromEmail, $fromName);
+                $emailService->setTo((string) $admin['email']);
+                $emailService->setSubject('Aktivasi alumni baru: ' . $namaAlumni);
+                $emailService->setMailType('text');
+                $emailService->setMessage($message);
+
+                if (! $emailService->send()) {
+                    log_message('error', 'Email pendaftaran alumni gagal dikirim kepada salah satu admin.');
+                }
+            } catch (\Throwable $th) {
+                log_message('error', 'Email pendaftaran alumni gagal dikirim: ' . $th->getMessage());
+            }
+        }
+    }
+
+    protected function ambilPenerimaEmailAdmin(array $admins, string $configuredRecipients): array
+    {
+        if (trim($configuredRecipients) !== '') {
+            $result = [];
+            foreach (preg_split('/[,;]+/', $configuredRecipients) ?: [] as $email) {
+                $email = strtolower(trim($email));
+                if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                    $result[$email] = [
+                        'nama_lengkap' => 'Admin',
+                        'email' => $email,
+                        'slug_peran' => '',
+                    ];
+                }
+            }
+
+            return array_values($result);
+        }
+
+        $result = [];
+        foreach ($admins as $admin) {
+            $email = strtolower(trim((string) ($admin['email'] ?? '')));
+            if (! filter_var($email, FILTER_VALIDATE_EMAIL) || $this->emailDemo($email)) {
+                continue;
+            }
+
+            $result[$email] = $admin;
+        }
+
+        return array_values($result);
+    }
+
+    protected function emailDemo(string $email): bool
+    {
+        return str_ends_with($email, '.local')
+            || str_ends_with($email, '@demo.tracer.test')
+            || $email === 'rina.wulandari.skom@gmail.com';
     }
 
     /*

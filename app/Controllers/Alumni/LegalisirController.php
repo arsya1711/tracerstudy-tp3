@@ -80,6 +80,43 @@ class LegalisirController extends BaseController
         return redirect()->to(site_url('alumni/legalisir'))->with('sukses', 'Pengajuan legalisir berhasil dikirim.');
     }
 
+    public function hapus(int $idPengajuan): RedirectResponse
+    {
+        $alumni = $this->ambilAlumniLogin();
+        if ($alumni === null) {
+            session()->destroy();
+
+            return redirect()->to(site_url('login'))->with('error', 'Profil alumni belum ditemukan.');
+        }
+
+        $pengajuan = $this->legalisirModel
+            ->where('id_pengajuan_legalisir', $idPengajuan)
+            ->where('id_alumni', (int) $alumni['id_alumni'])
+            ->first();
+
+        if ($pengajuan === null) {
+            return redirect()->to(site_url('alumni/legalisir'))
+                ->with('error', 'Pengajuan legalisir tidak ditemukan atau bukan milik akun kamu.');
+        }
+
+        if ((string) ($pengajuan['status'] ?? '') !== 'diajukan') {
+            return redirect()->to(site_url('alumni/legalisir'))
+                ->with('error', 'Pengajuan yang sudah diproses admin tidak dapat dihapus.');
+        }
+
+        $berhasil = $this->legalisirModel
+            ->where('id_alumni', (int) $alumni['id_alumni'])
+            ->delete($idPengajuan);
+
+        if (! $berhasil) {
+            return redirect()->to(site_url('alumni/legalisir'))
+                ->with('error', 'Pengajuan legalisir gagal dihapus.');
+        }
+
+        return redirect()->to(site_url('alumni/legalisir'))
+            ->with('sukses', 'Pengajuan legalisir berhasil dihapus.');
+    }
+
     protected function ambilAlumniLogin(): ?array
     {
         if ((string) session()->get('slug_peran') !== 'alumni') {

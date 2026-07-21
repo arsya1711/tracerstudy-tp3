@@ -11,6 +11,12 @@ class Email extends BaseConfig
     public string $recipients = '';
 
     /**
+     * Daftar penerima notifikasi admin, dipisahkan koma atau titik koma.
+     * Jika kosong, sistem memakai email akun Super Admin/Admin Sekolah aktif.
+     */
+    public string $adminRecipients = '';
+
+    /**
      * The "user agent"
      */
     public string $userAgent = 'CodeIgniter';

@@ -27,6 +27,12 @@ $routes->post('logout', 'Auth\LoginController::logout', ['filter' => 'auth']);
 $routes->post('notifikasi/buka/(:num)', 'NotifikasiController::buka/$1', ['filter' => 'auth']);
 $routes->get('alumni', 'Alumni\DashboardController::index', ['filter' => 'auth:alumni']);
 
+$routes->group('profil-akun', ['filter' => 'auth:superadmin,admin_sekolah'], static function (RouteCollection $routes) {
+    $routes->get('/', 'ProfilAkunController::index');
+    $routes->post('update', 'ProfilAkunController::update');
+    $routes->post('update-password', 'ProfilAkunController::updatePassword');
+});
+
 $routes->group('dashboard', ['filter' => 'auth'], static function (RouteCollection $routes) {
     $routes->get('superadmin', 'Superadmin\DashboardController::index', ['filter' => 'auth:superadmin']);
     $routes->get('super-admin', 'Superadmin\DashboardController::index', ['filter' => 'auth:superadmin']);
@@ -38,6 +44,7 @@ $routes->group('admin-sekolah', ['filter' => 'auth:admin_sekolah'], static funct
     $routes->get('dashboard', 'AdminSekolah\DashboardController::index');
     $routes->get('legalisir', 'AdminSekolah\LegalisirController::index');
     $routes->post('legalisir/update-status/(:num)', 'AdminSekolah\LegalisirController::updateStatus/$1');
+    $routes->post('legalisir/hapus/(:num)', 'AdminSekolah\LegalisirController::hapus/$1');
     $routes->get('kompetensi', 'AdminSekolah\KompetensiController::index');
     $routes->post('kompetensi/simpan', 'AdminSekolah\KompetensiController::simpan');
     $routes->post('kompetensi/update/(:num)', 'AdminSekolah\KompetensiController::update/$1');
@@ -53,6 +60,7 @@ $routes->group('admin-sekolah', ['filter' => 'auth:admin_sekolah'], static funct
     $routes->get('tracer', 'AdminSekolah\TracerController::index');
     $routes->get('tracer/export', 'AdminSekolah\TracerController::export');
     $routes->get('tracer/export-pdf', 'AdminSekolah\TracerController::exportPdf');
+    $routes->post('tracer/aktivasi-alumni/(:num)', 'AdminSekolah\TracerController::aktivasiAlumni/$1');
     $routes->post('tracer/update/(:num)', 'AdminSekolah\TracerController::update/$1');
     $routes->post('tracer/hapus-tracer/(:num)', 'AdminSekolah\TracerController::hapusTracer/$1');
     $routes->post('tracer/hapus-alumni/(:num)', 'AdminSekolah\TracerController::hapusAlumni/$1');
@@ -61,6 +69,7 @@ $routes->group('admin-sekolah', ['filter' => 'auth:admin_sekolah'], static funct
 $routes->group('superadmin', ['filter' => 'auth:superadmin'], static function (RouteCollection $routes) {
     $routes->get('legalisir', 'Superadmin\LegalisirController::index');
     $routes->post('legalisir/update-status/(:num)', 'Superadmin\LegalisirController::updateStatus/$1');
+    $routes->post('legalisir/hapus/(:num)', 'Superadmin\LegalisirController::hapus/$1');
     $routes->get('kompetensi', 'Superadmin\KompetensiController::index');
     $routes->post('kompetensi/simpan', 'Superadmin\KompetensiController::simpan');
     $routes->post('kompetensi/update/(:num)', 'Superadmin\KompetensiController::update/$1');
@@ -76,6 +85,7 @@ $routes->group('superadmin', ['filter' => 'auth:superadmin'], static function (R
     $routes->get('tracer', 'Superadmin\TracerController::index');
     $routes->get('tracer/export', 'Superadmin\TracerController::export');
     $routes->get('tracer/export-pdf', 'Superadmin\TracerController::exportPdf');
+    $routes->post('tracer/aktivasi-alumni/(:num)', 'Superadmin\TracerController::aktivasiAlumni/$1');
     $routes->post('tracer/update/(:num)', 'Superadmin\TracerController::update/$1');
     $routes->post('tracer/hapus-tracer/(:num)', 'Superadmin\TracerController::hapusTracer/$1');
     $routes->post('tracer/hapus-alumni/(:num)', 'Superadmin\TracerController::hapusAlumni/$1');
@@ -93,6 +103,7 @@ $routes->group('alumni', ['filter' => 'auth:alumni'], static function (RouteColl
     $routes->get('tracer', 'Alumni\DashboardController::tracer');
     $routes->get('legalisir', 'Alumni\LegalisirController::index');
     $routes->post('legalisir/simpan', 'Alumni\LegalisirController::simpan');
+    $routes->post('legalisir/hapus/(:num)', 'Alumni\LegalisirController::hapus/$1');
     $routes->post('profil/update/(:num)', 'Alumni\DashboardController::updateDetail/$1');
     $routes->post('profil/update-email', 'Alumni\DashboardController::updateEmail');
     $routes->post('profil/update-password', 'Alumni\DashboardController::updatePassword');

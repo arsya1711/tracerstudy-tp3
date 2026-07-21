@@ -3,9 +3,11 @@
 namespace App\Controllers\Superadmin;
 
 use App\Controllers\BaseController;
+use App\Models\NotifikasiModel;
 use CodeIgniter\HTTP\RedirectResponse;
 use CodeIgniter\HTTP\ResponseInterface;
 use Config\Database;
+use Config\Email as EmailConfig;
 
 /*
 |-------------------------------------------------------------------
@@ -171,8 +173,6 @@ class TracerController extends BaseController
             'id_angkatan'         => $this->ambilIntegerKosongJadiNull('id_angkatan'),
             'id_kompetensi'       => $this->ambilIntegerKosongJadiNull('id_kompetensi'),
             'alamat'              => $this->ambilStringKosongJadiNull('alamat'),
-            'status_pendaftaran'  => 'aktif',
-            'status_verifikasi'   => 'aktif',
         ];
 
         $this->db->table('tb_alumni')
@@ -203,6 +203,133 @@ class TracerController extends BaseController
         }
 
         return redirect()->to($this->getTracerBaseUrl())->with('success', 'Data alumni dan tracer berhasil diperbarui.');
+    }
+
+    public function aktivasiAlumni(int $idAlumni): RedirectResponse
+    {
+        if (! $this->isSuperadmin()) {
+            return redirect()->to('/login')->with('error', 'Akses ditolak.');
+        }
+
+        $alumni = $this->ambilAlumniDasar($idAlumni);
+        if ($alumni === null) {
+            return redirect()->to($this->getTracerBaseUrl())->with('error', 'Data alumni tidak ditemukan.');
+        }
+
+        if (
+            (string) ($alumni['status_pendaftaran'] ?? '') === 'aktif'
+            && (int) ($alumni['status_aktif'] ?? 0) === 1
+        ) {
+            return redirect()->to($this->getTracerBaseUrl())
+                ->with('success', 'Akun alumni sudah aktif.');
+        }
+
+        $this->db->transStart();
+
+        $this->db->table('tb_pengguna')
+            ->where('id_pengguna', (int) $alumni['id_pengguna'])
+            ->update(['status_aktif' => 1]);
+
+        $this->db->table('tb_alumni')
+            ->where('id_alumni', $idAlumni)
+            ->update([
+                'status_pendaftaran' => 'aktif',
+                'status_verifikasi'  => 'aktif',
+                'catatan_verifikasi' => null,
+                'diverifikasi_oleh'  => (int) session()->get('id_pengguna') ?: null,
+                'diverifikasi_pada'  => date('Y-m-d H:i:s'),
+            ]);
+
+        $this->db->transComplete();
+
+        if (! $this->db->transStatus()) {
+            return redirect()->to($this->getTracerBaseUrl() . '?status_akun=menunggu_aktivasi')
+                ->with('error', 'Akun alumni gagal diaktifkan.');
+        }
+
+        $this->kirimNotifikasiAktivasiAlumni($alumni);
+
+        return redirect()->to($this->getTracerBaseUrl() . '?status_akun=menunggu_aktivasi')
+            ->with('success', 'Akun alumni berhasil diverifikasi dan diaktifkan.');
+    }
+
+    /**
+     * Alumni mendapat notifikasi aplikasi dan email setelah transaksi
+     * aktivasi berhasil. Kegagalan notifikasi tidak membatalkan aktivasi.
+     */
+    protected function kirimNotifikasiAktivasiAlumni(array $alumni): void
+    {
+        $idPengguna = (int) ($alumni['id_pengguna'] ?? 0);
+        if ($idPengguna <= 0) {
+            return;
+        }
+
+        try {
+            (new NotifikasiModel())->buatUntukPengguna(
+                [$idPengguna],
+                'akun_diaktifkan',
+                'Akun alumni sudah aktif',
+                'Akun kamu telah diverifikasi oleh Admin Sekolah dan sekarang dapat digunakan.',
+                'alumni/dashboard'
+            );
+        } catch (\Throwable $th) {
+            log_message('error', 'Notifikasi aktivasi alumni gagal dibuat: ' . $th->getMessage());
+        }
+
+        $this->kirimEmailAktivasiAlumni($alumni);
+    }
+
+    protected function kirimEmailAktivasiAlumni(array $alumni): void
+    {
+        $config = config(EmailConfig::class);
+        $fromEmail = trim((string) $config->fromEmail);
+        $emailAlumni = strtolower(trim((string) ($alumni['email'] ?? '')));
+
+        if (! filter_var($fromEmail, FILTER_VALIDATE_EMAIL)) {
+            log_message('warning', 'Email aktivasi alumni tidak dikirim: email.fromEmail belum dikonfigurasi.');
+
+            return;
+        }
+
+        if (! filter_var($emailAlumni, FILTER_VALIDATE_EMAIL) || $this->alumniDemo($alumni)) {
+            log_message('warning', 'Email aktivasi alumni tidak dikirim: alamat alumni tidak valid atau merupakan akun demo.');
+
+            return;
+        }
+
+        $namaAlumni = trim((string) ($alumni['nama_lengkap'] ?? 'Alumni')) ?: 'Alumni';
+        $namaAlumni = preg_replace('/[\r\n]+/', ' ', $namaAlumni) ?: 'Alumni';
+        $fromName = trim((string) $config->fromName) ?: 'Tracer Study SMK Teratai Putih 3';
+        $message = "Halo {$namaAlumni},\n\n"
+            . "Akun alumni kamu telah diverifikasi dan diaktifkan oleh Admin Sekolah. "
+            . "Sekarang kamu dapat login untuk melengkapi profil dan mengisi tracer study.\n\n"
+            . 'Login: ' . site_url('login') . "\n\n"
+            . "Jangan membalas email otomatis ini.";
+
+        try {
+            $emailService = service('email');
+            $emailService->clear(true);
+            $emailService->setFrom($fromEmail, $fromName);
+            $emailService->setTo($emailAlumni);
+            $emailService->setSubject('Akun alumni kamu sudah aktif');
+            $emailService->setMailType('text');
+            $emailService->setMessage($message);
+
+            if (! $emailService->send()) {
+                log_message('error', 'Email aktivasi alumni gagal dikirim.');
+            }
+        } catch (\Throwable $th) {
+            log_message('error', 'Email aktivasi alumni gagal dikirim: ' . $th->getMessage());
+        }
+    }
+
+    protected function alumniDemo(array $alumni): bool
+    {
+        $nis = trim((string) ($alumni['nis'] ?? ''));
+        $email = strtolower(trim((string) ($alumni['email'] ?? '')));
+
+        return preg_match('/^1920\d{4}$/', $nis) === 1
+            || str_ends_with($email, '@demo.tracer.test');
     }
 
     public function hapusTracer(int $idAlumni): RedirectResponse
@@ -314,6 +441,10 @@ class TracerController extends BaseController
             $builder->where('t.id_tracer IS NULL', null, false);
         }
 
+        if (($filters['status_akun'] ?? '') !== '') {
+            $builder->where('al.status_pendaftaran', $filters['status_akun']);
+        }
+
         if (($filters['tanggal_mulai'] ?? '') !== '') {
             $builder->where('DATE(COALESCE(t.diperbarui_pada, t.dibuat_pada)) >=', $filters['tanggal_mulai']);
         }
@@ -357,6 +488,7 @@ class TracerController extends BaseController
             'id_kompetensi'    => max(0, (int) ($this->request->getGet('id_kompetensi') ?? 0)),
             'id_aktivitas'     => max(0, (int) ($this->request->getGet('id_aktivitas') ?? 0)),
             'status'           => in_array((string) $this->request->getGet('status'), ['sudah', 'belum'], true) ? (string) $this->request->getGet('status') : '',
+            'status_akun'      => in_array((string) $this->request->getGet('status_akun'), ['menunggu_aktivasi', 'aktif'], true) ? (string) $this->request->getGet('status_akun') : '',
             'tanggal_mulai'    => $tanggalMulai,
             'tanggal_selesai'  => $tanggalSelesai,
         ];
@@ -775,6 +907,10 @@ class TracerController extends BaseController
             $items[] = 'Status: ' . $filters['status'];
         }
 
+        if (($filters['status_akun'] ?? '') !== '') {
+            $items[] = 'Status Akun: ' . str_replace('_', ' ', $filters['status_akun']);
+        }
+
         if (($filters['tanggal_mulai'] ?? '') !== '') {
             $items[] = 'Tanggal Mulai: ' . $filters['tanggal_mulai'];
         }
@@ -1172,7 +1308,7 @@ class TracerController extends BaseController
         }
 
         $row = $this->db->table('tb_alumni al')
-            ->select('al.id_alumni, al.id_pengguna, u.email')
+            ->select('al.id_alumni, al.id_pengguna, al.nis, al.status_pendaftaran, al.status_verifikasi, u.nama_lengkap, u.email, u.status_aktif')
             ->join('tb_pengguna u', 'u.id_pengguna = al.id_pengguna', 'inner')
             ->where('al.id_alumni', $idAlumni)
             ->get()

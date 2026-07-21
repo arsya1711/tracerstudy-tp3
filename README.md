@@ -112,3 +112,4 @@ Ganti password bootstrap setelah login pertama dan jangan commit nilainya ke rep
 - Folder `vendor/` tidak ikut di-commit; jalankan `composer install` setelah clone.
 - Folder `public/uploads/` dipakai untuk file upload runtime dan tidak ikut di-commit.
 - Dokumentasi struktur database tersedia di `database_table.md`.
+- Petunjuk pengisian tracer untuk Alumni dan Admin Sekolah tersedia di `docs/petunjuk-pengisian-tracer.md`.
